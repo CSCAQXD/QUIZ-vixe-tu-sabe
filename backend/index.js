@@ -1,70 +1,32 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { PrismaClient } = require('@prisma/client');
+app.get('/perguntas', async (req, res) => {
+    const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTsNj_z-lz_htrzuv0pbyFllv_z2cFNeRRvX-GUV2RPUEsx08TfUoSS24LjXZS3OML3O1f_yW-e-E6t/pub?output=csv";
 
-const app = express();
-
-const prisma = new PrismaClient();
-
-app.use(cors());
-app.use(express.json());
-
-// --- ROTAS PARA AS ESCOLAS ---
-
-// 1. Cadastrar uma nova escola (Cadastro inicial)
-app.post('/escolas', async (req, res) => {
-    const { nome, cidade } = req.body;
     try {
-        const novaEscola = await prisma.escola.create({
-            data: { nome, cidade }
+        const resposta = await axios.get(urlPlanilha);
+        
+        const resultados = Papa.parse(resposta.data, {
+            header: true,
+            skipEmptyLines: true
         });
-        res.status(201).json(novaEscola);
-    } catch (error) {
-        res.status(400).json({ erro: "Essa escola já está cadastrada ou dados inválidos." });
-    }
-});
+        console.log("Perguntas carregadas:", resultados.data.length);
 
-// 2. Listar todas as escolas (Para o mediador selecionar no formulário)
-app.get('/escolas', async (req, res) => {
-    const escolas = await prisma.escola.findMany({
-        orderBy: { nome: 'asc' }
-    });
-    res.json(escolas);
-});
-
-// 3. Salvar o resultado de um quiz finalizado
-app.post('/partidas', async (req, res) => {
-    const { escolaId, nivel, turno, serie, turma, pontuacao } = req.body;
-    try {
-        const novaPartida = await prisma.partida.create({
-        data: {
-            escolaId,
-            nivel,
-            turno,
-            serie: parseInt(serie),
-            turma,
-            pontuacao: parseInt(pontuacao)
+        if (!resultados.data || resultados.data.length === 0) {
+            return res.status(404).json({ mensagem: "Nenhuma pergunta encontrada na planilha." });
         }
-        });
-        res.status(201).json(novaPartida);
+
+        const perguntas = resultados.data.map(p => ({
+            id: p.id || "sem-id",
+            pergunta: p.pergunta || "Sem pergunta",
+            opcoes: [p.altA, p.altB, p.altC, p.altD].filter(opcao => opcao),
+            correta: p.correta,
+            pontosIniciais: Number(p.pontosIniciais) || 0,
+            dicas: [p.dica1, p.dica2, p.dica3].filter(dica => dica && dica.trim() !== "")
+        }));
+        
+        res.json(perguntas);
     } catch (error) {
-        console.log(error);
-        res.status(400).json({ erro: "Erro ao salvar a pontuação da partida." });
+        console.error("Erro na rota /perguntas:", error.message);
+        res.status(500).json({ erro: "Erro ao buscar as perguntas na planilha.", detalhe: error.message });
     }
 });
 
-// 4. Puxar o Ranking Geral (Top 10 para a Tela 6)
-app.get('/ranking-geral', async (req, res) => {
-    const ranking = await prisma.partida.findMany({
-        include: { escola: true },
-        orderBy: { pontuacao: 'desc' },
-        take: 10
-    });
-    res.json(ranking);
-});
-
-const PORT = 3001; 
-app.listen(PORT, () => {
-    console.log(`Servidor da Casa de Saberes rodando em http://localhost:${PORT}`);
-});
