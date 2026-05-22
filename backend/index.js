@@ -1,3 +1,14 @@
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const axios = require('axios');
+const Papa = require('papaparse');
+const { PrismaClient } = require('@prisma/client');
+const app = express();
+const prisma = new PrismaClient();
+app.use(cors());
+app.use(express.json());
+
 app.get('/perguntas', async (req, res) => {
     const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTsNj_z-lz_htrzuv0pbyFllv_z2cFNeRRvX-GUV2RPUEsx08TfUoSS24LjXZS3OML3O1f_yW-e-E6t/pub?output=csv";
 
@@ -56,4 +67,10 @@ app.post('/partidas', async (req, res) => {
         console.error("Erro ao salvar partida:", error.message);
         res.status(500).json({ erro: "Erro ao salvar pontuação." });
     }
+});
+
+// --- LIGAR O SERVIDOR ---
+const PORT = 3001;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
