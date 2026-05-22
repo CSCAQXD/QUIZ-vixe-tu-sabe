@@ -30,3 +30,30 @@ app.get('/perguntas', async (req, res) => {
     }
 });
 
+// Rota para salvar a partida e atualizar a pontuação
+app.post('/partidas', async (req, res) => {
+    const { escolaId, serie, turma, nivel, turno, pontuacaoOriginal, dicasUsadas } = req.body;
+
+    try {
+        // Regra de negócio: Cada dica subtrai 20% do valor original (obs: eu vou arredondar esse valor, para melhorar a visualização no ranking)
+        const desconto = dicasUsadas * 0.20;
+        const pontuacaoCalculada = pontuacaoOriginal * (1 - desconto);
+        const pontuacaoFinal = Math.max(0, Math.round(pontuacaoCalculada));
+        
+        const novaPartida = await prisma.partida.create({
+            data: {
+                escolaId,
+                serie: parseInt(serie),
+                turma,
+                nivel,
+                turno,
+                pontuacao: pontuacaoFinal 
+            }
+        });
+
+        res.status(201).json({ mensagem: "Partida salva com sucesso!", pontuacao: pontuacaoFinal });
+    } catch (error) {
+        console.error("Erro ao salvar partida:", error.message);
+        res.status(500).json({ erro: "Erro ao salvar pontuação." });
+    }
+});
