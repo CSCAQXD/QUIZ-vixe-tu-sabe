@@ -41,33 +41,99 @@ app.get('/perguntas', async (req, res) => {
     }
 });
 
-// Rota para salvar a Sessão e calcular a pontuação
+// Rota inteligente para processar e registrar as sessões de jogo
 app.post('/sessao', async (req, res) => {
-    const { escolaId, serie, turma, pontuacaoOriginal, dicasUsadas } = req.body;
-
-    if (!escolaId || !serie || !turma) {
-        return res.status(400).json({ erro: "Escola, série e turma são obrigatórios." });
-    }
-
     try {
-        // Regra de negócio: Cada dica subtrai 20% do valor original (obs: eu vou arredondar esse valor, para melhorar a visualização no ranking)        
-        const desconto = dicasUsadas * 0.20;
+        console.log("Dados recebidos no body:", req.body);
+        
+        const { nomeEscola, cidade, serie, turma, pontuacaoOriginal, dicasUsadas } = req.body;
+
+        if (!nomeEscola || !cidade || !serie || !turma) {
+            return res.status(400).json({ erro: "Escola, cidade, série e turma são obrigatórios." });
+        }
+
+        // SANITIZAÇÃO: Limpa os textos removendo espaços nas pontas e padronizando em maiúsculo
+        const nomeEscolaTratado = nomeEscola.trim().toUpperCase();
+        const cidadeTratada = cidade.trim().toUpperCase();
+        const turmaTratada = turma.trim().toUpperCase();
+
+        // 1ª ETAPA: Verificar se a escola já existe pelo nome único
+        let esco = await prisma.escola.findUnique({
+            where: { nome: nomeEscolaTratado }
+        });
+
+        // 2ª ETAPA: Se for uma escola nova, cadastra de forma transparente
+        if (!esco) {
+            console.log(`Nova escola detectada! Cadastrando: ${nomeEscolaTratado}`);
+            esco = await prisma.escola.create({
+                data: {
+                    nome: nomeEscolaTratado,
+                    cidade: cidadeTratada
+                }
+            });
+        }
+
+        // 3ª ETAPA: Cálculo dinâmico do desconto de dicas
+        const desconto = dicasUsadas ? (dicasUsadas * 0.20) : 0;
         const pontuacaoCalculada = pontuacaoOriginal * (1 - desconto);
         const pontuacaoFinal = Math.max(0, Math.round(pontuacaoCalculada));
         
+        // 4ª ETAPA: Grava a rodada no histórico vinculando ao ID seguro da escola
         const novaSessao = await prisma.sessao.create({
             data: {
-                escolaId,
+                escolaId: esco.id,
                 serie: parseInt(serie),
-                turma: turma.trim().toUpperCase(),
+                turma: turmaTratada,
                 pontuacao: pontuacaoFinal 
             }
         });
 
-        res.status(201).json({ mensagem: "Sessão salva com sucesso!", id: novaSessao.id, pontuacaoFinal });
+        res.status(201).json({ 
+            mensagem: "Sessão e dados escolares processados com sucesso!", 
+            id: novaSessao.id,
+            escola: esco.nome
+        });
+
     } catch (error) {
-        console.error("Erro ao salvar sessão:", error.message);
-        res.status(500).json({ erro: "Erro ao salvar sessão." });
+        console.error("ERRO DETALHADO NO PROCESSAMENTO DA SESSÃO:", error);
+        res.status(500).json({ erro: "Erro ao processar e salvar a sessão.", detalhe: error.message });
+    }
+});
+
+// ROTA DE RANKING: Agrupa e soma os pontos para o ranking geral de turmas
+app.get('/ranking-turmas', async (req, res) => {
+    try {
+        // O Prisma junta as linhas idênticas de escola, série e turma e faz a soma matemática rápida
+        const rankingAgrupado = await prisma.sessao.groupBy({
+            by: ['escolaId', 'serie', 'turma'],
+            _sum: {
+                pontuacao: true
+            },
+            orderBy: {
+                _sum: {
+                    pontuacao: 'desc'
+                }
+            }
+        });
+
+        // Busca a lista de escolas para injetar o nome e a cidade reais no retorno do JSON
+        const escolas = await prisma.escola.findMany();
+        
+        const rankingFinal = rankingAgrupado.map(item => {
+            const escolaEncontrada = escolas.find(e => e.id === item.escolaId);
+            return {
+                escola: escolaEncontrada ? escolaEncontrada.nome : "Escola Não Identificada",
+                cidade: escolaEncontrada ? escolaEncontrada.cidade : "Desconhecida",
+                serie: item.serie,
+                turma: item.turma,
+                pontuacaoTotal: item._sum.pontuacao // Pontuação somada de todas as visitas!
+            };
+        });
+
+        res.status(200).json(rankingFinal);
+    } catch (error) {
+        console.error("Erro na rota /ranking-turmas:", error.message);
+        res.status(500).json({ erro: "Erro ao compilar o ranking de turmas." });
     }
 });
 
