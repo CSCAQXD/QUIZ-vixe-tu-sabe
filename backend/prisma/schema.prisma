@@ -8,10 +8,10 @@ datasource db {
 }
 
 model Escola {
-  id       String   @id @default(uuid())
-  nome     String   @unique
-  cidade   String
-  sessoes  Sessao[]
+  id      String   @id @default(uuid())
+  nome    String   @unique
+  cidade  String
+  sessoes Sessao[]
 }
 
 model Sessao {
@@ -19,7 +19,12 @@ model Sessao {
   serie       Int
   turma       String
   pontuacao   Int      @default(0)
-  dataSessao  DateTime @default(now())
-  escolaId    String
-  escola      Escola   @relation(fields: [escolaId], references: [id])
+  dicasUsadas Int      @default(0)
+  grupoId String
+  dataSessao DateTime @default(now())
+  escolaId String
+  escola   Escola @relation(fields: [escolaId], references: [id])
+  @@index([escolaId])
+  @@index([grupoId])
+  @@index([escolaId, serie, turma])
 }

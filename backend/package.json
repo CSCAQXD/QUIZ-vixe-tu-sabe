@@ -1,14 +1,15 @@
 {
   "name": "backend",
-  "version": "1.0.0",
-  "description": "",
+  "version": "2.0.0",
+  "description": "API do Quiz Interativo - Casa de Saberes Cego Aderaldo",
   "main": "index.js",
   "scripts": {
     "dev": "node --watch index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "studio": "prisma studio"
   },
   "keywords": [],
-  "author": "",
+  "author": "Carla Cristina Sousa Araújo",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
