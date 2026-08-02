@@ -8,20 +8,18 @@ datasource db {
 }
 
 model Escola {
-  id        String    @id @default(uuid())
-  nome      String    @unique
-  cidade    String
-  partidas  Partida[]
+  id       String   @id @default(uuid())
+  nome     String   @unique
+  cidade   String
+  sessoes  Sessao[]
 }
 
-model Partida {
-  id           String   @id @default(uuid())
-  nivel        String
-  turno        String
-  serie        Int
-  turma        String
-  pontuacao    Int      @default(0)
-  dataPartida  DateTime @default(now())
-  escolaId     String
-  escola       Escola   @relation(fields: [escolaId], references: [id])
+model Sessao {
+  id          String   @id @default(uuid())
+  serie       Int
+  turma       String
+  pontuacao   Int      @default(0)
+  dataSessao  DateTime @default(now())
+  escolaId    String
+  escola      Escola   @relation(fields: [escolaId], references: [id])
 }
