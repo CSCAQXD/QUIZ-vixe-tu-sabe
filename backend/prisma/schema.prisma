@@ -9,9 +9,11 @@ datasource db {
 
 model Escola {
   id      String   @id @default(uuid())
-  nome    String   @unique
+  nome    String
   cidade  String
   sessoes Sessao[]
+  
+  @@unique([nome, cidade])
 }
 
 model Sessao {

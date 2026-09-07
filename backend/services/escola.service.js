@@ -5,7 +5,8 @@ async function listarEscolas() {
 }
 
 async function buscarOuCriarEscola(nome, cidade) {
-    const escolaExistente = await escolaRepository.buscarPorNome(nome);
+    const escolaExistente =
+        await escolaRepository.buscarPorNomeECidade(nome, cidade);
 
     if (escolaExistente) {
         return escolaExistente;

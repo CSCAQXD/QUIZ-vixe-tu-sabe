@@ -8,10 +8,13 @@ async function buscarTodas() {
     });
 }
 
-async function buscarPorNome(nome) {
+async function buscarPorNomeECidade(nome, cidade) {
     return prisma.escola.findUnique({
         where: {
-        nome,
+            nome_cidade: {
+                nome,
+                cidade,
+            },
         },
     });
 }
@@ -24,6 +27,6 @@ async function criar(dados) {
 
 module.exports = {
     buscarTodas,
-    buscarPorNome,
+    buscarPorNomeECidade,
     criar,
 };
