@@ -76,7 +76,22 @@ SELECT
     MAX("pontuacao"),
     0,
     MAX("dicasUsadas"),
-    CAST(strftime('%Y', MIN("dataSessao")) AS INTEGER),
+    CASE
+    WHEN typeof(MIN("dataSessao")) = 'integer'
+    THEN CAST(
+        strftime(
+            '%Y',
+            MIN("dataSessao") / 1000,
+            'unixepoch'
+        ) AS INTEGER
+    )
+    ELSE CAST(
+        strftime(
+            '%Y',
+            MIN("dataSessao")
+        ) AS INTEGER
+    )
+END,
     MIN("dataSessao"),
     "escolaId",
     MIN("dataSessao"),
