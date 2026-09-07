@@ -1,35 +1,301 @@
-const test = require("node\:test");
+const test = require("node:test");
+const assert = require("node:assert/strict");
 
-const assert = require("node\:assert/strict");
+const {
+    validarSessao,
+} = require("../schemas/sessao.schema");
 
-const { validarSessao } = require("../schemas/sessao.schema");
+const ID_PARTIDA =
+    "550e8400-e29b-41d4-a716-446655440000";
 
-test("normaliza uma sessão de turma única", () => {
-    const dados = validarSessao({ nomeEscola: " Escola ", cidade: " Quixadá ", serie: "9", turma: " A ", pontuacaoOriginal: "100" });
+function criarSessaoValida(
+    alteracoes = {}
+) {
+    return {
+        idempotencyKey: ID_PARTIDA,
+        nomeEscola:
+            "EEEP Maria Cavalcante Costa",
+        cidade: "Quixadá",
+        pontuacaoFinal: 100,
+        serie: 9,
+        turma: "A",
+        ...alteracoes,
+    };
+}
 
-    assert.deepEqual(dados, { nomeEscola: "Escola", cidade: "Quixadá", pontuacaoFinal: null, pontuacaoOriginal: 100, dicasUsadas: 0, turmas: [{ serie: 9, turma: "A" }] });
-});
+test(
+    "normaliza uma partida com uma única turma",
+    () => {
+        const resultado =
+            validarSessao(
+                criarSessaoValida({
+                    nomeEscola:
+                        "  Escola Teste  ",
+                    cidade:
+                        "  Quixadá  ",
+                    serie: "9",
+                    turma: "  A  ",
+                    pontuacaoFinal:
+                        "100",
+                })
+            );
 
-test("aceita pontuação final calculada pergunta a pergunta", () => {
-    const dados = validarSessao({ nomeEscola: "E", cidade: "C", serie: 9, turma: "A", pontuacaoFinal: 275 });
+        assert.deepEqual(
+            resultado,
+            {
+                idempotencyKey:
+                    ID_PARTIDA,
+                nomeEscola:
+                    "Escola Teste",
+                cidade: "Quixadá",
+                pontuacaoFinal: 100,
+                turmas: [
+                    {
+                        serie: 9,
+                        turma: "A",
+                    },
+                ],
+            }
+        );
+    }
+);
 
-    assert.equal(dados.pontuacaoFinal, 275);
+test(
+    "aceita várias turmas diferentes",
+    () => {
+        const resultado =
+            validarSessao(
+                criarSessaoValida({
+                    serie: undefined,
+                    turma: undefined,
+                    turmas: [
+                        {
+                            serie: 8,
+                            turma: "A",
+                        },
+                        {
+                            serie: 8,
+                            turma: "B",
+                        },
+                        {
+                            serie: 9,
+                            turma: "A",
+                        },
+                    ],
+                })
+            );
 
-    assert.equal(dados.pontuacaoOriginal, null);
-});
+        assert.equal(
+            resultado.turmas.length,
+            3
+        );
 
-test("aceita várias turmas distintas", () => {
-    const dados = validarSessao({ nomeEscola: "E", cidade: "C", turmas: [{ serie: 8, turma: "A" }, { serie: 9, turma: "A" }], pontuacaoOriginal: 80, dicasUsadas: 2 });
+        assert.deepEqual(
+            resultado.turmas,
+            [
+                {
+                    serie: 8,
+                    turma: "A",
+                },
+                {
+                    serie: 8,
+                    turma: "B",
+                },
+                {
+                    serie: 9,
+                    turma: "A",
+                },
+            ]
+        );
+    }
+);
 
-    assert.equal(dados.turmas.length, 2);
-});
+test(
+    "aceita pontuação final igual a zero",
+    () => {
+        const resultado =
+            validarSessao(
+                criarSessaoValida({
+                    pontuacaoFinal: 0,
+                })
+            );
 
-test("rejeita turma duplicada sem diferenciar maiúsculas", () => {
-    assert.throws(() => validarSessao({ nomeEscola: "E", cidade: "C", turmas: [{ serie: 9, turma: "a" }, { serie: 9, turma: "A" }], pontuacaoOriginal: 10 }), /repetir/);
-});
+        assert.equal(
+            resultado.pontuacaoFinal,
+            0
+        );
+    }
+);
 
-test("rejeita pontuação negativa e limite de dicas inválido", () => {
-    assert.throws(() => validarSessao({ nomeEscola: "E", cidade: "C", serie: 9, turma: "A", pontuacaoOriginal: -1 }), /pontuacaoOriginal/);
+test(
+    "rejeita chave de idempotência ausente",
+    () => {
+        assert.throws(
+            () =>
+                validarSessao(
+                    criarSessaoValida({
+                        idempotencyKey: "",
+                    })
+                ),
+            /idempotencyKey/
+        );
+    }
+);
 
-    assert.throws(() => validarSessao({ nomeEscola: "E", cidade: "C", serie: 9, turma: "A", pontuacaoOriginal: 1, dicasUsadas: 4 }), /dicasUsadas/);
-});
+test(
+    "rejeita pontuação final negativa",
+    () => {
+        assert.throws(
+            () =>
+                validarSessao(
+                    criarSessaoValida({
+                        pontuacaoFinal: -1,
+                    })
+                ),
+            /pontuacaoFinal/
+        );
+    }
+);
+
+test(
+    "rejeita pontuação final decimal",
+    () => {
+        assert.throws(
+            () =>
+                validarSessao(
+                    criarSessaoValida({
+                        pontuacaoFinal:
+                            10.5,
+                    })
+                ),
+            /pontuacaoFinal/
+        );
+    }
+);
+
+test(
+    "rejeita turma duplicada sem diferenciar maiúsculas",
+    () => {
+        assert.throws(
+            () =>
+                validarSessao(
+                    criarSessaoValida({
+                        serie: undefined,
+                        turma: undefined,
+                        turmas: [
+                            {
+                                serie: 9,
+                                turma: "a",
+                            },
+                            {
+                                serie: 9,
+                                turma: "A",
+                            },
+                        ],
+                    })
+                ),
+            /repetir/
+        );
+    }
+);
+
+test(
+    "permite o mesmo nome de turma em séries diferentes",
+    () => {
+        const resultado =
+            validarSessao(
+                criarSessaoValida({
+                    serie: undefined,
+                    turma: undefined,
+                    turmas: [
+                        {
+                            serie: 8,
+                            turma: "A",
+                        },
+                        {
+                            serie: 9,
+                            turma: "A",
+                        },
+                    ],
+                })
+            );
+
+        assert.equal(
+            resultado.turmas.length,
+            2
+        );
+    }
+);
+
+test(
+    "rejeita série fora do intervalo permitido",
+    () => {
+        assert.throws(
+            () =>
+                validarSessao(
+                    criarSessaoValida({
+                        serie: 13,
+                    })
+                ),
+            /entre 1 e 12/
+        );
+    }
+);
+
+test(
+    "rejeita escola sem nome",
+    () => {
+        assert.throws(
+            () =>
+                validarSessao(
+                    criarSessaoValida({
+                        nomeEscola: "   ",
+                    })
+                ),
+            /nome da escola/
+        );
+    }
+);
+
+test(
+    "rejeita cidade vazia",
+    () => {
+        assert.throws(
+            () =>
+                validarSessao(
+                    criarSessaoValida({
+                        cidade: "",
+                    })
+                ),
+            /cidade/
+        );
+    }
+);
+
+test(
+    "rejeita mais de vinte turmas",
+    () => {
+        const turmas =
+            Array.from(
+                {
+                    length: 21,
+                },
+                (_, indice) => ({
+                    serie: 9,
+                    turma: `TURMA-${indice + 1}`,
+                })
+            );
+
+        assert.throws(
+            () =>
+                validarSessao(
+                    criarSessaoValida({
+                        serie: undefined,
+                        turma: undefined,
+                        turmas,
+                    })
+                ),
+            /máximo 20 turmas/
+        );
+    }
+);
