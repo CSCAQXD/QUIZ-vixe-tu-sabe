@@ -5,7 +5,7 @@ const cors = require("cors");
 
 const perguntasRoutes = require("./src/routes/perguntas.routes");
 const escolaRouter = require("./routers/escola.router");
-const sessoesRoutes = require("./src/routes/sessoes.routes");
+const sessaoRouter = require("./routers/sessao.router");
 const rankingRoutes = require("./src/routes/ranking.routes");
 
 const app = express();
@@ -22,7 +22,8 @@ app.get("/health", (req, res) => {
 
 app.use(perguntasRoutes);
 app.use("/escolas", escolaRouter);
-app.use(sessoesRoutes);
+app.use("/sessao", sessaoRouter);
+app.use("/sessoes", sessaoRouter);
 app.use(rankingRoutes);
 
 const PORT = process.env.PORT || 3001;
