@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+﻿const crypto = require("crypto");
 
 const escolaService = require("./escola.service");
 const sessaoRepository = require("../repositories/sessao.repository");
@@ -30,27 +30,42 @@ async function registrarSessoes(dados) {
         isNaN(Number(pontuacaoOriginal))
     ) {
         const erro = new Error(
-        "pontuacaoOriginal é obrigatório e deve ser numérico."
+            "pontuacaoOriginal é obrigatório e deve ser numérico."
         );
         erro.statusCode = 400;
         throw erro;
     }
 
-    if (isNaN(dicasUsadas) || dicasUsadas < 0) {
+    if (
+        !Number.isInteger(dicasUsadas) ||
+        dicasUsadas < 0 ||
+        dicasUsadas > 3
+    ) {
         const erro = new Error(
-        "dicasUsadas deve ser um número maior ou igual a 0."
+            "dicasUsadas deve ser um número inteiro entre 0 e 3."
         );
         erro.statusCode = 400;
         throw erro;
     }
 
     for (const t of turmas) {
-        if (!t.serie || !t.turma) {
-        const erro = new Error(
-            "Cada turma precisa dos campos 'serie' e 'turma' preenchidos."
-        );
-        erro.statusCode = 400;
-        throw erro;
+        const serie = Number(t.serie);
+        const turmaTratada = limpar(t.turma);
+
+        if (!Number.isInteger(serie) || serie <= 0) {
+            const erro = new Error(
+                "Cada turma precisa ter uma série válida."
+            );
+            erro.statusCode = 400;
+            throw erro;
+        }
+
+        if (!turmaTratada) {
+            const erro = new Error(
+                "Cada turma precisa ter o campo 'turma' preenchido."
+            );
+            erro.statusCode = 400;
+            throw erro;
         }
     }
 
@@ -78,12 +93,12 @@ async function registrarSessoes(dados) {
         const turmaTratada = limpar(t.turma);
 
         const sessao = await sessaoRepository.criar({
-        escolaId: escola.id,
-        serie: parseInt(t.serie),
-        turma: turmaTratada,
-        pontuacao: pontuacaoFinal,
-        dicasUsadas,
-        grupoId,
+            escolaId: escola.id,
+            serie: Number(t.serie),
+            turma: turmaTratada,
+            pontuacao: pontuacaoFinal,
+            dicasUsadas,
+            grupoId,
         });
 
         sessoesCriadas.push(sessao);
@@ -98,52 +113,52 @@ async function registrarSessoes(dados) {
         const chave = `${sessao.serie}|||${sessao.turma}`;
 
         totaisPorTurma.set(
-        chave,
-        (totaisPorTurma.get(chave) || 0) + sessao.pontuacao
+            chave,
+            (totaisPorTurma.get(chave) || 0) + sessao.pontuacao
         );
     }
 
     const rankingInterno = [...totaisPorTurma.entries()]
         .map(([chave, total]) => {
-        const [serie, turma] = chave.split("|||");
+            const [serie, turma] = chave.split("|||");
 
-        return {
-            serie: Number(serie),
-            turma,
-            pontuacaoTotal: total,
-        };
+            return {
+                serie: Number(serie),
+                turma,
+                pontuacaoTotal: total,
+            };
         })
         .sort((a, b) => b.pontuacaoTotal - a.pontuacaoTotal);
 
     const resultadoTurmas = turmas.map((t) => {
-        const serieNum = parseInt(t.serie);
+        const serieNum = Number(t.serie);
         const turmaTratada = limpar(t.turma);
 
         const posicao =
-        rankingInterno.findIndex(
-            (ranking) =>
-            ranking.serie === serieNum &&
-            ranking.turma === turmaTratada
-        ) + 1;
+            rankingInterno.findIndex(
+                (ranking) =>
+                    ranking.serie === serieNum &&
+                    ranking.turma === turmaTratada
+            ) + 1;
 
         return {
-        serie: serieNum,
-        turma: turmaTratada,
-        pontuacaoDaRodada: pontuacaoFinal,
-        pontuacaoAcumuladaNaEscola: totaisPorTurma.get(
-            `${serieNum}|||${turmaTratada}`
-        ),
-        posicaoRankingInterno: posicao,
-        totalTurmasNoRankingInterno: rankingInterno.length,
+            serie: serieNum,
+            turma: turmaTratada,
+            pontuacaoDaRodada: pontuacaoFinal,
+            pontuacaoAcumuladaNaEscola: totaisPorTurma.get(
+                `${serieNum}|||${turmaTratada}`
+            ),
+            posicaoRankingInterno: posicao,
+            totalTurmasNoRankingInterno: rankingInterno.length,
         };
     });
 
     return {
         mensagem: "Sessão(ões) registrada(s) com sucesso!",
         escola: {
-        id: escola.id,
-        nome: escola.nome,
-        cidade: escola.cidade,
+            id: escola.id,
+            nome: escola.nome,
+            cidade: escola.cidade,
         },
         grupoId,
         turmas: resultadoTurmas,
