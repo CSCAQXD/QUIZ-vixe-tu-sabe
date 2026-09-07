@@ -2,24 +2,18 @@
     "../services/pergunta.service"
 );
 
-async function listarPerguntas(
-    req,
-    res,
-    next
-) {
+async function listarPerguntas(req, res, next) {
     try {
         const perguntas =
-            await perguntaService
-                .listarPerguntas();
+            await perguntaService.listarPerguntas();
 
         res.setHeader(
             "Cache-Control",
             "public, max-age=60"
         );
 
-        return res.json({
-            total:
-                perguntas.length,
+        return res.status(200).json({
+            total: perguntas.length,
             perguntas,
         });
     } catch (error) {
