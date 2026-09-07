@@ -2,90 +2,119 @@ const perguntaRepository = require(
     "../repositories/pergunta.repository"
 );
 
-const CACHE_TTL_MS =
-    Number(
-        process.env.PERGUNTAS_CACHE_TTL_MS
-    ) || 300000;
+const CACHE_TTL_PADRAO =
+    5 * 60 * 1000;
 
-let cachePerguntas = null;
+let cache = null;
 let cacheExpiraEm = 0;
+let buscaEmAndamento = null;
 
-function transformarPergunta(pergunta) {
+function obterCacheTtl() {
+    const valor = Number(
+        process.env
+            .PERGUNTAS_CACHE_TTL_MS
+    );
+
+    if (
+        Number.isInteger(valor) &&
+        valor >= 1000
+    ) {
+        return valor;
+    }
+
+    return CACHE_TTL_PADRAO;
+}
+
+function normalizarTexto(valor) {
+    return String(
+        valor ?? ""
+    ).trim();
+}
+
+function normalizarPergunta(
+    pergunta,
+    indice
+) {
+    const id =
+        normalizarTexto(
+            pergunta.id
+        ) || `PERGUNTA-${indice + 1}`;
+
+    const enunciado =
+        normalizarTexto(
+            pergunta.pergunta
+        );
+
+    const opcoes = [
+        pergunta.altA,
+        pergunta.altB,
+        pergunta.altC,
+        pergunta.altD,
+    ].map(normalizarTexto);
+
+    const correta =
+        normalizarTexto(
+            pergunta.correta
+        );
+
+    const pontosIniciais =
+        Number(
+            pergunta.pontosIniciais
+        );
+
+    const dicas = [
+        pergunta.dica1,
+        pergunta.dica2,
+        pergunta.dica3,
+    ]
+        .map(normalizarTexto)
+        .filter(Boolean);
+
+    if (!enunciado) {
+        return null;
+    }
+
+    if (
+        opcoes.some(
+            (opcao) => !opcao
+        )
+    ) {
+        return null;
+    }
+
+    if (!correta) {
+        return null;
+    }
+
+    if (
+        !Number.isInteger(
+            pontosIniciais
+        ) ||
+        pontosIniciais < 0
+    ) {
+        return null;
+    }
+
     return {
-        id: String(
-            pergunta.id || "sem-id"
-        ).trim(),
-
-        pergunta: String(
-            pergunta.pergunta || ""
-        ).trim(),
-
-        opcoes: [
-            pergunta.altA,
-            pergunta.altB,
-            pergunta.altC,
-            pergunta.altD,
-        ]
-            .map((opcao) =>
-                String(opcao || "").trim()
-            )
-            .filter(Boolean),
-
-        correta: String(
-            pergunta.correta || ""
-        ).trim(),
-
-        pontosIniciais:
-            Number(
-                pergunta.pontosIniciais
-            ) || 0,
-
-        dicas: [
-            pergunta.dica1,
-            pergunta.dica2,
-            pergunta.dica3,
-        ]
-            .map((dica) =>
-                String(dica || "").trim()
-            )
-            .filter(Boolean),
+        id,
+        pergunta: enunciado,
+        opcoes,
+        correta,
+        pontosIniciais,
+        dicas: dicas.slice(0, 3),
     };
 }
 
-async function listarPerguntas() {
-    if (
-        cachePerguntas &&
-        Date.now() < cacheExpiraEm
-    ) {
-        return cachePerguntas;
-    }
+function transformarPerguntas(
+    dados
+) {
+    const perguntas = dados
+        .map(normalizarPergunta)
+        .filter(Boolean);
 
-    let dados;
-
-    try {
-        dados =
-            await perguntaRepository.buscarDaPlanilha();
-    } catch (error) {
-        if (cachePerguntas) {
-            return cachePerguntas;
-        }
-
-        error.statusCode = 503;
-        throw error;
-    }
-
-    const perguntasValidas = dados
-        .map(transformarPergunta)
-        .filter(
-            (pergunta) =>
-                pergunta.pergunta &&
-                pergunta.opcoes.length === 4 &&
-                pergunta.correta
-        );
-
-    if (perguntasValidas.length === 0) {
+    if (perguntas.length === 0) {
         const erro = new Error(
-            "Nenhuma pergunta válida encontrada na planilha."
+            "Nenhuma pergunta válida foi encontrada na planilha."
         );
 
         erro.statusCode = 502;
@@ -93,13 +122,81 @@ async function listarPerguntas() {
         throw erro;
     }
 
-    cachePerguntas = perguntasValidas;
-    cacheExpiraEm =
-        Date.now() + CACHE_TTL_MS;
+    const ids = new Set();
 
-    return cachePerguntas;
+    for (
+        const pergunta
+        of perguntas
+    ) {
+        if (ids.has(pergunta.id)) {
+            const erro = new Error(
+                `A planilha possui o ID duplicado: ${pergunta.id}.`
+            );
+
+            erro.statusCode = 502;
+
+            throw erro;
+        }
+
+        ids.add(pergunta.id);
+    }
+
+    return perguntas;
+}
+
+async function atualizarCache() {
+    const dados =
+        await perguntaRepository
+            .buscarDaPlanilha();
+
+    const perguntas =
+        transformarPerguntas(dados);
+
+    cache = perguntas;
+
+    cacheExpiraEm =
+        Date.now() + obterCacheTtl();
+
+    return cache;
+}
+
+async function listarPerguntas() {
+    const cacheValido =
+        cache &&
+        Date.now() <
+            cacheExpiraEm;
+
+    if (cacheValido) {
+        return cache;
+    }
+
+    if (buscaEmAndamento) {
+        return buscaEmAndamento;
+    }
+
+    buscaEmAndamento =
+        atualizarCache();
+
+    try {
+        return await buscaEmAndamento;
+    } catch (error) {
+        if (cache) {
+            return cache;
+        }
+
+        throw error;
+    } finally {
+        buscaEmAndamento = null;
+    }
+}
+
+function limparCache() {
+    cache = null;
+    cacheExpiraEm = 0;
+    buscaEmAndamento = null;
 }
 
 module.exports = {
     listarPerguntas,
+    limparCache,
 };
