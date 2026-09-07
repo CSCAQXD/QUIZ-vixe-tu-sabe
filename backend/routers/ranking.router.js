@@ -1,21 +1,27 @@
 const express = require("express");
-const rankingController = require("../controllers/ranking.controller");
+
+const rankingController = require(
+    "../controllers/ranking.controller"
+);
 
 const router = express.Router();
 
 router.get(
     "/ranking-turmas",
-    rankingController.listarRankingDeTurmas
+    rankingController
+        .listarRankingDeTurmas
 );
 
 router.get(
     "/ranking-escolas",
-    rankingController.listarRankingDeEscolas
+    rankingController
+        .listarRankingDeEscolas
 );
 
 router.get(
     "/ranking-interno/:escolaId",
-    rankingController.listarRankingInterno
+    rankingController
+        .listarRankingInterno
 );
 
 module.exports = router;
