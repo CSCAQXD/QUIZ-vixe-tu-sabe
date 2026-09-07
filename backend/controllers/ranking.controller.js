@@ -2,17 +2,50 @@
     "../services/ranking.service"
 );
 
-function obterLimit(req) {
-    if (req.query.limit === undefined) {
+function obterAno(req) {
+    if (
+        req.query.ano === undefined
+    ) {
+        return new Date()
+            .getFullYear();
+    }
+
+    const ano = Number(
+        req.query.ano
+    );
+
+    if (
+        !Number.isInteger(ano) ||
+        ano < 2000 ||
+        ano > 2100
+    ) {
+        const erro = new Error(
+            "ano deve ser um número inteiro entre 2000 e 2100."
+        );
+
+        erro.statusCode = 400;
+
+        throw erro;
+    }
+
+    return ano;
+}
+
+function obterLimite(req) {
+    if (
+        req.query.limit === undefined
+    ) {
         return null;
     }
 
-    const limit = Number(req.query.limit);
+    const limite = Number(
+        req.query.limit
+    );
 
     if (
-        !Number.isInteger(limit) ||
-        limit < 1 ||
-        limit > 100
+        !Number.isInteger(limite) ||
+        limite < 1 ||
+        limite > 100
     ) {
         const erro = new Error(
             "limit deve ser um número inteiro entre 1 e 100."
@@ -23,7 +56,7 @@ function obterLimit(req) {
         throw erro;
     }
 
-    return limit;
+    return limite;
 }
 
 async function listarRankingDeTurmas(
@@ -32,12 +65,13 @@ async function listarRankingDeTurmas(
     next
 ) {
     try {
-        const ranking =
+        const resultado =
             await rankingService.listarRankingDeTurmas(
-                obterLimit(req)
+                obterAno(req),
+                obterLimite(req)
             );
 
-        return res.json(ranking);
+        return res.json(resultado);
     } catch (error) {
         next(error);
     }
@@ -49,12 +83,13 @@ async function listarRankingDeEscolas(
     next
 ) {
     try {
-        const ranking =
+        const resultado =
             await rankingService.listarRankingDeEscolas(
-                obterLimit(req)
+                obterAno(req),
+                obterLimite(req)
             );
 
-        return res.json(ranking);
+        return res.json(resultado);
     } catch (error) {
         next(error);
     }
@@ -68,7 +103,9 @@ async function listarRankingInterno(
     try {
         const resultado =
             await rankingService.listarRankingInterno(
-                req.params.escolaId
+                req.params.escolaId,
+                obterAno(req),
+                obterLimite(req)
             );
 
         return res.json(resultado);
