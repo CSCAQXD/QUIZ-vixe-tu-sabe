@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "node --watch index.js",
     "start": "node index.js",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "test": "node --test",
+    "check": "node --check index.js && prisma validate"
   },
-  "keywords": [],
   "author": "Carla Cristina Sousa Araújo",
   "license": "ISC",
   "type": "commonjs",
