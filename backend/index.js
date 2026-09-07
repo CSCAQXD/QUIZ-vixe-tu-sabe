@@ -1,27 +1,60 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
+﻿require("dotenv").config();
 
-const perguntasRoutes = require('./src/routes/perguntas.routes');
-const escolasRoutes = require('./src/routes/escolas.routes');
-const sessoesRoutes = require('./src/routes/sessoes.routes');
-const rankingRoutes = require('./src/routes/ranking.routes');
+const app = require("./app");
+const prisma = require(
+    "./config/prisma"
+);
 
-const app = express();
+const PORT =
+    Number(process.env.PORT) ||
+    3001;
 
-app.use(cors());
-app.use(express.json());
+const servidor = app.listen(
+    PORT,
+    () => {
+        console.log(
+            `Servidor da Casa de Saberes rodando em http://localhost:${PORT}`
+        );
+    }
+);
 
-app.get('/health', (req, res) => {
-    res.json({ status: 'ok', servico: 'Quiz Vixe, Tu Sabe? - API' });
+let encerrando = false;
+
+async function encerrarServidor(
+    sinal
+) {
+    if (encerrando) {
+        return;
+    }
+
+    encerrando = true;
+
+    console.log(
+        `Encerrando servidor após ${sinal}.`
+    );
+
+    servidor.close(async (error) => {
+        try {
+            await prisma.$disconnect();
+
+            if (error) {
+                console.error(error);
+                process.exitCode = 1;
+            }
+        } catch (erroPrisma) {
+            console.error(
+                erroPrisma
+            );
+
+            process.exitCode = 1;
+        }
+    });
+}
+
+process.on("SIGINT", () => {
+    encerrarServidor("SIGINT");
 });
 
-app.use(perguntasRoutes);
-app.use(escolasRoutes);
-app.use(sessoesRoutes);
-app.use(rankingRoutes);
-
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor da Casa de Saberes rodando em http://localhost:${PORT}`);
+process.on("SIGTERM", () => {
+    encerrarServidor("SIGTERM");
 });

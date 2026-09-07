@@ -1,14 +1,22 @@
 {
   "name": "backend",
   "version": "2.0.0",
-  "description": "API do Quiz Interativo - Casa de Saberes Cego Aderaldo",
+  "description": "API do Quiz Interativo da Casa de Saberes Cego Aderaldo",
   "main": "index.js",
   "scripts": {
     "dev": "node --watch index.js",
     "start": "node index.js",
+    "test": "node --test",
+    "test:coverage": "node --test --experimental-test-coverage",
+    "check": "node --check index.js && prisma validate",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
     "studio": "prisma studio"
   },
-  "keywords": [],
+  "engines": {
+    "node": ">=18.18"
+  },
   "author": "Carla Cristina Sousa Araújo",
   "license": "ISC",
   "type": "commonjs",
