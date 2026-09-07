@@ -1,18 +1,19 @@
 const axios = require("axios");
 const Papa = require("papaparse");
 
-const CSV_URL =
-    process.env.PERGUNTAS_CSV_URL;
+function obterConfiguracao() {
+    const csvUrl =
+        process.env.PERGUNTAS_CSV_URL;
 
-const TIMEOUT_MS =
-    Number(
-        process.env.PERGUNTAS_TIMEOUT_MS
-    ) || 5000;
+    const timeoutMs =
+        Number(
+            process.env
+                .PERGUNTAS_TIMEOUT_MS
+        ) || 5000;
 
-async function buscarDaPlanilha() {
-    if (!CSV_URL) {
+    if (!csvUrl) {
         const erro = new Error(
-            "PERGUNTAS_CSV_URL não configurada."
+            "PERGUNTAS_CSV_URL não está configurada."
         );
 
         erro.statusCode = 500;
@@ -20,26 +21,100 @@ async function buscarDaPlanilha() {
         throw erro;
     }
 
-    const resposta = await axios.get(
-        CSV_URL,
-        {
-            timeout: TIMEOUT_MS,
-            responseType: "text",
-        }
-    );
+    return {
+        csvUrl,
+        timeoutMs,
+    };
+}
+
+async function buscarDaPlanilha() {
+    const {
+        csvUrl,
+        timeoutMs,
+    } = obterConfiguracao();
+
+    let resposta;
+
+    try {
+        resposta = await axios.get(
+            csvUrl,
+            {
+                timeout: timeoutMs,
+                responseType: "text",
+                maxContentLength:
+                    2 * 1024 * 1024,
+                headers: {
+                    Accept:
+                        "text/csv,text/plain",
+                },
+            }
+        );
+    } catch (error) {
+        const erro = new Error(
+            "Não foi possível consultar a planilha de perguntas."
+        );
+
+        erro.statusCode = 503;
+        erro.cause = error;
+
+        throw erro;
+    }
+
+    if (
+        typeof resposta.data !==
+        "string"
+    ) {
+        const erro = new Error(
+            "A planilha retornou um conteúdo inválido."
+        );
+
+        erro.statusCode = 502;
+
+        throw erro;
+    }
 
     const resultado = Papa.parse(
         resposta.data,
         {
             header: true,
-            skipEmptyLines: true,
+            skipEmptyLines: "greedy",
+            transformHeader: (
+                cabecalho
+            ) => cabecalho.trim(),
         }
     );
 
-    if (resultado.errors.length > 0) {
-        throw new Error(
-            "A planilha contém dados CSV inválidos."
+    const errosRelevantes =
+        resultado.errors.filter(
+            (erro) =>
+                erro.type !==
+                "FieldMismatch"
         );
+
+    if (
+        errosRelevantes.length > 0
+    ) {
+        const erro = new Error(
+            "A planilha contém um CSV inválido."
+        );
+
+        erro.statusCode = 502;
+
+        throw erro;
+    }
+
+    if (
+        !Array.isArray(
+            resultado.data
+        )
+    ) {
+        const erro = new Error(
+            "A planilha não contém perguntas válidas."
+        );
+
+        erro.statusCode = 502;
+
+        throw erro;
     }
 
     return resultado.data;
