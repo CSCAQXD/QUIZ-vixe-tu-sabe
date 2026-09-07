@@ -14,17 +14,16 @@ rankings previstos no Documento de Requisitos (RN-006).
 ```
 backend/
 ├── index.js                     # ponto de entrada, monta as rotas
+├── app.js                       # configuração testável da aplicação Express
 ├── prisma/
 │   └── schema.prisma             # modelo de dados (Escola, Sessao)
-├── src/
-│   ├── prismaClient.js           # instância única do Prisma Client
-│   ├── utils/
-│   │   └── sanitize.js           # limpeza de texto (trim + uppercase)
-│   └── routes/
-│       ├── perguntas.routes.js   # GET /perguntas
-│       ├── escolas.routes.js     # GET /escolas
-│       ├── sessoes.routes.js     # POST /sessao e /sessoes
-│       └── ranking.routes.js     # os 3 rankings (RN-006)
+├── controllers/                 # camada HTTP
+├── routers/                     # definição das rotas
+├── schemas/                     # validação das entradas
+├── services/                    # regras de negócio
+├── repositories/                # acesso ao banco e à planilha
+├── utils/                       # utilitários de normalização
+├── test/                        # testes automatizados
 ├── .env.example
 ├── .gitignore
 └── package.json
@@ -67,6 +66,13 @@ npm run dev
 
 Deve aparecer: `🚀 Servidor da Casa de Saberes rodando em http://localhost:3001`
 
+Para validar o backend antes de publicar:
+
+```bash
+npm test
+npm run check
+```
+
 ---
 
 ## 🧪 Contrato da API
@@ -88,8 +94,7 @@ autocomplete no formulário de registro da turma no front.
   "cidade": "Quixadá",
   "serie": 9,
   "turma": "B",
-  "pontuacaoOriginal": 100,
-  "dicasUsadas": 0
+  "pontuacaoFinal": 100
 }
 ```
 
@@ -102,8 +107,7 @@ autocomplete no formulário de registro da turma no front.
     { "serie": 9, "turma": "A" },
     { "serie": 9, "turma": "B" }
   ],
-  "pontuacaoOriginal": 180,
-  "dicasUsadas": 0
+  "pontuacaoFinal": 180
 }
 ```
 
@@ -129,10 +133,10 @@ Resposta (201) de ambas as rotas:
 5 (Encerramento com Posição Imediata, HU-005) sem precisar de uma segunda
 chamada.
 
-> **Sobre `dicasUsadas`:** é a soma de dicas usadas em todas as perguntas da
-> sessão (não um valor por pergunta). O limite de 3 dicas por pergunta
-> (RN-003) é controlado pelo front-end em tempo real, já que a mediação não
-> pode depender de chamadas ao servidor no meio do jogo (RNF-002).
+> Envie em `pontuacaoFinal` a soma já calculada pergunta a pergunta pelo
+> front-end. Assim, cada questão pode aplicar suas próprias dicas (RN-002 e
+> RN-003) sem chamadas durante a mediação (RNF-002). O formato legado com
+> `pontuacaoOriginal` e `dicasUsadas` continua aceito para compatibilidade.
 
 ### `GET /ranking-turmas?limit=10`
 Ranking Geral de Turmas — soma os pontos de cada turma (escola+série+turma)
