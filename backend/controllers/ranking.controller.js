@@ -1,14 +1,41 @@
-﻿const rankingService = require("../services/ranking.service");
+﻿const rankingService = require(
+    "../services/ranking.service"
+);
 
 function obterLimit(req) {
-    return req.query.limit ? parseInt(req.query.limit) : null;
+    if (req.query.limit === undefined) {
+        return null;
+    }
+
+    const limit = Number(req.query.limit);
+
+    if (
+        !Number.isInteger(limit) ||
+        limit < 1 ||
+        limit > 100
+    ) {
+        const erro = new Error(
+            "limit deve ser um número inteiro entre 1 e 100."
+        );
+
+        erro.statusCode = 400;
+
+        throw erro;
+    }
+
+    return limit;
 }
 
-async function listarRankingDeTurmas(req, res, next) {
+async function listarRankingDeTurmas(
+    req,
+    res,
+    next
+) {
     try {
-        const ranking = await rankingService.listarRankingDeTurmas(
-            obterLimit(req)
-        );
+        const ranking =
+            await rankingService.listarRankingDeTurmas(
+                obterLimit(req)
+            );
 
         return res.json(ranking);
     } catch (error) {
@@ -16,11 +43,16 @@ async function listarRankingDeTurmas(req, res, next) {
     }
 }
 
-async function listarRankingDeEscolas(req, res, next) {
+async function listarRankingDeEscolas(
+    req,
+    res,
+    next
+) {
     try {
-        const ranking = await rankingService.listarRankingDeEscolas(
-            obterLimit(req)
-        );
+        const ranking =
+            await rankingService.listarRankingDeEscolas(
+                obterLimit(req)
+            );
 
         return res.json(ranking);
     } catch (error) {
@@ -28,13 +60,16 @@ async function listarRankingDeEscolas(req, res, next) {
     }
 }
 
-async function listarRankingInterno(req, res, next) {
+async function listarRankingInterno(
+    req,
+    res,
+    next
+) {
     try {
-        const { escolaId } = req.params;
-
-        const resultado = await rankingService.listarRankingInterno(
-            escolaId
-        );
+        const resultado =
+            await rankingService.listarRankingInterno(
+                req.params.escolaId
+            );
 
         return res.json(resultado);
     } catch (error) {
