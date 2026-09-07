@@ -8,21 +8,23 @@ async function listarRankingDeTurmas(limit) {
     const rankingAgrupado =
         await rankingRepository.buscarRankingDeTurmas();
 
-    const escolas = await rankingRepository.buscarEscolas();
+        const escolas = await rankingRepository.buscarEscolas();
 
-    const rankingFinal = rankingAgrupado.map((item) => {
-        const escola = escolas.find(
-        (escolaItem) => escolaItem.id === item.escolaId
+        const escolasPorId = new Map(
+            escolas.map((escola) => [escola.id, escola])
         );
 
-        return {
-        escola: escola ? escola.nome : "Escola Não Identificada",
-        cidade: escola ? escola.cidade : "Desconhecida",
-        serie: item.serie,
-        turma: item.turma,
-        pontuacaoTotal: item._sum.pontuacao,
-        };
-    });
+        const rankingFinal = rankingAgrupado.map((item) => {
+            const escola = escolasPorId.get(item.escolaId);
+
+            return {
+                escola: escola ? escola.nome : "Escola Não Identificada",
+                cidade: escola ? escola.cidade : "Desconhecida",
+                serie: item.serie,
+                turma: item.turma,
+                pontuacaoTotal: item._sum.pontuacao,
+            };
+        });
 
     return aplicarLimite(rankingFinal, limit);
 }
