@@ -3,16 +3,15 @@
 const escolaService = require("./escola.service");
 const sessaoRepository = require("../repositories/sessao.repository");
 const { limpar } = require("../utils/sanitize");
-const { validarSessao } = require("../schemas/sessao.schema");
 
 async function registrarSessoes(dados) {
     const {
         nomeEscola,
         cidade,
         pontuacaoOriginal,
+        dicasUsadas,
+        turmas,
     } = dados;
-
-    const { dicasUsadas, turmas } = validarSessao(dados);
 
     const nomeEscolaTratado = limpar(nomeEscola);
     const cidadeTratada = limpar(cidade);
