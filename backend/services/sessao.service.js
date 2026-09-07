@@ -1,102 +1,115 @@
 ﻿const crypto = require("crypto");
 
-const escolaService = require("./escola.service");
-const sessaoRepository = require("../repositories/sessao.repository");
-const rankingRepository = require("../repositories/ranking.repository");
+const prisma = require("../config/prisma");
+const escolaRepository = require(
+    "../repositories/escola.repository"
+);
+const sessaoRepository = require(
+    "../repositories/sessao.repository"
+);
+const rankingRepository = require(
+    "../repositories/ranking.repository"
+);
 
 const { limpar } = require("../utils/sanitize");
 
 async function registrarSessoes(dados) {
-    const {
-        nomeEscola,
-        cidade,
-        pontuacaoOriginal,
-        dicasUsadas,
-        turmas,
-    } = dados;
-
-    const nomeEscolaTratado = limpar(nomeEscola);
-    const cidadeTratada = limpar(cidade);
-
-    const escola = await escolaService.buscarOuCriarEscola(
-        nomeEscolaTratado,
-        cidadeTratada
-    );
-
-    const desconto = dicasUsadas * 0.2;
-
-    const pontuacaoCalculada =
-        Number(pontuacaoOriginal) * (1 - desconto);
-
     const pontuacaoFinal = Math.max(
         0,
-        Math.round(pontuacaoCalculada)
+        Math.round(
+            dados.pontuacaoFinal ??
+                dados.pontuacaoOriginal *
+                    (1 - dados.dicasUsadas * 0.2)
+        )
     );
 
     const grupoId = crypto.randomUUID();
 
-    for (const t of turmas) {
-        const turmaTratada = limpar(t.turma);
-
-        await sessaoRepository.criar({
-            escolaId: escola.id,
-            serie: Number(t.serie),
-            turma: turmaTratada,
-            pontuacao: pontuacaoFinal,
-            dicasUsadas,
-            grupoId,
-        });
-    }
-
-    const rankingAgrupado =
-        await rankingRepository.buscarRankingInterno(escola.id);
-
-    const rankingInterno = rankingAgrupado.map((item) => ({
-        serie: item.serie,
-        turma: item.turma,
-        pontuacaoTotal: item._sum.pontuacao,
-    }));
-
-    const pontuacoesPorTurma = new Map(
-        rankingInterno.map((item) => [
-            `${item.serie}|||${item.turma}`,
-            item.pontuacaoTotal,
-        ])
+    const turmasTratadas = dados.turmas.map(
+        (turma) => ({
+            serie: turma.serie,
+            turma: limpar(turma.turma),
+        })
     );
 
-    const resultadoTurmas = turmas.map((t) => {
-        const serieNum = Number(t.serie);
-        const turmaTratada = limpar(t.turma);
+    const resultado = await prisma.$transaction(
+        async (transaction) => {
+            const escola =
+                await escolaRepository.buscarOuCriar(
+                    limpar(dados.nomeEscola),
+                    limpar(dados.cidade),
+                    transaction
+                );
 
-        const posicao =
-            rankingInterno.findIndex(
-                (ranking) =>
-                    ranking.serie === serieNum &&
-                    ranking.turma === turmaTratada
-            ) + 1;
+            await sessaoRepository.criarMuitas(
+                turmasTratadas.map((turma) => ({
+                    ...turma,
+                    escolaId: escola.id,
+                    pontuacao: pontuacaoFinal,
+                    dicasUsadas: dados.dicasUsadas,
+                    grupoId,
+                })),
+                transaction
+            );
 
-        return {
-            serie: serieNum,
-            turma: turmaTratada,
-            pontuacaoDaRodada: pontuacaoFinal,
-            pontuacaoAcumuladaNaEscola:
-                pontuacoesPorTurma.get(
-                    `${serieNum}|||${turmaTratada}`
-                ),
-            posicaoRankingInterno: posicao,
-            totalTurmasNoRankingInterno: rankingInterno.length,
-        };
-    });
+            const ranking =
+                await rankingRepository.buscarRankingInterno(
+                    escola.id,
+                    transaction
+                );
+
+            return {
+                escola,
+                ranking,
+            };
+        }
+    );
+
+    const rankingInterno = resultado.ranking.map(
+        (item) => ({
+            serie: item.serie,
+            turma: item.turma,
+            pontuacaoTotal:
+                item._sum.pontuacao || 0,
+        })
+    );
+
+    const turmasResultado = turmasTratadas.map(
+        (turma) => {
+            const indice = rankingInterno.findIndex(
+                (item) =>
+                    item.serie === turma.serie &&
+                    item.turma === turma.turma
+            );
+
+            const itemRanking =
+                rankingInterno[indice];
+
+            return {
+                serie: turma.serie,
+                turma: turma.turma,
+                pontuacaoDaRodada:
+                    pontuacaoFinal,
+                pontuacaoAcumuladaNaEscola:
+                    itemRanking.pontuacaoTotal,
+                posicaoRankingInterno:
+                    indice + 1,
+                totalTurmasNoRankingInterno:
+                    rankingInterno.length,
+            };
+        }
+    );
 
     return {
-        mensagem: "Sessão(ões) registrada(s) com sucesso!",
+        mensagem:
+            "Sessão(ões) registrada(s) com sucesso!",
         escola: {
-            id: escola.id,
-            nome: escola.nome,
-            cidade: escola.cidade,
+            id: resultado.escola.id,
+            nome: resultado.escola.nome,
+            cidade: resultado.escola.cidade,
         },
         grupoId,
-        turmas: resultadoTurmas,
+        turmas: turmasResultado,
     };
 }
 
