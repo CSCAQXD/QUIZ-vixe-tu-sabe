@@ -24,25 +24,15 @@ function validarSessao(dados = {}) {
         dados.cidade ?? ""
     ).trim();
 
-    const temPontuacaoFinal =
-        dados.pontuacaoFinal !== undefined &&
-        dados.pontuacaoFinal !== null;
+    const idempotencyKey = String(
+        dados.idempotencyKey ?? ""
+    ).trim();
 
-    const pontuacaoFinal = temPontuacaoFinal
-        ? Number(dados.pontuacaoFinal)
-        : null;
-
-    const pontuacaoOriginal =
-        dados.pontuacaoOriginal === undefined ||
-        dados.pontuacaoOriginal === null
-            ? null
-            : Number(dados.pontuacaoOriginal);
-
-    const dicasUsadas = Number(
-        dados.dicasUsadas ?? 0
+    const pontuacaoFinal = Number(
+        dados.pontuacaoFinal
     );
 
-    const entradaTurmas =
+    const turmasRecebidas =
         Array.isArray(dados.turmas) &&
         dados.turmas.length > 0
             ? dados.turmas
@@ -53,97 +43,102 @@ function validarSessao(dados = {}) {
                     },
                 ];
 
-    if (!nomeEscola || !cidade) {
+    if (!nomeEscola) {
         throw criarErroValidacao(
-            "Escola e cidade são obrigatórios."
+            "O nome da escola é obrigatório."
+        );
+    }
+
+    if (!cidade) {
+        throw criarErroValidacao(
+            "A cidade é obrigatória."
         );
     }
 
     if (
-        temPontuacaoFinal &&
-        (
-            !Number.isFinite(pontuacaoFinal) ||
-            pontuacaoFinal < 0
-        )
+        idempotencyKey.length < 8 ||
+        idempotencyKey.length > 100
     ) {
         throw criarErroValidacao(
-            "pontuacaoFinal deve ser maior ou igual a zero."
+            "idempotencyKey deve possuir entre 8 e 100 caracteres."
         );
     }
 
     if (
-        !temPontuacaoFinal &&
-        (
-            !Number.isFinite(pontuacaoOriginal) ||
-            pontuacaoOriginal < 0
-        )
+        !Number.isInteger(pontuacaoFinal) ||
+        pontuacaoFinal < 0
     ) {
         throw criarErroValidacao(
-            "Informe pontuacaoFinal ou uma pontuacaoOriginal válida."
+            "pontuacaoFinal deve ser um número inteiro maior ou igual a zero."
         );
     }
 
-    if (
-        !Number.isInteger(dicasUsadas) ||
-        dicasUsadas < 0 ||
-        dicasUsadas > 3
-    ) {
+    if (turmasRecebidas.length > 20) {
         throw criarErroValidacao(
-            "dicasUsadas deve ser um número inteiro entre 0 e 3."
+            "Uma partida pode possuir no máximo 20 turmas."
         );
     }
 
-    if (entradaTurmas.length > 20) {
-        throw criarErroValidacao(
-            "Uma partida pode registrar no máximo 20 turmas."
-        );
-    }
+    const identificadores = new Set();
 
-    const turmasUnicas = new Set();
-
-    const turmas = entradaTurmas.map((item) => {
-        const serie = Number(item?.serie);
-        const turma = String(
-            item?.turma ?? ""
-        ).trim();
-
-        if (
-            !Number.isInteger(serie) ||
-            serie <= 0
-        ) {
-            throw criarErroValidacao(
-                "Cada turma precisa ter uma série válida."
+    const turmas = turmasRecebidas.map(
+        (item, indice) => {
+            const serie = Number(
+                item?.serie
             );
-        }
 
-        if (!turma) {
-            throw criarErroValidacao(
-                "Cada turma precisa ter o campo 'turma' preenchido."
+            const turma = String(
+                item?.turma ?? ""
+            ).trim();
+
+            if (
+                !Number.isInteger(serie) ||
+                serie < 1 ||
+                serie > 12
+            ) {
+                throw criarErroValidacao(
+                    `A série da turma ${indice + 1} deve ser um número inteiro entre 1 e 12.`
+                );
+            }
+
+            if (
+                turma.length < 1 ||
+                turma.length > 30
+            ) {
+                throw criarErroValidacao(
+                    `O nome da turma ${indice + 1} deve possuir entre 1 e 30 caracteres.`
+                );
+            }
+
+            const identificador =
+                `${serie}|||${turma.toUpperCase()}`;
+
+            if (
+                identificadores.has(
+                    identificador
+                )
+            ) {
+                throw criarErroValidacao(
+                    "Não é permitido repetir a mesma série e turma na partida."
+                );
+            }
+
+            identificadores.add(
+                identificador
             );
+
+            return {
+                serie,
+                turma,
+            };
         }
-
-        const chave = `${serie}|||${turma.toUpperCase()}`;
-
-        if (turmasUnicas.has(chave)) {
-            throw criarErroValidacao(
-                "Não é permitido repetir a mesma série e turma."
-            );
-        }
-
-        turmasUnicas.add(chave);
-
-        return {
-            serie,
-            turma,
-        };
-    });
+    );
 
     return {
         nomeEscola,
         cidade,
+        idempotencyKey,
         pontuacaoFinal,
-        pontuacaoOriginal,
-        dicasUsadas,
         turmas,
     };
 }
