@@ -8,25 +8,71 @@ datasource db {
 }
 
 model Escola {
-  id      String   @id @default(uuid())
-  nome    String
-  cidade  String
-  sessoes Sessao[]
+  id        String    @id @default(uuid())
+  nome      String
+  cidade    String
+  partidas Partida[]
   
   @@unique([nome, cidade])
+  @@index([nome])
+  @@index([cidade])
 }
 
-model Sessao {
-  id          String   @id @default(uuid())
-  serie       Int
-  turma       String
-  pontuacao   Int      @default(0)
-  dicasUsadas Int      @default(0)
-  grupoId String
-  dataSessao DateTime @default(now())
-  escolaId String
-  escola   Escola @relation(fields: [escolaId], references: [id])
+model Partida {
+  id                String         @id @default(uuid())
+  idempotencyKey    String         @unique
+  status            String         @default("CONCLUIDA")
+  pontuacaoFinal    Int
+  quantidadeAcertos Int            @default(0)
+  totalDicasUsadas  Int            @default(0)
+  ano               Int
+  dataPartida       DateTime       @default(now())
+  canceladaEm       DateTime?
+  motivoCancelamento String?
+  escolaId          String
+  escola            Escola         @relation(fields: [escolaId], references: [id])
+  participacoes     Participacao[]
+  respostas         Resposta[]
+  criadaEm          DateTime       @default(now())
+  atualizadaEm      DateTime       @updatedAt
+
   @@index([escolaId])
-  @@index([grupoId])
-  @@index([escolaId, serie, turma])
+  @@index([ano])
+  @@index([status])
+  @@index([escolaId, ano, status])
+  @@index([dataPartida])
+}
+
+model Participacao {
+  id        String  @id @default(uuid())
+  serie     Int
+  turma     String
+  partidaId String
+  partida   Partida @relation(fields: [partidaId], references: [id], onDelete: Cascade)
+
+  @@unique([partidaId, serie, turma])
+  @@index([partidaId])
+  @@index([serie, turma])
+}
+
+model Resposta {
+  id                   String  @id @default(uuid())
+  ordem                Int
+  perguntaExternaId    String
+  enunciado            String
+  opcoes               Json
+  alternativaEscolhida String
+  alternativaCorreta   String
+  acertou              Boolean
+  pontosBase           Int
+  dicasUsadas          Int     @default(0)
+  pontosObtidos        Int     @default(0)
+  partidaId            String
+  partida              Partida @relation(fields: [partidaId], references: [id], onDelete: Cascade)
+
+  @@unique([partidaId, ordem])
+  @@unique([partidaId, perguntaExternaId])
+  @@index([partidaId])
+  @@index([perguntaExternaId])
+  @@index([acertou])
 }
