@@ -2,6 +2,8 @@
 
 const escolaService = require("./escola.service");
 const sessaoRepository = require("../repositories/sessao.repository");
+const rankingRepository = require("../repositories/ranking.repository");
+
 const { limpar } = require("../utils/sanitize");
 
 async function registrarSessoes(dados) {
@@ -46,31 +48,21 @@ async function registrarSessoes(dados) {
         });
     }
 
-    const todasSessoesDaEscola =
-        await sessaoRepository.buscarTodasDaEscola(escola.id);
+    const rankingAgrupado =
+        await rankingRepository.buscarRankingInterno(escola.id);
 
-    const totaisPorTurma = new Map();
+    const rankingInterno = rankingAgrupado.map((item) => ({
+        serie: item.serie,
+        turma: item.turma,
+        pontuacaoTotal: item._sum.pontuacao,
+    }));
 
-    for (const sessao of todasSessoesDaEscola) {
-        const chave = `${sessao.serie}|||${sessao.turma}`;
-
-        totaisPorTurma.set(
-            chave,
-            (totaisPorTurma.get(chave) || 0) + sessao.pontuacao
-        );
-    }
-
-    const rankingInterno = [...totaisPorTurma.entries()]
-        .map(([chave, total]) => {
-            const [serie, turma] = chave.split("|||");
-
-            return {
-                serie: Number(serie),
-                turma,
-                pontuacaoTotal: total,
-            };
-        })
-        .sort((a, b) => b.pontuacaoTotal - a.pontuacaoTotal);
+    const pontuacoesPorTurma = new Map(
+        rankingInterno.map((item) => [
+            `${item.serie}|||${item.turma}`,
+            item.pontuacaoTotal,
+        ])
+    );
 
     const resultadoTurmas = turmas.map((t) => {
         const serieNum = Number(t.serie);
@@ -87,9 +79,10 @@ async function registrarSessoes(dados) {
             serie: serieNum,
             turma: turmaTratada,
             pontuacaoDaRodada: pontuacaoFinal,
-            pontuacaoAcumuladaNaEscola: totaisPorTurma.get(
-                `${serieNum}|||${turmaTratada}`
-            ),
+            pontuacaoAcumuladaNaEscola:
+                pontuacoesPorTurma.get(
+                    `${serieNum}|||${turmaTratada}`
+                ),
             posicaoRankingInterno: posicao,
             totalTurmasNoRankingInterno: rankingInterno.length,
         };
