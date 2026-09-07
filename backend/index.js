@@ -1,38 +1,22 @@
 ﻿require("dotenv").config();
 
-const express = require("express");
-const cors = require("cors");
+const app = require("./app");
+const prisma = require("./config/prisma");
 
-const perguntaRouter = require("./routers/pergunta.router");
-const escolaRouter = require("./routers/escola.router");
-const sessaoRouter = require("./routers/sessao.router");
-const rankingRouter = require("./routers/ranking.router");
-const errorMiddleware = require("./middlewares/error.middleware");
+const PORT = Number(process.env.PORT) || 3001;
 
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-app.get("/health", (req, res) => {
-    res.json({
-        status: "ok",
-        servico: "Quiz Vixe, Tu Sabe? - API",
-    });
-});
-
-app.use("/perguntas", perguntaRouter);
-app.use("/escolas", escolaRouter);
-app.use("/sessao", sessaoRouter);
-app.use("/sessoes", sessaoRouter);
-app.use(rankingRouter);
-
-app.use(errorMiddleware);
-
-const PORT = process.env.PORT || 3001;
-
-app.listen(PORT, () => {
+const servidor = app.listen(PORT, () => {
     console.log(
         `Servidor da Casa de Saberes rodando em http://localhost:${PORT}`
     );
 });
+
+function encerrarServidor() {
+    servidor.close(async () => {
+        await prisma.$disconnect();
+        process.exit(0);
+    });
+}
+
+process.on("SIGINT", encerrarServidor);
+process.on("SIGTERM", encerrarServidor);
