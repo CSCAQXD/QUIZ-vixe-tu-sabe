@@ -1,4 +1,4 @@
-const rankingService = require("../services/ranking.service");
+﻿const rankingService = require("../services/ranking.service");
 
 function obterLimit(req) {
     return req.query.limit ? parseInt(req.query.limit) : null;
@@ -7,7 +7,7 @@ function obterLimit(req) {
 async function listarRankingDeTurmas(req, res, next) {
     try {
         const ranking = await rankingService.listarRankingDeTurmas(
-        obterLimit(req)
+            obterLimit(req)
         );
 
         return res.json(ranking);
@@ -19,7 +19,7 @@ async function listarRankingDeTurmas(req, res, next) {
 async function listarRankingDeEscolas(req, res, next) {
     try {
         const ranking = await rankingService.listarRankingDeEscolas(
-        obterLimit(req)
+            obterLimit(req)
         );
 
         return res.json(ranking);
@@ -33,17 +33,11 @@ async function listarRankingInterno(req, res, next) {
         const { escolaId } = req.params;
 
         const resultado = await rankingService.listarRankingInterno(
-        escolaId
+            escolaId
         );
 
         return res.json(resultado);
     } catch (error) {
-        if (error.statusCode) {
-        return res.status(error.statusCode).json({
-            erro: error.message,
-        });
-        }
-
         next(error);
     }
 }

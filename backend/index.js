@@ -1,4 +1,4 @@
-require("dotenv").config();
+﻿require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
@@ -7,6 +7,7 @@ const perguntaRouter = require("./routers/pergunta.router");
 const escolaRouter = require("./routers/escola.router");
 const sessaoRouter = require("./routers/sessao.router");
 const rankingRouter = require("./routers/ranking.router");
+const errorMiddleware = require("./middlewares/error.middleware");
 
 const app = express();
 
@@ -26,10 +27,12 @@ app.use("/sessao", sessaoRouter);
 app.use("/sessoes", sessaoRouter);
 app.use(rankingRouter);
 
+app.use(errorMiddleware);
+
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
     console.log(
-        `🚀 Servidor da Casa de Saberes rodando em http://localhost:${PORT}`
+        `Servidor da Casa de Saberes rodando em http://localhost:${PORT}`
     );
 });

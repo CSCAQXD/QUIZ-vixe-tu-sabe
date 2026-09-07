@@ -1,4 +1,4 @@
-const sessaoService = require("../services/sessao.service");
+﻿const sessaoService = require("../services/sessao.service");
 
 async function registrarSessoes(req, res, next) {
     try {
@@ -6,12 +6,6 @@ async function registrarSessoes(req, res, next) {
 
         return res.status(201).json(resultado);
     } catch (error) {
-        if (error.statusCode) {
-        return res.status(error.statusCode).json({
-            erro: error.message,
-        });
-        }
-
         next(error);
     }
 }
