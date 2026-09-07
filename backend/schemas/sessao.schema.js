@@ -62,9 +62,10 @@ function validarSessao(dados = {}) {
     }
 
     return {
-        dicasUsadas,
-        turmas,
-    };
+    ...dados,
+    dicasUsadas,
+    turmas,
+};
 }
 
 module.exports = {
