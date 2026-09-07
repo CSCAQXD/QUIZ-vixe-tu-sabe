@@ -1,97 +1,337 @@
-const rankingRepository = require("../repositories/ranking.repository");
+const rankingRepository = require(
+    "../repositories/ranking.repository"
+);
 
-function aplicarLimite(lista, limit) {
-    return limit ? lista.slice(0, limit) : lista;
+function compararTexto(
+    primeiro,
+    segundo
+) {
+    return primeiro.localeCompare(
+        segundo,
+        "pt-BR",
+        {
+            sensitivity: "base",
+        }
+    );
 }
 
-async function listarRankingDeTurmas(limit) {
-    const rankingAgrupado =
-        await rankingRepository.buscarRankingDeTurmas();
+function adicionarPosicoes(ranking) {
+    let posicaoAnterior = 0;
+    let pontuacaoAnterior = null;
 
-        const escolas = await rankingRepository.buscarEscolas();
+    return ranking.map(
+        (item, indice) => {
+            if (
+                item.pontuacaoTotal !==
+                pontuacaoAnterior
+            ) {
+                posicaoAnterior =
+                    indice + 1;
 
-        const escolasPorId = new Map(
-            escolas.map((escola) => [escola.id, escola])
-        );
-
-        const rankingFinal = rankingAgrupado.map((item) => {
-            const escola = escolasPorId.get(item.escolaId);
+                pontuacaoAnterior =
+                    item.pontuacaoTotal;
+            }
 
             return {
-                escola: escola ? escola.nome : "Escola Não Identificada",
-                cidade: escola ? escola.cidade : "Desconhecida",
-                serie: item.serie,
-                turma: item.turma,
-                pontuacaoTotal: item._sum.pontuacao,
+                posicao:
+                    posicaoAnterior,
+                ...item,
+            };
+        }
+    );
+}
+
+function aplicarLimite(
+    ranking,
+    limite
+) {
+    if (!limite) {
+        return ranking;
+    }
+
+    return ranking.slice(
+        0,
+        limite
+    );
+}
+
+function agruparParticipacoes(
+    participacoes
+) {
+    const grupos = new Map();
+
+    for (
+        const participacao
+        of participacoes
+    ) {
+        const escola =
+            participacao.partida.escola;
+
+        const chave = [
+            escola.id,
+            participacao.serie,
+            participacao.turma,
+        ].join("|||");
+
+        const grupoExistente =
+            grupos.get(chave);
+
+        if (grupoExistente) {
+            grupoExistente.pontuacaoTotal +=
+                participacao.partida
+                    .pontuacaoFinal;
+
+            grupoExistente.quantidadePartidas +=
+                1;
+
+            continue;
+        }
+
+        grupos.set(chave, {
+            escolaId: escola.id,
+            escola: escola.nome,
+            cidade: escola.cidade,
+            serie:
+                participacao.serie,
+            turma:
+                participacao.turma,
+            pontuacaoTotal:
+                participacao.partida
+                    .pontuacaoFinal,
+            quantidadePartidas: 1,
+        });
+    }
+
+    return Array.from(
+        grupos.values()
+    );
+}
+
+function ordenarRankingDeTurmas(
+    ranking
+) {
+    return ranking.sort(
+        (primeiro, segundo) => {
+            const diferencaPontos =
+                segundo.pontuacaoTotal -
+                primeiro.pontuacaoTotal;
+
+            if (diferencaPontos !== 0) {
+                return diferencaPontos;
+            }
+
+            const diferencaEscola =
+                compararTexto(
+                    primeiro.escola,
+                    segundo.escola
+                );
+
+            if (diferencaEscola !== 0) {
+                return diferencaEscola;
+            }
+
+            const diferencaSerie =
+                primeiro.serie -
+                segundo.serie;
+
+            if (diferencaSerie !== 0) {
+                return diferencaSerie;
+            }
+
+            return compararTexto(
+                primeiro.turma,
+                segundo.turma
+            );
+        }
+    );
+}
+
+async function listarRankingDeTurmas(
+    ano,
+    limite
+) {
+    const participacoes =
+        await rankingRepository.buscarParticipacoes(
+            ano
+        );
+
+    const ranking =
+        agruparParticipacoes(
+            participacoes
+        );
+
+    ordenarRankingDeTurmas(
+        ranking
+    );
+
+    return {
+        ano,
+        total: ranking.length,
+        ranking: aplicarLimite(
+            adicionarPosicoes(ranking),
+            limite
+        ),
+    };
+}
+
+async function listarRankingDeEscolas(
+    ano,
+    limite
+) {
+    const agrupamento =
+        await rankingRepository.buscarRankingDeEscolas(
+            ano
+        );
+
+    const escolaIds =
+        agrupamento.map(
+            (item) => item.escolaId
+        );
+
+    const escolas =
+        await rankingRepository.buscarEscolasPorIds(
+            escolaIds
+        );
+
+    const escolasPorId =
+        new Map(
+            escolas.map(
+                (escola) => [
+                    escola.id,
+                    escola,
+                ]
+            )
+        );
+
+    const ranking =
+        agrupamento.map((item) => {
+            const escola =
+                escolasPorId.get(
+                    item.escolaId
+                );
+
+            return {
+                escolaId:
+                    item.escolaId,
+                escola:
+                    escola?.nome ||
+                    "Escola não encontrada",
+                cidade:
+                    escola?.cidade ||
+                    "Cidade não encontrada",
+                pontuacaoTotal:
+                    item._sum
+                        .pontuacaoFinal || 0,
+                quantidadePartidas:
+                    item._count.id,
             };
         });
 
-    return aplicarLimite(rankingFinal, limit);
-}
+    ranking.sort(
+        (primeiro, segundo) => {
+            const diferencaPontos =
+                segundo.pontuacaoTotal -
+                primeiro.pontuacaoTotal;
 
-async function listarRankingDeEscolas(limit) {
-    const sessoes =
-        await rankingRepository.buscarSessoesParaRankingDeEscolas();
+            if (diferencaPontos !== 0) {
+                return diferencaPontos;
+            }
 
-    const partidasUnicas = new Map();
-
-    for (const sessao of sessoes) {
-        const chave = `${sessao.escolaId}|||${sessao.grupoId}`;
-
-        if (!partidasUnicas.has(chave)) {
-        partidasUnicas.set(chave, {
-            escolaId: sessao.escolaId,
-            pontuacao: sessao.pontuacao,
-        });
+            return compararTexto(
+                primeiro.escola,
+                segundo.escola
+            );
         }
-    }
+    );
 
-    const totaisPorEscola = new Map();
-
-    for (const { escolaId, pontuacao } of partidasUnicas.values()) {
-        totaisPorEscola.set(
-        escolaId,
-        (totaisPorEscola.get(escolaId) || 0) + pontuacao
-        );
-    }
-
-    const escolas = await rankingRepository.buscarEscolas();
-
-    const rankingFinal = escolas
-        .map((escola) => ({
-        escola: escola.nome,
-        cidade: escola.cidade,
-        pontuacaoTotal: totaisPorEscola.get(escola.id) || 0,
-        }))
-        .filter((item) => item.pontuacaoTotal > 0)
-        .sort((a, b) => b.pontuacaoTotal - a.pontuacaoTotal);
-
-    return aplicarLimite(rankingFinal, limit);
+    return {
+        ano,
+        total: ranking.length,
+        ranking: aplicarLimite(
+            adicionarPosicoes(ranking),
+            limite
+        ),
+    };
 }
 
-async function listarRankingInterno(escolaId) {
+async function listarRankingInterno(
+    escolaId,
+    ano,
+    limite
+) {
     const escola =
-        await rankingRepository.buscarEscolaPorId(escolaId);
+        await rankingRepository.buscarEscolaPorId(
+            escolaId
+        );
 
     if (!escola) {
-        const erro = new Error("Escola não encontrada.");
+        const erro = new Error(
+            "Escola não encontrada."
+        );
+
         erro.statusCode = 404;
+
         throw erro;
     }
 
-    const rankingAgrupado =
-        await rankingRepository.buscarRankingInterno(escolaId);
+    const participacoes =
+        await rankingRepository.buscarParticipacoes(
+            ano,
+            escolaId
+        );
 
-    const ranking = rankingAgrupado.map((item) => ({
-        serie: item.serie,
-        turma: item.turma,
-        pontuacaoTotal: item._sum.pontuacao,
-    }));
+    const ranking =
+        agruparParticipacoes(
+            participacoes
+        ).map((item) => ({
+            serie: item.serie,
+            turma: item.turma,
+            pontuacaoTotal:
+                item.pontuacaoTotal,
+            quantidadePartidas:
+                item.quantidadePartidas,
+        }));
+
+    ordenarRankingDeTurmas(
+        ranking.map((item) => ({
+            ...item,
+            escola: escola.nome,
+        }))
+    );
+
+    ranking.sort(
+        (primeiro, segundo) => {
+            const diferencaPontos =
+                segundo.pontuacaoTotal -
+                primeiro.pontuacaoTotal;
+
+            if (diferencaPontos !== 0) {
+                return diferencaPontos;
+            }
+
+            const diferencaSerie =
+                primeiro.serie -
+                segundo.serie;
+
+            if (diferencaSerie !== 0) {
+                return diferencaSerie;
+            }
+
+            return compararTexto(
+                primeiro.turma,
+                segundo.turma
+            );
+        }
+    );
 
     return {
-        escola: escola.nome,
-        cidade: escola.cidade,
-        ranking,
+        ano,
+        escola,
+        total: ranking.length,
+        ranking: aplicarLimite(
+            adicionarPosicoes(ranking),
+            limite
+        ),
     };
 }
 
