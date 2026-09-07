@@ -2,42 +2,68 @@ const prisma = require("../config/prisma");
 
 async function buscarRankingDeTurmas() {
     return prisma.sessao.groupBy({
-        by: ["escolaId", "serie", "turma"],
+        by: [
+            "escolaId",
+            "serie",
+            "turma",
+        ],
         _sum: {
-        pontuacao: true,
+            pontuacao: true,
         },
-        orderBy: {
-        _sum: {
-            pontuacao: "desc",
-        },
-        },
+        orderBy: [
+            {
+                _sum: {
+                    pontuacao: "desc",
+                },
+            },
+            {
+                serie: "asc",
+            },
+            {
+                turma: "asc",
+            },
+        ],
     });
 }
 
 async function buscarSessoesParaRankingDeEscolas() {
     return prisma.sessao.findMany({
         select: {
-        escolaId: true,
-        grupoId: true,
-        pontuacao: true,
+            escolaId: true,
+            grupoId: true,
+            pontuacao: true,
         },
     });
 }
 
-async function buscarRankingInterno(escolaId) {
-    return prisma.sessao.groupBy({
-        by: ["serie", "turma"],
+async function buscarRankingInterno(
+    escolaId,
+    cliente = prisma
+) {
+    return cliente.sessao.groupBy({
+        by: [
+            "serie",
+            "turma",
+        ],
         where: {
-        escolaId,
+            escolaId,
         },
         _sum: {
-        pontuacao: true,
+            pontuacao: true,
         },
-        orderBy: {
-        _sum: {
-            pontuacao: "desc",
-        },
-        },
+        orderBy: [
+            {
+                _sum: {
+                    pontuacao: "desc",
+                },
+            },
+            {
+                serie: "asc",
+            },
+            {
+                turma: "asc",
+            },
+        ],
     });
 }
 
@@ -48,7 +74,7 @@ async function buscarEscolas() {
 async function buscarEscolaPorId(escolaId) {
     return prisma.escola.findUnique({
         where: {
-        id: escolaId,
+            id: escolaId,
         },
     });
 }
