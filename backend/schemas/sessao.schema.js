@@ -6,18 +6,52 @@ function criarErroValidacao(mensagem) {
 }
 
 function validarSessao(dados = {}) {
-    const {
-        nomeEscola,
-        cidade,
-        pontuacaoOriginal,
-    } = dados;
+    if (
+        !dados ||
+        typeof dados !== "object" ||
+        Array.isArray(dados)
+    ) {
+        throw criarErroValidacao(
+            "O corpo da requisição deve ser um objeto JSON."
+        );
+    }
 
-    const dicasUsadas = Number(dados.dicasUsadas ?? 0);
+    const nomeEscola = String(
+        dados.nomeEscola ?? ""
+    ).trim();
 
-    const turmas =
-        Array.isArray(dados.turmas) && dados.turmas.length > 0
+    const cidade = String(
+        dados.cidade ?? ""
+    ).trim();
+
+    const temPontuacaoFinal =
+        dados.pontuacaoFinal !== undefined &&
+        dados.pontuacaoFinal !== null;
+
+    const pontuacaoFinal = temPontuacaoFinal
+        ? Number(dados.pontuacaoFinal)
+        : null;
+
+    const pontuacaoOriginal =
+        dados.pontuacaoOriginal === undefined ||
+        dados.pontuacaoOriginal === null
+            ? null
+            : Number(dados.pontuacaoOriginal);
+
+    const dicasUsadas = Number(
+        dados.dicasUsadas ?? 0
+    );
+
+    const entradaTurmas =
+        Array.isArray(dados.turmas) &&
+        dados.turmas.length > 0
             ? dados.turmas
-            : [{ serie: dados.serie, turma: dados.turma }];
+            : [
+                    {
+                        serie: dados.serie,
+                        turma: dados.turma,
+                    },
+                ];
 
     if (!nomeEscola || !cidade) {
         throw criarErroValidacao(
@@ -26,12 +60,26 @@ function validarSessao(dados = {}) {
     }
 
     if (
-        pontuacaoOriginal === undefined ||
-        pontuacaoOriginal === null ||
-        isNaN(Number(pontuacaoOriginal))
+        temPontuacaoFinal &&
+        (
+            !Number.isFinite(pontuacaoFinal) ||
+            pontuacaoFinal < 0
+        )
     ) {
         throw criarErroValidacao(
-            "pontuacaoOriginal é obrigatório e deve ser numérico."
+            "pontuacaoFinal deve ser maior ou igual a zero."
+        );
+    }
+
+    if (
+        !temPontuacaoFinal &&
+        (
+            !Number.isFinite(pontuacaoOriginal) ||
+            pontuacaoOriginal < 0
+        )
+    ) {
+        throw criarErroValidacao(
+            "Informe pontuacaoFinal ou uma pontuacaoOriginal válida."
         );
     }
 
@@ -45,27 +93,59 @@ function validarSessao(dados = {}) {
         );
     }
 
-    for (const turma of turmas) {
-        const serie = Number(turma.serie);
+    if (entradaTurmas.length > 20) {
+        throw criarErroValidacao(
+            "Uma partida pode registrar no máximo 20 turmas."
+        );
+    }
 
-        if (!Number.isInteger(serie) || serie <= 0) {
+    const turmasUnicas = new Set();
+
+    const turmas = entradaTurmas.map((item) => {
+        const serie = Number(item?.serie);
+        const turma = String(
+            item?.turma ?? ""
+        ).trim();
+
+        if (
+            !Number.isInteger(serie) ||
+            serie <= 0
+        ) {
             throw criarErroValidacao(
                 "Cada turma precisa ter uma série válida."
             );
         }
 
-        if (!turma.turma || !String(turma.turma).trim()) {
+        if (!turma) {
             throw criarErroValidacao(
                 "Cada turma precisa ter o campo 'turma' preenchido."
             );
         }
-    }
+
+        const chave = `${serie}|||${turma.toUpperCase()}`;
+
+        if (turmasUnicas.has(chave)) {
+            throw criarErroValidacao(
+                "Não é permitido repetir a mesma série e turma."
+            );
+        }
+
+        turmasUnicas.add(chave);
+
+        return {
+            serie,
+            turma,
+        };
+    });
 
     return {
-    ...dados,
-    dicasUsadas,
-    turmas,
-};
+        nomeEscola,
+        cidade,
+        pontuacaoFinal,
+        pontuacaoOriginal,
+        dicasUsadas,
+        turmas,
+    };
 }
 
 module.exports = {
