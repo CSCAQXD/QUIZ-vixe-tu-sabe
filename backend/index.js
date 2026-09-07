@@ -6,7 +6,7 @@ const cors = require("cors");
 const perguntaRouter = require("./routers/pergunta.router");
 const escolaRouter = require("./routers/escola.router");
 const sessaoRouter = require("./routers/sessao.router");
-const rankingRoutes = require("./src/routes/ranking.routes");
+const rankingRouter = require("./routers/ranking.router");
 
 const app = express();
 
@@ -24,7 +24,7 @@ app.use("/perguntas", perguntaRouter);
 app.use("/escolas", escolaRouter);
 app.use("/sessao", sessaoRouter);
 app.use("/sessoes", sessaoRouter);
-app.use(rankingRoutes);
+app.use(rankingRouter);
 
 const PORT = process.env.PORT || 3001;
 
