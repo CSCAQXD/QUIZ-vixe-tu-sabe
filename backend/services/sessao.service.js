@@ -10,19 +10,64 @@ const sessaoRepository = require(
     "../repositories/sessao.repository"
 );
 
-const { limpar } = require(
-    "../utils/sanitize"
+const rankingService = require(
+    "./ranking.service"
 );
 
-function formatarPartida(
+const {
+    limpar,
+} = require("../utils/sanitize");
+
+async function montarResultado(
     partida,
     duplicada = false
 ) {
+    const rankingInterno =
+        await rankingService.listarRankingInterno(
+            partida.escola.id,
+            partida.ano,
+            null
+        );
+
+    const turmas =
+        partida.participacoes.map(
+            (participacao) => {
+                const itemRanking =
+                    rankingInterno.ranking.find(
+                        (item) =>
+                            item.serie ===
+                                participacao.serie &&
+                            item.turma ===
+                                participacao.turma
+                    );
+
+                return {
+                    id: participacao.id,
+                    serie:
+                        participacao.serie,
+                    turma:
+                        participacao.turma,
+                    pontuacaoDaRodada:
+                        partida.pontuacaoFinal,
+                    pontuacaoAcumulada:
+                        itemRanking
+                            ?.pontuacaoTotal || 0,
+                    posicaoRankingInterno:
+                        itemRanking
+                            ?.posicao || null,
+                    totalTurmasNoRankingInterno:
+                        rankingInterno.total,
+                };
+            }
+        );
+
     return {
         mensagem: duplicada
             ? "Esta partida já havia sido registrada."
             : "Partida registrada com sucesso.",
+
         duplicada,
+
         partida: {
             id: partida.id,
             idempotencyKey:
@@ -33,90 +78,97 @@ function formatarPartida(
             dataPartida:
                 partida.dataPartida,
         },
+
         escola: {
             id: partida.escola.id,
             nome: partida.escola.nome,
-            cidade: partida.escola.cidade,
+            cidade:
+                partida.escola.cidade,
         },
-        turmas:
-            partida.participacoes.map(
-                (participacao) => ({
-                    id: participacao.id,
-                    serie: participacao.serie,
-                    turma: participacao.turma,
-                })
-            ),
+
+        turmas,
     };
 }
 
 async function registrarSessoes(dados) {
     const partidaExistente =
-        await sessaoRepository.buscarPorIdempotencyKey(
-            dados.idempotencyKey
-        );
+        await sessaoRepository
+            .buscarPorIdempotencyKey(
+                dados.idempotencyKey
+            );
 
     if (partidaExistente) {
-        return formatarPartida(
+        return montarResultado(
             partidaExistente,
             true
         );
     }
 
-    const nomeEscola = limpar(
-        dados.nomeEscola
-    );
+    const nomeEscola =
+        limpar(dados.nomeEscola);
 
-    const cidade = limpar(
-        dados.cidade
-    );
+    const cidade =
+        limpar(dados.cidade);
 
-    const turmas = dados.turmas.map(
-        (turma) => ({
-            serie: turma.serie,
-            turma: limpar(turma.turma),
-        })
-    );
+    const turmas =
+        dados.turmas.map(
+            (turma) => ({
+                serie: turma.serie,
+                turma: limpar(
+                    turma.turma
+                ),
+            })
+        );
+
+    const anoAtual =
+        new Date().getFullYear();
 
     try {
         const partida =
             await prisma.$transaction(
                 async (transaction) => {
                     const escola =
-                        await escolaRepository.buscarOuCriar(
-                            nomeEscola,
-                            cidade,
+                        await escolaRepository
+                            .buscarOuCriar(
+                                nomeEscola,
+                                cidade,
+                                transaction
+                            );
+
+                    return sessaoRepository
+                        .criar(
+                            {
+                                idempotencyKey:
+                                    dados.idempotencyKey,
+
+                                pontuacaoFinal:
+                                    dados.pontuacaoFinal,
+
+                                ano: anoAtual,
+
+                                escolaId:
+                                    escola.id,
+
+                                turmas,
+                            },
                             transaction
                         );
-
-                    return sessaoRepository.criar(
-                        {
-                            idempotencyKey:
-                                dados.idempotencyKey,
-                            pontuacaoFinal:
-                                dados.pontuacaoFinal,
-                            ano: new Date()
-                                .getFullYear(),
-                            escolaId:
-                                escola.id,
-                            turmas,
-                        },
-                        transaction
-                    );
                 }
             );
 
-        return formatarPartida(
+        return montarResultado(
             partida
         );
     } catch (error) {
         if (error.code === "P2002") {
             const partidaDuplicada =
-                await sessaoRepository.buscarPorIdempotencyKey(
-                    dados.idempotencyKey
-                );
+                await sessaoRepository
+                    .buscarPorIdempotencyKey(
+                        dados.idempotencyKey
+                    );
 
             if (partidaDuplicada) {
-                return formatarPartida(
+                return montarResultado(
                     partidaDuplicada,
                     true
                 );
@@ -129,9 +181,8 @@ async function registrarSessoes(dados) {
 
 async function buscarPartidaPorId(id) {
     const partida =
-        await sessaoRepository.buscarPorId(
-            id
-        );
+        await sessaoRepository
+            .buscarPorId(id);
 
     if (!partida) {
         const erro = new Error(
@@ -143,7 +194,7 @@ async function buscarPartidaPorId(id) {
         throw erro;
     }
 
-    return formatarPartida(
+    return montarResultado(
         partida
     );
 }
@@ -153,9 +204,8 @@ async function listarPartidasPorEscola(
     ano
 ) {
     const escola =
-        await escolaRepository.buscarPorId(
-            escolaId
-        );
+        await escolaRepository
+            .buscarPorId(escolaId);
 
     if (!escola) {
         const erro = new Error(
@@ -168,15 +218,40 @@ async function listarPartidasPorEscola(
     }
 
     const partidas =
-        await sessaoRepository.listarPorEscola(
-            escolaId,
-            ano
-        );
+        await sessaoRepository
+            .listarPorEscola(
+                escolaId,
+                ano
+            );
+
+    const historico =
+        partidas.map((partida) => ({
+            id: partida.id,
+            idempotencyKey:
+                partida.idempotencyKey,
+            pontuacaoFinal:
+                partida.pontuacaoFinal,
+            ano: partida.ano,
+            dataPartida:
+                partida.dataPartida,
+            turmas:
+                partida.participacoes.map(
+                    (participacao) => ({
+                        id:
+                            participacao.id,
+                        serie:
+                            participacao.serie,
+                        turma:
+                            participacao.turma,
+                    })
+                ),
+        }));
 
     return {
         escola,
         ano: ano || null,
-        partidas,
+        total: historico.length,
+        partidas: historico,
     };
 }
 
