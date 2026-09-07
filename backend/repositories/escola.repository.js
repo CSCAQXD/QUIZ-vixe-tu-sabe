@@ -1,4 +1,6 @@
-const prisma = require("../config/prisma");
+const prisma = require(
+    "../config/prisma"
+);
 
 async function buscarTodas() {
     return prisma.escola.findMany({
@@ -10,6 +12,14 @@ async function buscarTodas() {
                 cidade: "asc",
             },
         ],
+    });
+}
+
+async function buscarPorId(id) {
+    return prisma.escola.findUnique({
+        where: {
+            id,
+        },
     });
 }
 
@@ -25,15 +35,6 @@ async function buscarPorNomeECidade(
                 cidade,
             },
         },
-    });
-}
-
-async function criar(
-    dados,
-    cliente = prisma
-) {
-    return cliente.escola.create({
-        data: dados,
     });
 }
 
@@ -59,7 +60,7 @@ async function buscarOuCriar(
 
 module.exports = {
     buscarTodas,
+    buscarPorId,
     buscarPorNomeECidade,
-    criar,
     buscarOuCriar,
 };
