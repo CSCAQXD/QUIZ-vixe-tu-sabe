@@ -1,36 +1,123 @@
-const prisma = require("../config/prisma");
+const prisma = require(
+    "../config/prisma"
+);
+
+async function buscarPorIdempotencyKey(
+    idempotencyKey,
+    cliente = prisma
+) {
+    return cliente.partida.findUnique({
+        where: {
+            idempotencyKey,
+        },
+        include: {
+            escola: true,
+            participacoes: {
+                orderBy: [
+                    {
+                        serie: "asc",
+                    },
+                    {
+                        turma: "asc",
+                    },
+                ],
+            },
+        },
+    });
+}
 
 async function criar(
     dados,
     cliente = prisma
 ) {
-    return cliente.sessao.create({
-        data: dados,
+    return cliente.partida.create({
+        data: {
+            idempotencyKey:
+                dados.idempotencyKey,
+            pontuacaoFinal:
+                dados.pontuacaoFinal,
+            ano: dados.ano,
+            escolaId: dados.escolaId,
+            participacoes: {
+                create: dados.turmas.map(
+                    (turma) => ({
+                        serie: turma.serie,
+                        turma: turma.turma,
+                    })
+                ),
+            },
+        },
+        include: {
+            escola: true,
+            participacoes: {
+                orderBy: [
+                    {
+                        serie: "asc",
+                    },
+                    {
+                        turma: "asc",
+                    },
+                ],
+            },
+        },
     });
 }
 
-async function criarMuitas(
-    dados,
-    cliente = prisma
-) {
-    return cliente.sessao.createMany({
-        data: dados,
+async function buscarPorId(id) {
+    return prisma.partida.findUnique({
+        where: {
+            id,
+        },
+        include: {
+            escola: true,
+            participacoes: {
+                orderBy: [
+                    {
+                        serie: "asc",
+                    },
+                    {
+                        turma: "asc",
+                    },
+                ],
+            },
+        },
     });
 }
 
-async function buscarTodasDaEscola(
+async function listarPorEscola(
     escolaId,
-    cliente = prisma
+    ano
 ) {
-    return cliente.sessao.findMany({
+    return prisma.partida.findMany({
         where: {
             escolaId,
+            ...(ano
+                ? {
+                        ano,
+                    }
+                : {}),
+        },
+        include: {
+            participacoes: {
+                orderBy: [
+                    {
+                        serie: "asc",
+                    },
+                    {
+                        turma: "asc",
+                    },
+                ],
+            },
+        },
+        orderBy: {
+            dataPartida: "desc",
         },
     });
 }
 
 module.exports = {
+    buscarPorIdempotencyKey,
     criar,
-    criarMuitas,
-    buscarTodasDaEscola,
+    buscarPorId,
+    listarPorEscola,
 };
