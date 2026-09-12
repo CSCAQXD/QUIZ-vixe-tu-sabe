@@ -8,7 +8,7 @@
   background: #f7c181;
 }
 
-@media (min-width: 769px) and (max-width: 1440px) and (min-aspect-ratio: 9 / 5) {
+@media (min-width: 769px) and (min-aspect-ratio: 9 / 5) {
   .home-page {
     place-items: start center;
   }

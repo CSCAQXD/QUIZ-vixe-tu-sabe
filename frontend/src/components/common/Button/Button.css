@@ -44,3 +44,44 @@
     color: var(--color-white);
     background: var(--color-error);
 }
+
+.button--home-action {
+    width: 11.4583cqw;
+    min-width: 11.4583cqw;
+    min-height: 0;
+    height: 6.1111cqh;
+    padding: 0;
+    border: 0;
+    border-radius: 0.3646cqw;
+    color: #000;
+    background: #f09b32;
+    box-shadow: 0.5208cqw 0.9259cqh 0 #3c1423;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 1.8229cqw;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.button--home-action:hover:not(:disabled) {
+    transform: translate(-0.1042cqw, -0.1852cqh);
+    box-shadow: 0.625cqw 1.1111cqh 0 #3c1423;
+}
+
+.button--home-action:active:not(:disabled) {
+    transform: translate(0.3646cqw, 0.6481cqh);
+    box-shadow: 0.1563cqw 0.2778cqh 0 #3c1423;
+}
+
+.button--home-action:focus-visible {
+    outline: 0.2083cqw solid #fff;
+    outline-offset: 0.2083cqw;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .button--home-action {
+        transition: none;
+    }
+}

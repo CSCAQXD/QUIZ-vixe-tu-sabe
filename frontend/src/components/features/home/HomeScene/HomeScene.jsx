@@ -1,3 +1,4 @@
+import Button from "../../../common/Button/Button";
 import SponsorsBar from "../../../common/SponsorsBar/SponsorsBar";
 import "./HomeScene.css";
 
@@ -12,12 +13,12 @@ function HomeScene({ onOpenRankings, onStart }) {
         <img alt="Vixe, Tu Sabe?" className="home-scene__logo" src="/assets/brand/vixe-tu-sabe.svg" />
 
         <nav aria-label="Ações principais" className="home-scene__actions">
-          <button className="home-scene__button" onClick={onOpenRankings} type="button">
+          <Button onClick={onOpenRankings} variant="home-action">
             RANKINGS
-          </button>
-          <button className="home-scene__button" onClick={onStart} type="button">
+          </Button>
+          <Button onClick={onStart} variant="home-action">
             INICIAR
-          </button>
+          </Button>
         </nav>
       </div>
 
