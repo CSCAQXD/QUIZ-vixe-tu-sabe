@@ -1,41 +1,84 @@
 .home-page {
-    width: min(1200px, calc(100% - 32px));
-    min-height: calc(100vh - 48px);
+    min-height: 100vh;
     display: grid;
-    grid-template-columns:
-        minmax(0, 1fr)
-        minmax(280px, 440px);
-    align-items: center;
-    gap: 48px;
-    margin-inline: auto;
+    place-items: center;
+    overflow: hidden;
+    background: #f7c181;
 }
 
-.home-page__brand > span {
-    color: var(--color-wine);
-    font-weight: 900;
+.home-page__stage {
+    position: relative;
+    width: min(
+        100vw,
+        calc(100vh * 16 / 9)
+    );
+    height: min(
+        100vh,
+        calc(100vw * 9 / 16)
+    );
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
 }
 
-.home-page__brand h1 {
-    margin: 10px 0;
-    color: var(--color-wine-dark);
-    font-size: clamp(4rem, 10vw, 8rem);
-    line-height: 0.84;
+.home-page__art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
 }
 
-.home-page__brand p {
-    max-width: 580px;
-    font-size: 1.25rem;
-    font-weight: 600;
+.home-page__hotspot {
+    position: absolute;
+    z-index: 1;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
 }
 
-.home-page__actions {
-    display: grid;
-    gap: 16px;
+.home-page__hotspot--start {
+    top: 38.89%;
+    left: 34.64%;
+    width: 11.41%;
+    height: 6.58%;
 }
 
-@media (max-width: 760px) {
+.home-page__hotspot--rankings {
+    top: 38.89%;
+    left: 47.6%;
+    width: 12.19%;
+    height: 6.58%;
+}
+
+.home-page__hotspot:hover {
+    background: rgb(255 255 255 / 8%);
+}
+
+.home-page__hotspot:active {
+    transform: translateY(2px);
+}
+
+.home-page__hotspot:focus-visible {
+    outline: 4px solid white;
+    outline-offset: 4px;
+}
+
+@media (max-aspect-ratio: 4 / 5) {
     .home-page {
-        grid-template-columns: 1fr;
-        align-content: center;
+        overflow: auto;
+    }
+
+    .home-page__stage {
+        width: 100vw;
+        height: calc(100vw * 9 / 16);
+        min-height: 100vh;
+        background: #f7c181;
+    }
+
+    .home-page__art {
+        object-position: center top;
     }
 }
