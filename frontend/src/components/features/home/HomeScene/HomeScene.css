@@ -1,8 +1,8 @@
 .home-scene {
   container-type: size;
   position: relative;
-  width: min(100vw, 177.7778svh);
-  height: min(100svh, 56.25vw);
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: #f7c181;
   isolation: isolate;
@@ -25,7 +25,7 @@
   top: -2.7778%;
   left: 51.5625%;
   width: 54.7396%;
-  height: 76.2963%;
+  height: auto;
 }
 
 .home-scene__identity {
@@ -55,7 +55,7 @@
   bottom: 5.3704%;
   left: 2.6563%;
   width: 25.8375%;
-  height: 27.7556%;
+  aspect-ratio: 497 / 300;
   opacity: 0.5;
   mix-blend-mode: multiply;
   pointer-events: none;
@@ -64,7 +64,7 @@
 .home-scene__character-shadow img {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 
 .home-scene__character {
@@ -72,7 +72,7 @@
   bottom: 5.3704%;
   left: 6.0417%;
   width: 22.2552%;
-  height: 45.4352%;
+  height: auto;
 }
 
 .home-scene__house {
@@ -80,7 +80,7 @@
   bottom: 15.0926%;
   left: 38.125%;
   width: 43.0443%;
-  height: 56.0463%;
+  height: auto;
 }
 
 .home-scene__fence {
@@ -88,7 +88,7 @@
   bottom: 15.2778%;
   left: -14.4063%;
   width: 114.7698%;
-  height: 27.1944%;
+  height: auto;
 }
 
 .home-scene__ground {
@@ -96,7 +96,7 @@
   bottom: 0;
   left: -0.1725%;
   width: 100.2875%;
-  height: 24.1028%;
+  height: auto;
 }
 
 .home-scene__sponsors {
@@ -106,12 +106,4 @@
   display: flex;
   width: 41.4583%;
   height: 10.5556%;
-}
-
-@media (min-width: 769px) and (min-aspect-ratio: 9 / 5) {
-  .home-scene {
-    width: 100vw;
-    height: 56.25vw;
-    flex: 0 0 auto;
-  }
 }
