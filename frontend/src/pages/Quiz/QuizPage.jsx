@@ -1,24 +1,22 @@
 import {
-    useCallback,
     useEffect,
     useMemo,
     useState,
 } from "react";
 
-import {
-    useNavigate,
-} from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 import { listarPerguntas } from "../../api/perguntaApi";
 import { registrarSessao } from "../../api/sessaoApi";
 import Button from "../../components/common/Button/Button";
 import PageStatus from "../../components/common/PageStatus/PageStatus";
 import QuizBoard from "../../components/features/quiz/QuizBoard/QuizBoard";
+
 import {
     calculateAvailablePoints,
     isCorrectAnswer,
     normalizeQuestion,
 } from "../../utils/quiz";
+
 import {
     getMediation,
     saveResult,
@@ -32,6 +30,10 @@ function QuizPage() {
     const mediation = useMemo(
         () => getMediation(),
         [],
+    );
+
+    const [idempotencyKey] = useState(
+        () => crypto.randomUUID(),
     );
 
     const [questions, setQuestions] =
@@ -64,23 +66,33 @@ function QuizPage() {
     const [error, setError] =
         useState("");
 
-    const loadQuestions =
-        useCallback(async () => {
-        setIsLoading(true);
-        setError("");
+    const [loadAttempt, setLoadAttempt] =
+        useState(0);
 
-        try {
-            const response =
-            await listarPerguntas();
+    useEffect(() => {
+        if (!mediation) {
+        navigate("/cadastro-turmas", {
+            replace: true,
+        });
 
-            const normalizedQuestions =
-            response
-                .map(normalizeQuestion)
-                .filter(
+        return undefined;
+        }
+
+        let active = true;
+
+        listarPerguntas()
+        .then((response) => {
+            if (!active) {
+            return;
+            }
+
+            const normalizedQuestions = response
+            .map(normalizeQuestion)
+            .filter(
                 (question) =>
-                    question.opcoes.length === 4 &&
-                    question.correctIndex !== -1,
-                );
+                question.opcoes.length === 4 &&
+                question.correctIndex !== -1,
+            );
 
             if (
             normalizedQuestions.length === 0
@@ -93,30 +105,25 @@ function QuizPage() {
             setQuestions(
             normalizedQuestions,
             );
-        } catch (requestError) {
+        })
+        .catch((requestError) => {
+            if (active) {
             setError(
-            requestError.message,
+                requestError.message,
             );
-        } finally {
+            }
+        })
+        .finally(() => {
+            if (active) {
             setIsLoading(false);
-        }
-        }, []);
+            }
+        });
 
-    useEffect(() => {
-        if (!mediation) {
-        navigate(
-            "/cadastro-turmas",
-            {
-            replace: true,
-            },
-        );
-
-        return;
-        }
-
-        loadQuestions();
+        return () => {
+        active = false;
+        };
     }, [
-        loadQuestions,
+        loadAttempt,
         mediation,
         navigate,
     ]);
@@ -136,6 +143,14 @@ function QuizPage() {
         currentQuestion?.dicas[
         Math.max(0, hintsUsed - 1)
         ] ?? "";
+
+    function retryQuestions() {
+        setError("");
+        setIsLoading(true);
+        setLoadAttempt(
+        (current) => current + 1,
+        );
+    }
 
     function openHint() {
         if (
@@ -163,10 +178,9 @@ function QuizPage() {
         return;
         }
 
-        const correct =
-        isCorrectAnswer(
-            currentQuestion,
-            selectedAnswer,
+        const correct = isCorrectAnswer(
+        currentQuestion,
+        selectedAnswer,
         );
 
         if (correct) {
@@ -194,24 +208,17 @@ function QuizPage() {
         const result =
             await registrarSessao({
             ...mediation,
-            idempotencyKey:
-                crypto.randomUUID(),
+            idempotencyKey,
             pontuacaoFinal: score,
             });
 
         saveResult(result);
 
-        navigate(
-            "/quiz-concluido",
-            {
+        navigate("/quiz-concluido", {
             replace: true,
-            },
-        );
+        });
         } catch (requestError) {
-        setError(
-            requestError.message,
-        );
-
+        setError(requestError.message);
         setIsSaving(false);
         }
     }
@@ -220,9 +227,7 @@ function QuizPage() {
         const nextIndex =
         questionIndex + 1;
 
-        if (
-        nextIndex >= questions.length
-        ) {
+        if (nextIndex >= questions.length) {
         finishQuiz();
         return;
         }
@@ -250,7 +255,7 @@ function QuizPage() {
         <PageStatus
             action={
             <Button
-                onClick={loadQuestions}
+                onClick={retryQuestions}
                 variant="primary"
             >
                 Tentar novamente
@@ -263,20 +268,21 @@ function QuizPage() {
     }
 
     if (!currentQuestion) {
-        return null;
+        return (
+        <PageStatus
+            message="Nenhuma pergunta disponível."
+            type="error"
+        />
+        );
     }
 
     return (
         <section className="quiz-page">
         <QuizBoard
             answerState={answerState}
-            availablePoints={
-            availablePoints
-            }
+            availablePoints={availablePoints}
             currentHint={currentHint}
-            currentQuestion={
-            currentQuestion
-            }
+            currentQuestion={currentQuestion}
             currentQuestionIndex={
             questionIndex
             }
@@ -317,6 +323,7 @@ function QuizPage() {
                 <p>{error}</p>
 
                 <Button
+                disabled={isSaving}
                 onClick={finishQuiz}
                 variant="primary"
                 >
