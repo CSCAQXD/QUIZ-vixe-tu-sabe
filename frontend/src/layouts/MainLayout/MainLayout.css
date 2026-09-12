@@ -1,52 +1,6 @@
 .main-layout {
-    position: relative;
+    min-width: 320px;
     min-height: 100vh;
     overflow: hidden;
-    background:
-        linear-gradient(
-        to bottom,
-        var(--color-orange-light) 0 76%,
-        var(--color-orange) 76% 100%
-        );
-}
-
-.main-layout__sun {
-    position: fixed;
-    top: -280px;
-    left: -230px;
-    width: 680px;
-    height: 680px;
-    border-radius: 50%;
-    background: rgb(240 155 50 / 38%);
-    pointer-events: none;
-}
-
-.main-layout__ground {
-    position: fixed;
-    right: -5%;
-    bottom: -100px;
-    left: -5%;
-    height: 230px;
-    border-radius: 50% 50% 0 0;
-    background: var(--color-orange);
-    pointer-events: none;
-}
-
-.main-layout__content {
-    position: relative;
-    z-index: 1;
-    min-height: calc(100vh - 48px);
-}
-
-.main-layout__footer {
-    position: relative;
-    z-index: 2;
-    min-height: 48px;
-    display: grid;
-    place-items: center;
-    padding: 8px 16px;
-    background: #f6f6f6;
-    font-size: 0.875rem;
-    font-weight: 700;
-    text-align: center;
+    background: #f7c181;
 }
