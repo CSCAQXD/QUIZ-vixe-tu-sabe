@@ -1,0 +1,23 @@
+.quiz-page {
+    min-height: calc(100vh - 48px);
+    padding-bottom: 64px;
+}
+
+.quiz-page__message,
+.quiz-page__save-error {
+    width: min(520px, calc(100% - 32px));
+    margin: 24px auto 0;
+    padding: 20px;
+    border-radius: 16px;
+    background: var(--color-cream);
+    text-align: center;
+    font-weight: 700;
+}
+
+.quiz-page__save-error {
+    border: 2px solid var(--color-error);
+}
+
+.quiz-page__save-error p {
+    margin-top: 0;
+}
