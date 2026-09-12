@@ -1,65 +1,54 @@
-import Button from "../../../common/Button/Button";
-import FormField from "../../../common/FormField/FormField";
-import "./TurmaForm.css";
+import "./FormField.css";
 
-function TurmaForm({
-    index,
+function FormField({
+    error = "",
+    id,
+    label,
+    maxLength,
+    min,
     onChange,
-    onRemove,
-    removable,
-    turma,
+    placeholder = "",
+    required = false,
+    type = "text",
+    value,
 }) {
-    function update(field, value) {
-        onChange({
-        ...turma,
-        [field]: value,
-        });
-    }
+    const errorId = `${id}-error`;
 
     return (
-        <fieldset className="turma-form">
-        <legend>
-            TURMA {index + 1}
-        </legend>
+        <div className="form-field">
+        <label
+            className="form-field__label"
+            htmlFor={id}
+        >
+            {label}
+        </label>
 
-        <div className="turma-form__fields">
-            <FormField
-            id={`serie-${turma.id}`}
-            label="Série"
-            min="1"
-            onChange={(value) =>
-                update("serie", value)
+        <input
+            aria-describedby={error ? errorId : undefined}
+            aria-invalid={Boolean(error)}
+            className="form-field__input"
+            id={id}
+            maxLength={maxLength}
+            min={min}
+            onChange={(event) =>
+            onChange(event.target.value)
             }
-            placeholder="Ex.: 9"
-            required
-            type="number"
-            value={turma.serie}
-            />
+            placeholder={placeholder}
+            required={required}
+            type={type}
+            value={value}
+        />
 
-            <FormField
-            id={`turma-${turma.id}`}
-            label="Turma"
-            maxLength={30}
-            onChange={(value) =>
-                update("turma", value)
-            }
-            placeholder="Ex.: A"
-            required
-            value={turma.turma}
-            />
-        </div>
-
-        {removable && (
-            <Button
-            className="turma-form__remove"
-            onClick={onRemove}
-            variant="danger"
+        {error && (
+            <span
+            className="form-field__error"
+            id={errorId}
             >
-            REMOVER TURMA
-            </Button>
+            {error}
+            </span>
         )}
-        </fieldset>
+        </div>
     );
 }
 
-export default TurmaForm;
+export default FormField;
