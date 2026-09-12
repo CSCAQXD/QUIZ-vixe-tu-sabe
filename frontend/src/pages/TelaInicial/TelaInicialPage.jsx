@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import Button from "../../components/common/Button/Button";
 import { clearQuizStorage } from "../../utils/storage";
 import "./TelaInicialPage.css";
 
@@ -12,35 +11,40 @@ function TelaInicialPage() {
     }
 
     return (
-        <section className="home-page">
-        <div className="home-page__brand">
-            <span>QUIZ CULTURAL</span>
+        <section
+        aria-label="Tela inicial do Vixe, Tu Sabe?"
+        className="home-page"
+        >
+        <div className="home-page__stage">
+            <img
+            alt=""
+            aria-hidden="true"
+            className="home-page__art"
+            draggable="false"
+            src="/assets/figma/TELA%20INICIAL.svg"
+            />
 
-            <h1>
-            VIXE,
-            <br />
-            TU SABE?
-            </h1>
-
-            <p>
-            Teste seus conhecimentos sobre
-            Cego Aderaldo e a cultura cearense.
-            </p>
-        </div>
-
-        <div className="home-page__actions">
-            <Button onClick={startQuiz}>
-            INICIAR
-            </Button>
-
-            <Button
-            onClick={() =>
-                navigate("/rankings")
-            }
-            variant="secondary"
+            <button
+            aria-label="Iniciar quiz"
+            className="home-page__hotspot home-page__hotspot--start"
+            onClick={startQuiz}
+            type="button"
             >
-            RANKINGS
-            </Button>
+            <span className="sr-only">
+                Iniciar quiz
+            </span>
+            </button>
+
+            <button
+            aria-label="Ver rankings"
+            className="home-page__hotspot home-page__hotspot--rankings"
+            onClick={() => navigate("/rankings")}
+            type="button"
+            >
+            <span className="sr-only">
+                Ver rankings
+            </span>
+            </button>
         </div>
         </section>
     );
