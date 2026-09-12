@@ -30,5 +30,10 @@
   },
   "devDependencies": {
     "prisma": "^6.19.3"
+  },
+  "allowScripts": {
+    "prisma@6.19.3": true,
+    "@prisma/client@6.19.3": true,
+    "@prisma/engines@6.19.3": true
   }
 }

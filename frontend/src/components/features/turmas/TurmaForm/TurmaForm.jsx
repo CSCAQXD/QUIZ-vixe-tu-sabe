@@ -1,6 +1,6 @@
-import Button from "../../../../common/Button/Button";
-import FormField from "../../../../common/FormField/FormField";
-import "../TurmaForm.css";
+import Button from "../../../common/Button/Button";
+import FormField from "../../../common/FormField/FormField";
+import "./TurmaForm.css";
 
 function TurmaForm({
     index,
