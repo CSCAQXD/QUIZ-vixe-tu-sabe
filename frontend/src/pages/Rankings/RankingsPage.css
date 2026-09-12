@@ -1,0 +1,93 @@
+.rankings-page {
+    width: min(1240px, calc(100% - 32px));
+    min-height: calc(100vh - 48px);
+    margin-inline: auto;
+    padding: 32px 0 64px;
+}
+
+.rankings-page__header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.rankings-page__header h1 {
+    margin: 20px 0 0;
+    color: var(--color-wine-dark);
+    font-size: clamp(3rem, 7vw, 6rem);
+    line-height: 1;
+}
+
+.rankings-page__year,
+.rankings-page__school {
+    display: grid;
+    gap: 8px;
+    font-weight: 800;
+}
+
+.rankings-page__year input,
+.rankings-page__school select {
+    min-height: 48px;
+    padding: 8px 12px;
+    border: 1px solid var(--color-black);
+    border-radius: 10px;
+    background: var(--color-cream);
+}
+
+.rankings-page__tabs {
+    display: grid;
+    grid-template-columns: repeat(
+        3,
+        minmax(0, 1fr)
+    );
+    margin: 32px 0 20px;
+    border: 2px solid var(--color-wine-dark);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.rankings-page__tabs button {
+    min-height: 62px;
+    padding: 12px;
+    border: 0;
+    color: var(--color-black);
+    background: var(--color-cream);
+    font-weight: 800;
+}
+
+.rankings-page__tabs button[aria-pressed="true"] {
+    color: var(--color-white);
+    background: var(--color-wine-dark);
+}
+
+.rankings-page__school {
+    width: min(520px, 100%);
+    margin-bottom: 20px;
+}
+
+.rankings-page__panel {
+    padding: clamp(18px, 4vw, 40px);
+    border-radius: 30px;
+    background: white;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 25%);
+}
+
+.rankings-page__panel > h2 {
+    margin-top: 0;
+}
+
+.rankings-page__panel .page-status {
+    margin: 24px auto;
+}
+
+@media (max-width: 680px) {
+    .rankings-page__header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .rankings-page__tabs {
+        grid-template-columns: 1fr;
+    }
+}
