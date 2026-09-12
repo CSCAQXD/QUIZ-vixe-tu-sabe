@@ -1,6 +1,20 @@
 .quiz-page {
-    min-height: calc(100vh - 48px);
-    padding-bottom: 64px;
+    position: relative;
+    min-height: 100svh;
+    overflow: hidden;
+    background:
+        linear-gradient(to bottom, transparent 0 56%, #a52d37 56% 83%, transparent 83%),
+        #f7c181;
+}
+
+.quiz-page::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 18%;
+    background: url("/assets/illustrations/muro-tijolos.svg") center bottom / cover no-repeat;
 }
 
 .quiz-page__message,

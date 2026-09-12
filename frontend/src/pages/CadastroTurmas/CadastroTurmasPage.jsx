@@ -156,22 +156,23 @@ function CadastroTurmasPage() {
     return (
         <section className="registration-page">
         <aside className="registration-page__intro">
-            <BackButton fallback="/" />
-
-            <h1>
-            REGISTRE OS DADOS DA TURMA
-            </h1>
-
-            <p>
-            Cadastre a escola e as turmas
-            participantes antes de começar.
-            </p>
+            <img
+                alt="Vixe, Tu Sabe?"
+                className="registration-page__logo"
+                src="/assets/brand/vixe-tu-sabe.svg"
+            />
+            <img alt="" aria-hidden="true" className="registration-page__fence" src="/assets/illustrations/cerca.svg" />
+            <img alt="" aria-hidden="true" className="registration-page__ground" src="/assets/illustrations/muro-tijolos.svg" />
         </aside>
 
         <form
             className="registration-page__panel"
             onSubmit={handleSubmit}
         >
+            <BackButton fallback="/" />
+
+            <h1>REGISTRE OS DADOS DA TURMA</h1>
+
             <div className="registration-page__school">
             <FormField
                 id="nome-escola"

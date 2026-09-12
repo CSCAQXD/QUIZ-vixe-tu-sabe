@@ -4,10 +4,10 @@
     gap: 18px;
     min-height: 82px;
     padding: 14px 20px;
-    border: 3px solid transparent;
-    border-radius: 15px;
+    border: 1px solid var(--color-black);
+    border-radius: 14px;
     color: var(--color-black);
-    background: var(--color-cream);
+    background: transparent;
     font-weight: 700;
     text-align: left;
 }

@@ -1,0 +1,24 @@
+.sponsors-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4.63%;
+  width: 49.75rem;
+  height: 7.125rem;
+  border-radius: 1.875rem 1.875rem 0 0;
+  background: #f6f6f6;
+}
+
+.sponsors-bar__logo {
+  display: block;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.sponsors-bar__logo--dragao { width: 18.405%; height: auto; }
+.sponsors-bar__logo--casa { width: 28.298%; height: auto; }
+.sponsors-bar__logo--ceara { width: 22.386%; height: auto; }
+
+@media (max-width: 900px) {
+  .sponsors-bar { gap: 4.63%; }
+}

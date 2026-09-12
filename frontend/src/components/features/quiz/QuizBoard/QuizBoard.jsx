@@ -8,7 +8,6 @@ function QuizBoard({
     availablePoints,
     currentHint,
     currentQuestion,
-    currentQuestionIndex,
     isHintOpen,
     onCloseHint,
     onConfirm,
@@ -16,8 +15,8 @@ function QuizBoard({
     onOpenHint,
     onSelectAnswer,
     score,
+    schoolName,
     selectedAnswer,
-    totalQuestions,
 }) {
     const answered =
         answerState === "correct" ||
@@ -69,8 +68,17 @@ function QuizBoard({
         <>
         <section className="quiz-board">
             <header className="quiz-board__header">
-            <div>
-                {feedback ? (
+            {!answered ? (
+                <button
+                    aria-label="Ver dica"
+                    className="quiz-board__hint-button"
+                    disabled={currentQuestion.dicas.length === 0}
+                    onClick={onOpenHint}
+                    type="button"
+                >
+                    💡
+                </button>
+                ) : (
                 <div
                     aria-live="polite"
                     className={`quiz-board__feedback quiz-board__feedback--${answerState}`}
@@ -78,26 +86,18 @@ function QuizBoard({
                     <strong>{feedback.title}</strong>
                     <span>{feedback.description}</span>
                 </div>
-                ) : (
-                <span className="quiz-board__progress">
-                    PERGUNTA{" "}
-                    {currentQuestionIndex + 1} DE{" "}
-                    {totalQuestions}
-                </span>
                 )}
-            </div>
+
+            <span className="quiz-board__school">ESCOLA {schoolName}</span>
 
             <div className="quiz-board__score">
-                <span>PONTUAÇÃO</span>
-                <strong>{score}</strong>
+                <span>PONTUAÇÃO: {score}</span>
             </div>
             </header>
 
             <div className="quiz-board__meta">
             <span>SOBRE O POETA</span>
-            <strong>
-                VALE {availablePoints} PONTOS
-            </strong>
+            <strong><small>VALE</small>{availablePoints}<small>PONTOS</small></strong>
             </div>
 
             <article className="quiz-board__question">
@@ -122,16 +122,6 @@ function QuizBoard({
             <div className="quiz-board__actions">
             {!answered && (
                 <>
-                <Button
-                    disabled={
-                    currentQuestion.dicas.length === 0
-                    }
-                    onClick={onOpenHint}
-                    variant="secondary"
-                >
-                    Ver dica
-                </Button>
-
                 <Button
                     disabled={selectedAnswer === null}
                     onClick={onConfirm}

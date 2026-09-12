@@ -1,84 +1,15 @@
 .home-page {
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-    background: #f7c181;
+  min-width: 320px;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: #f7c181;
 }
 
-.home-page__stage {
-    position: relative;
-    width: min(
-        100vw,
-        calc(100vh * 16 / 9)
-    );
-    height: min(
-        100vh,
-        calc(100vw * 9 / 16)
-    );
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-}
-
-.home-page__art {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: contain;
-    user-select: none;
-    pointer-events: none;
-}
-
-.home-page__hotspot {
-    position: absolute;
-    z-index: 1;
-    border: 0;
-    border-radius: 10px;
-    background: transparent;
-}
-
-.home-page__hotspot--start {
-    top: 38.89%;
-    left: 34.64%;
-    width: 11.41%;
-    height: 6.58%;
-}
-
-.home-page__hotspot--rankings {
-    top: 38.89%;
-    left: 47.6%;
-    width: 12.19%;
-    height: 6.58%;
-}
-
-.home-page__hotspot:hover {
-    background: rgb(255 255 255 / 8%);
-}
-
-.home-page__hotspot:active {
-    transform: translateY(2px);
-}
-
-.home-page__hotspot:focus-visible {
-    outline: 4px solid white;
-    outline-offset: 4px;
-}
-
-@media (max-aspect-ratio: 4 / 5) {
-    .home-page {
-        overflow: auto;
-    }
-
-    .home-page__stage {
-        width: 100vw;
-        height: calc(100vw * 9 / 16);
-        min-height: 100vh;
-        background: #f7c181;
-    }
-
-    .home-page__art {
-        object-position: center top;
-    }
+@media (min-width: 769px) and (max-width: 1440px) and (min-aspect-ratio: 9 / 5) {
+  .home-page {
+    place-items: start center;
+  }
 }

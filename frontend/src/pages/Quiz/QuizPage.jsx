@@ -283,9 +283,6 @@ function QuizPage() {
             availablePoints={availablePoints}
             currentHint={currentHint}
             currentQuestion={currentQuestion}
-            currentQuestionIndex={
-            questionIndex
-            }
             isHintOpen={isHintOpen}
             onCloseHint={() =>
             setIsHintOpen(false)
@@ -297,11 +294,9 @@ function QuizPage() {
             setSelectedAnswer
             }
             score={score}
+            schoolName={mediation.nomeEscola}
             selectedAnswer={
             selectedAnswer
-            }
-            totalQuestions={
-            questions.length
             }
         />
 
