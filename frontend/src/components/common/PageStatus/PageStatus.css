@@ -1,0 +1,18 @@
+.page-status {
+    width: min(600px, calc(100% - 32px));
+    margin: 64px auto;
+    padding: 28px;
+    border: 2px solid var(--color-black);
+    border-radius: 20px;
+    background: var(--color-cream);
+    text-align: center;
+}
+
+.page-status p {
+    margin-top: 0;
+    font-weight: 700;
+}
+
+.page-status--error {
+    border-color: var(--color-error);
+}
