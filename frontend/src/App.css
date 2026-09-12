@@ -1,3 +1,26 @@
 #app {
     min-height: 100vh;
 }
+
+.page-container {
+    width: min(1200px, calc(100% - 32px));
+    margin-inline: auto;
+}
+
+.page-title {
+    margin: 0;
+    color: var(--color-wine-dark);
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+    white-space: nowrap;
+}
