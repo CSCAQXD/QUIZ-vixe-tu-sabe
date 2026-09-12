@@ -1,0 +1,16 @@
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 8px 16px;
+    border: 1px solid var(--color-black);
+    border-radius: 999px;
+    color: var(--color-wine-dark);
+    background: var(--color-orange);
+    font-weight: 800;
+}
+
+.back-button span:first-child {
+    font-size: 1.5rem;
+}
