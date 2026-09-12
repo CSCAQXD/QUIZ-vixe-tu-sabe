@@ -18,13 +18,14 @@ function TurmaForm({
 
     return (
         <fieldset className="turma-form">
-        <legend>TURMA {index + 1}</legend>
+        <legend>
+            TURMA {index + 1}
+        </legend>
 
         <div className="turma-form__fields">
             <FormField
             id={`serie-${turma.id}`}
             label="Série"
-            maxLength={2}
             min="1"
             onChange={(value) =>
                 update("serie", value)
@@ -50,10 +51,11 @@ function TurmaForm({
 
         {removable && (
             <Button
+            className="turma-form__remove"
             onClick={onRemove}
             variant="danger"
             >
-            Remover turma
+            REMOVER TURMA
             </Button>
         )}
         </fieldset>
