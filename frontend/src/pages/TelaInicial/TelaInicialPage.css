@@ -1,0 +1,41 @@
+.home-page {
+    width: min(1200px, calc(100% - 32px));
+    min-height: calc(100vh - 48px);
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(280px, 440px);
+    align-items: center;
+    gap: 48px;
+    margin-inline: auto;
+}
+
+.home-page__brand > span {
+    color: var(--color-wine);
+    font-weight: 900;
+}
+
+.home-page__brand h1 {
+    margin: 10px 0;
+    color: var(--color-wine-dark);
+    font-size: clamp(4rem, 10vw, 8rem);
+    line-height: 0.84;
+}
+
+.home-page__brand p {
+    max-width: 580px;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.home-page__actions {
+    display: grid;
+    gap: 16px;
+}
+
+@media (max-width: 760px) {
+    .home-page {
+        grid-template-columns: 1fr;
+        align-content: center;
+    }
+}
