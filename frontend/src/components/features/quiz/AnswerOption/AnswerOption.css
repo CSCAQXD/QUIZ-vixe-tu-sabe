@@ -1,0 +1,52 @@
+.answer-option {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-height: 82px;
+    padding: 14px 20px;
+    border: 3px solid transparent;
+    border-radius: 15px;
+    color: var(--color-black);
+    background: var(--color-cream);
+    font-weight: 700;
+    text-align: left;
+}
+
+.answer-option:hover:not(:disabled) {
+    border-color: var(--color-orange);
+}
+
+.answer-option:disabled {
+    cursor: default;
+}
+
+.answer-option__label {
+    flex: 0 0 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--color-black);
+    border-radius: 50%;
+    background: var(--color-orange-light);
+    font-size: 1.25rem;
+}
+
+.answer-option--selected {
+    border-color: var(--color-black);
+}
+
+.answer-option--correct {
+    color: white;
+    border-color: #b4ffda;
+    background: var(--color-success);
+}
+
+.answer-option--wrong {
+    color: white;
+    border-color: #ffd5d7;
+    background: var(--color-error);
+}
+
+.answer-option--muted {
+    opacity: 0.5;
+}
