@@ -1,5 +1,4 @@
 import {
-    useCallback,
     useEffect,
     useState,
 } from "react";
@@ -8,7 +7,9 @@ import BackButton from "../../components/common/BackButton/BackButton";
 import Button from "../../components/common/Button/Button";
 import PageStatus from "../../components/common/PageStatus/PageStatus";
 import RankingTable from "../../components/features/rankings/RankingTable/RankingTable";
+
 import { listarEscolas } from "../../api/escolaApi";
+
 import {
     listarRankingEscolas,
     listarRankingInterno,
@@ -102,8 +103,10 @@ function RankingsPage() {
     const [schools, setSchools] =
         useState([]);
 
-    const [selectedSchoolId, setSelectedSchoolId] =
-        useState("");
+    const [
+        selectedSchoolId,
+        setSelectedSchoolId,
+    ] = useState("");
 
     const [records, setRecords] =
         useState([]);
@@ -114,11 +117,17 @@ function RankingsPage() {
     const [error, setError] =
         useState("");
 
-    const loadSchools =
-        useCallback(async () => {
-        try {
-            const response =
-            await listarEscolas();
+    const [loadAttempt, setLoadAttempt] =
+        useState(0);
+
+    useEffect(() => {
+        let active = true;
+
+        listarEscolas()
+        .then((response) => {
+            if (!active) {
+            return;
+            }
 
             setSchools(response);
 
@@ -128,84 +137,125 @@ function RankingsPage() {
                 response[0]?.id ||
                 "",
             );
-        } catch (requestError) {
+        })
+        .catch((requestError) => {
+            if (active) {
             setError(
-            requestError.message,
+                requestError.message,
             );
-        }
-        }, []);
+            }
+        });
+
+        return () => {
+        active = false;
+        };
+    }, []);
 
     useEffect(() => {
-        loadSchools();
-    }, [loadSchools]);
+        let active = true;
 
-    const loadRanking =
-        useCallback(async () => {
-        if (
-            activeRanking === "interno" &&
-            !selectedSchoolId
+        let request;
+
+        if (activeRanking === "turmas") {
+        request =
+            listarRankingTurmas({
+            ano: year,
+            });
+        } else if (
+        activeRanking === "escolas"
         ) {
-            setRecords([]);
-            setIsLoading(false);
-            return;
+        request =
+            listarRankingEscolas({
+            ano: year,
+            });
+        } else if (selectedSchoolId) {
+        request =
+            listarRankingInterno(
+            selectedSchoolId,
+            {
+                ano: year,
+            },
+            );
+        } else {
+        request = Promise.resolve({
+            ranking: [],
+        });
         }
 
-        setIsLoading(true);
-        setError("");
-
-        try {
-            let response;
-
-            if (activeRanking === "turmas") {
-            response =
-                await listarRankingTurmas({
-                ano: year,
-                });
-            } else if (
-            activeRanking === "escolas"
-            ) {
-            response =
-                await listarRankingEscolas({
-                ano: year,
-                });
-            } else {
-            response =
-                await listarRankingInterno(
-                selectedSchoolId,
-                {
-                    ano: year,
-                },
-                );
-            }
-
+        request
+        .then((response) => {
+            if (active) {
             setRecords(
-            response.ranking ?? [],
+                response.ranking ?? [],
             );
-        } catch (requestError) {
+            }
+        })
+        .catch((requestError) => {
+            if (active) {
             setError(
-            requestError.message,
+                requestError.message,
             );
-        } finally {
+            }
+        })
+        .finally(() => {
+            if (active) {
             setIsLoading(false);
-        }
-        }, [
+            }
+        });
+
+        return () => {
+        active = false;
+        };
+    }, [
         activeRanking,
+        loadAttempt,
         selectedSchoolId,
         year,
-        ]);
-
-    useEffect(() => {
-        loadRanking();
-    }, [loadRanking]);
+    ]);
 
     const config =
         RANKING_CONFIG[activeRanking];
+
+    function changeRanking(
+        newRanking,
+    ) {
+        setActiveRanking(newRanking);
+        setRecords([]);
+        setError("");
+        setIsLoading(true);
+    }
+
+    function changeYear(value) {
+        const newYear = Number(value);
+
+        setYear(newYear);
+        setRecords([]);
+        setError("");
+        setIsLoading(true);
+    }
+
+    function changeSchool(schoolId) {
+        setSelectedSchoolId(schoolId);
+        setRecords([]);
+        setError("");
+        setIsLoading(true);
+    }
+
+    function retryRanking() {
+        setError("");
+        setIsLoading(true);
+
+        setLoadAttempt(
+        (current) => current + 1,
+        );
+    }
 
     return (
         <section className="rankings-page">
         <header className="rankings-page__header">
             <div>
             <BackButton fallback="/" />
+
             <h1>Rankings</h1>
             </div>
 
@@ -216,10 +266,8 @@ function RankingsPage() {
                 max={2100}
                 min={2000}
                 onChange={(event) =>
-                setYear(
-                    Number(
+                changeYear(
                     event.target.value,
-                    ),
                 )
                 }
                 type="number"
@@ -237,7 +285,7 @@ function RankingsPage() {
                 activeRanking === "turmas"
             }
             onClick={() =>
-                setActiveRanking("turmas")
+                changeRanking("turmas")
             }
             type="button"
             >
@@ -249,7 +297,7 @@ function RankingsPage() {
                 activeRanking === "escolas"
             }
             onClick={() =>
-                setActiveRanking("escolas")
+                changeRanking("escolas")
             }
             type="button"
             >
@@ -261,7 +309,7 @@ function RankingsPage() {
                 activeRanking === "interno"
             }
             onClick={() =>
-                setActiveRanking("interno")
+                changeRanking("interno")
             }
             type="button"
             >
@@ -274,8 +322,9 @@ function RankingsPage() {
             Selecione a escola
 
             <select
+                disabled={schools.length === 0}
                 onChange={(event) =>
-                setSelectedSchoolId(
+                changeSchool(
                     event.target.value,
                 )
                 }
@@ -311,7 +360,7 @@ function RankingsPage() {
             <PageStatus
                 action={
                 <Button
-                    onClick={loadRanking}
+                    onClick={retryRanking}
                 >
                     Tentar novamente
                 </Button>
