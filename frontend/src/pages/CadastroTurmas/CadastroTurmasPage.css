@@ -57,8 +57,7 @@
     line-height: 1.05;
 }
 
-.registration-page__forms,
-.registration-page__actions {
+.registration-page__forms {
     display: grid;
     gap: 18px;
 }
@@ -75,26 +74,8 @@
     font-weight: 600;
 }
 
-.registration-page__actions .button {
-    width: 100%;
-    min-height: clamp(62px, 8.2vh, 89px);
-    font-family: "Cascadia Mono", Consolas, monospace;
-    font-size: clamp(1rem, 1.3vw, 1.55rem);
-}
-
-.registration-page__actions .button--secondary {
-    border: 0;
-    background: #f7c181;
-}
-
-.registration-page__actions {
-    order: 3;
-    margin-top: clamp(36px, 4.6vh, 50px);
-    gap: clamp(18px, 2.4vh, 26px);
-}
-
 .registration-page__error {
-    order: 4;
+    order: 2;
     margin-top: 18px;
 }
 
