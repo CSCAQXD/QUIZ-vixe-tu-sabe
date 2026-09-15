@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import BackButton from "../../components/common/BackButton/BackButton";
 import Button from "../../components/common/Button/Button";
+import BackButton from "../../components/common/BackButton/BackButton";
 import FormField from "../../components/common/FormField/FormField";
+import CadastroTurmasScene from "../../components/features/turmas/CadastroTurmasScene/CadastroTurmasScene";
 import TurmaForm from "../../components/features/turmas/TurmaForm/TurmaForm";
 import { saveMediation } from "../../utils/storage";
 
@@ -23,9 +23,6 @@ function CadastroTurmasPage() {
     const [schoolName, setSchoolName] =
         useState("");
 
-    const [city, setCity] =
-        useState("");
-
     const [classrooms, setClassrooms] =
         useState([createClassroom()]);
 
@@ -35,7 +32,6 @@ function CadastroTurmasPage() {
     const isValid = useMemo(() => {
         if (
         !schoolName.trim() ||
-        !city.trim() ||
         classrooms.length === 0
         ) {
         return false;
@@ -77,7 +73,6 @@ function CadastroTurmasPage() {
         },
         );
     }, [
-        city,
         classrooms,
         schoolName,
     ]);
@@ -138,7 +133,7 @@ function CadastroTurmasPage() {
 
         saveMediation({
         nomeEscola: schoolName.trim(),
-        cidade: city.trim(),
+        cidade: "Não informada",
         turmas: classrooms.map(
             (classroom) => ({
             serie: Number(
@@ -155,51 +150,15 @@ function CadastroTurmasPage() {
 
     return (
         <section className="registration-page">
-        <aside className="registration-page__intro">
-            <img
-                alt="Vixe, Tu Sabe?"
-                className="registration-page__logo"
-                src="/assets/brand/vixe-tu-sabe.svg"
-            />
-            <img alt="" aria-hidden="true" className="registration-page__fence" src="/assets/illustrations/cerca.svg" />
-            <img alt="" aria-hidden="true" className="registration-page__ground" src="/assets/illustrations/muro-tijolos.svg" />
-        </aside>
+        <CadastroTurmasScene />
 
         <form
             className="registration-page__panel"
             onSubmit={handleSubmit}
         >
-            <BackButton fallback="/" />
+            <BackButton fallback="/" label="Voltar" />
 
             <h1>REGISTRE OS DADOS DA TURMA</h1>
-
-            <div className="registration-page__school">
-            <FormField
-                id="nome-escola"
-                label="Nome da escola"
-                maxLength={200}
-                onChange={(value) => {
-                setSchoolName(value);
-                setError("");
-                }}
-                placeholder="Ex.: EEEP Dr. Fulano"
-                required
-                value={schoolName}
-            />
-
-            <FormField
-                id="cidade"
-                label="Cidade"
-                maxLength={120}
-                onChange={(value) => {
-                setCity(value);
-                setError("");
-                }}
-                placeholder="Ex.: Quixadá"
-                required
-                value={city}
-            />
-            </div>
 
             <div className="registration-page__forms">
             {classrooms.map(
@@ -221,6 +180,21 @@ function CadastroTurmasPage() {
                     removable={
                     classrooms.length > 1
                     }
+                    schoolField={index === 0 ? (
+                    <FormField
+                        id="nome-escola"
+                        label="Nome da escola"
+                        labelVisuallyHidden
+                        maxLength={200}
+                        onChange={(value) => {
+                        setSchoolName(value);
+                        setError("");
+                        }}
+                        placeholder="Nome da Escola"
+                        required
+                        value={schoolName}
+                    />
+                    ) : null}
                     turma={classroom}
                 />
                 ),
@@ -248,7 +222,6 @@ function CadastroTurmasPage() {
             </Button>
 
             <Button
-                disabled={!isValid}
                 type="submit"
                 variant="success"
             >
