@@ -7,8 +7,11 @@ function TurmaForm({
     onChange,
     onRemove,
     removable,
+    schoolField = null,
     turma,
 }) {
+    const headingId = `turma-${turma.id}-titulo`;
+
     function update(field, value) {
         onChange({
         ...turma,
@@ -17,20 +20,23 @@ function TurmaForm({
     }
 
     return (
-        <fieldset className="turma-form">
-        <legend>
+        <section aria-labelledby={headingId} className="turma-form">
+        <h2 id={headingId}>
             TURMA {index + 1}
-        </legend>
+        </h2>
+
+        {schoolField}
 
         <div className="turma-form__fields">
             <FormField
             id={`serie-${turma.id}`}
             label="Série"
+            labelVisuallyHidden
             min="1"
             onChange={(value) =>
                 update("serie", value)
             }
-            placeholder="Ex.: 9"
+            placeholder="Série"
             required
             type="number"
             value={turma.serie}
@@ -39,11 +45,12 @@ function TurmaForm({
             <FormField
             id={`turma-${turma.id}`}
             label="Turma"
+            labelVisuallyHidden
             maxLength={30}
             onChange={(value) =>
                 update("turma", value)
             }
-            placeholder="Ex.: A"
+            placeholder="Turma"
             required
             value={turma.turma}
             />
@@ -58,7 +65,7 @@ function TurmaForm({
             REMOVER TURMA
             </Button>
         )}
-        </fieldset>
+        </section>
     );
 }
 
