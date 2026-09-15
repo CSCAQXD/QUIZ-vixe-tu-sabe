@@ -36,8 +36,8 @@
 }
 
 .button--success {
-    color: var(--color-white);
-    background: var(--color-success);
+    color: var(--color-white, #fff);
+    background: var(--color-success, #219653);
 }
 
 .button--danger {
