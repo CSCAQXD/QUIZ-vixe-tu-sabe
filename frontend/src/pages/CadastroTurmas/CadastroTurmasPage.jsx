@@ -1,10 +1,9 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "../../components/common/Button/Button";
 import BackButton from "../../components/common/BackButton/BackButton";
-import FormField from "../../components/common/FormField/FormField";
 import CadastroTurmasScene from "../../components/features/turmas/CadastroTurmasScene/CadastroTurmasScene";
 import TurmaForm from "../../components/features/turmas/TurmaForm/TurmaForm";
+import { groupClassroomsBySchool } from "../../utils/mediation";
 import { saveMediation } from "../../utils/storage";
 
 import "./CadastroTurmasPage.css";
@@ -12,6 +11,7 @@ import "./CadastroTurmasPage.css";
 function createClassroom() {
     return {
         id: crypto.randomUUID(),
+        nomeEscola: "",
         serie: "",
         turma: "",
     };
@@ -19,9 +19,6 @@ function createClassroom() {
 
 function CadastroTurmasPage() {
     const navigate = useNavigate();
-
-    const [schoolName, setSchoolName] =
-        useState("");
 
     const [classrooms, setClassrooms] =
         useState([createClassroom()]);
@@ -31,7 +28,6 @@ function CadastroTurmasPage() {
 
     const isValid = useMemo(() => {
         if (
-        !schoolName.trim() ||
         classrooms.length === 0
         ) {
         return false;
@@ -44,10 +40,17 @@ function CadastroTurmasPage() {
             const grade =
             Number(classroom.serie);
 
+            const schoolName =
+            classroom.nomeEscola
+                .trim()
+                .replace(/\s+/g, " ");
+
             const className =
             classroom.turma.trim();
 
             if (
+            !schoolName ||
+            schoolName.length > 200 ||
             !Number.isInteger(grade) ||
             grade < 1 ||
             grade > 12 ||
@@ -58,7 +61,7 @@ function CadastroTurmasPage() {
             }
 
             const identifier =
-            `${grade}:${className.toLocaleUpperCase(
+            `${schoolName.toLocaleUpperCase("pt-BR")}:${grade}:${className.toLocaleUpperCase(
                 "pt-BR",
             )}`;
 
@@ -74,7 +77,6 @@ function CadastroTurmasPage() {
         );
     }, [
         classrooms,
-        schoolName,
     ]);
 
     function updateClassroom(
@@ -121,6 +123,28 @@ function CadastroTurmasPage() {
         setError("");
     }
 
+    function copyPreviousSchool(index) {
+        if (index < 1) {
+        return;
+        }
+
+        const previousSchool =
+        classrooms[index - 1].nomeEscola;
+
+        setClassrooms((current) =>
+        current.map((classroom, classroomIndex) =>
+            classroomIndex === index
+            ? {
+                ...classroom,
+                nomeEscola: previousSchool,
+                }
+            : classroom,
+        ),
+        );
+
+        setError("");
+    }
+
     function handleSubmit(event) {
         event.preventDefault();
 
@@ -131,18 +155,14 @@ function CadastroTurmasPage() {
         return;
         }
 
+        const escolas =
+        groupClassroomsBySchool(classrooms);
+
         saveMediation({
-        nomeEscola: schoolName.trim(),
-        cidade: "Não informada",
-        turmas: classrooms.map(
-            (classroom) => ({
-            serie: Number(
-                classroom.serie,
-            ),
-            turma:
-                classroom.turma.trim(),
-            }),
-        ),
+        escolas,
+        nomeEscola: escolas
+            .map((school) => school.nomeEscola)
+            .join(" / "),
         });
 
         navigate("/quiz");
@@ -172,6 +192,7 @@ function CadastroTurmasPage() {
                         newClassroom,
                     )
                     }
+                    onAdd={addClassroom}
                     onRemove={() =>
                     removeClassroom(
                         classroom.id,
@@ -180,21 +201,13 @@ function CadastroTurmasPage() {
                     removable={
                     classrooms.length > 1
                     }
-                    schoolField={index === 0 ? (
-                    <FormField
-                        id="nome-escola"
-                        label="Nome da escola"
-                        labelVisuallyHidden
-                        maxLength={200}
-                        onChange={(value) => {
-                        setSchoolName(value);
-                        setError("");
-                        }}
-                        placeholder="Nome da Escola"
-                        required
-                        value={schoolName}
-                    />
-                    ) : null}
+                    canAdd={classrooms.length < 20}
+                    canReuseSchool={Boolean(
+                    index > 0 && classrooms[index - 1].nomeEscola.trim()
+                    )}
+                    onUsePreviousSchool={() =>
+                    copyPreviousSchool(index)
+                    }
                     turma={classroom}
                 />
                 ),
@@ -210,24 +223,6 @@ function CadastroTurmasPage() {
             </p>
             )}
 
-            <div className="registration-page__actions">
-            <Button
-                disabled={
-                classrooms.length >= 20
-                }
-                onClick={addClassroom}
-                variant="secondary"
-            >
-                + ADICIONAR TURMA
-            </Button>
-
-            <Button
-                type="submit"
-                variant="success"
-            >
-                INICIAR QUIZ DA MEDIAÇÃO
-            </Button>
-            </div>
         </form>
         </section>
     );
