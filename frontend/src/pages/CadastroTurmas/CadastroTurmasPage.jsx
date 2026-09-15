@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "../../components/common/Button/Button";
 import BackButton from "../../components/common/BackButton/BackButton";
 import CadastroTurmasScene from "../../components/features/turmas/CadastroTurmasScene/CadastroTurmasScene";
 import TurmaForm from "../../components/features/turmas/TurmaForm/TurmaForm";
@@ -192,7 +193,6 @@ function CadastroTurmasPage() {
                         newClassroom,
                     )
                     }
-                    onAdd={addClassroom}
                     onRemove={() =>
                     removeClassroom(
                         classroom.id,
@@ -201,7 +201,6 @@ function CadastroTurmasPage() {
                     removable={
                     classrooms.length > 1
                     }
-                    canAdd={classrooms.length < 20}
                     canReuseSchool={Boolean(
                     index > 0 && classrooms[index - 1].nomeEscola.trim()
                     )}
@@ -212,6 +211,20 @@ function CadastroTurmasPage() {
                 />
                 ),
             )}
+            </div>
+
+            <div className="registration-page__actions">
+            <Button
+                disabled={classrooms.length >= 20}
+                onClick={addClassroom}
+                variant="secondary"
+            >
+                + ADICIONAR TURMA
+            </Button>
+
+            <Button type="submit" variant="success">
+                INICIAR QUIZ DA MEDIAÇÃO
+            </Button>
             </div>
 
             {error && (
