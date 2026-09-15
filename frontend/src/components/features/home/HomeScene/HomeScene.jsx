@@ -1,4 +1,5 @@
 import Button from "../../../common/Button/Button";
+import ScenicBackdrop from "../../../common/ScenicBackdrop/ScenicBackdrop";
 import SponsorsBar from "../../../common/SponsorsBar/SponsorsBar";
 import "./HomeScene.css";
 
@@ -28,8 +29,10 @@ function HomeScene({ onOpenRankings, onStart }) {
 
       <img alt="" aria-hidden="true" className="home-scene__character" src={`${ILLUSTRATIONS_PATH}/personagem-banco.svg`} />
       <img alt="" aria-hidden="true" className="home-scene__house" src={`${ILLUSTRATIONS_PATH}/casa.svg`} />
-      <img alt="" aria-hidden="true" className="home-scene__fence" src={`${ILLUSTRATIONS_PATH}/cerca.svg`} />
-      <img alt="" aria-hidden="true" className="home-scene__ground" src={`${ILLUSTRATIONS_PATH}/muro-tijolos.svg`} />
+      <ScenicBackdrop
+        fenceClassName="home-scene__fence"
+        groundClassName="home-scene__ground"
+      />
       <SponsorsBar className="home-scene__sponsors" />
     </div>
   );
