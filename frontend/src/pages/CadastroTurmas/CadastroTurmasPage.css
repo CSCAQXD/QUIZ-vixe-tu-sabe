@@ -67,6 +67,25 @@
     gap: clamp(32px, 5vh, 54px);
 }
 
+.registration-page__actions {
+    order: 2;
+    display: grid;
+    gap: clamp(18px, 2.4vh, 26px);
+    margin-top: clamp(36px, 4.6vh, 50px);
+}
+
+.registration-page__actions .button {
+    width: 100%;
+    min-height: clamp(62px, 8.2vh, 89px);
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: clamp(1rem, 1.3vw, 1.55rem);
+}
+
+.registration-page__actions .button--secondary {
+    border: 0;
+    background: #f7c181;
+}
+
 .turma-form .form-field__input {
     min-height: clamp(72px, 8.25vh, 89px);
     background: transparent;
@@ -75,7 +94,7 @@
 }
 
 .registration-page__error {
-    order: 2;
+    order: 3;
     margin-top: 18px;
 }
 
