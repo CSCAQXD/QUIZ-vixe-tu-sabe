@@ -3,10 +3,8 @@ import FormField from "../../../common/FormField/FormField";
 import "./TurmaForm.css";
 
 function TurmaForm({
-    canAdd,
     canReuseSchool,
     index,
-    onAdd,
     onChange,
     onRemove,
     onUsePreviousSchool,
@@ -91,19 +89,6 @@ function TurmaForm({
             />
         </div>
 
-        <div className="turma-form__actions">
-            <Button
-            disabled={!canAdd}
-            onClick={onAdd}
-            variant="secondary"
-            >
-            + ADICIONAR TURMA
-            </Button>
-
-            <Button type="submit" variant="success">
-            INICIAR QUIZ DA MEDIAÇÃO
-            </Button>
-        </div>
         </section>
     );
 }
