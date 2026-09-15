@@ -4,6 +4,7 @@ function FormField({
     error = "",
     id,
     label,
+    labelVisuallyHidden = false,
     maxLength,
     min,
     onChange,
@@ -17,7 +18,7 @@ function FormField({
     return (
         <div className="form-field">
         <label
-            className="form-field__label"
+            className={`form-field__label${labelVisuallyHidden ? " sr-only" : ""}`}
             htmlFor={id}
         >
             {label}
@@ -28,6 +29,7 @@ function FormField({
             aria-invalid={Boolean(error)}
             className="form-field__input"
             id={id}
+            aria-label={labelVisuallyHidden ? label : undefined}
             maxLength={maxLength}
             min={min}
             onChange={(event) =>
