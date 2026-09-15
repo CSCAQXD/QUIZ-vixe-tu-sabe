@@ -85,24 +85,6 @@
     transform: none;
 }
 
-.turma-form__actions {
-    display: grid;
-    gap: clamp(18px, 2.4vh, 26px);
-    margin-top: clamp(20px, 2vh, 24px);
-}
-
-.turma-form__actions .button {
-    width: 100%;
-    min-height: clamp(62px, 8.2vh, 89px);
-    font-family: "Cascadia Mono", Consolas, monospace;
-    font-size: clamp(1rem, 1.3vw, 1.55rem);
-}
-
-.turma-form__actions .button--secondary {
-    border: 0;
-    background: #f7c181;
-}
-
 @media (max-width: 720px) {
     .turma-form__fields {
         grid-template-columns: 1fr;
