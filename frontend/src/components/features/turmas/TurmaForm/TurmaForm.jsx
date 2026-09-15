@@ -3,11 +3,14 @@ import FormField from "../../../common/FormField/FormField";
 import "./TurmaForm.css";
 
 function TurmaForm({
+    canAdd,
+    canReuseSchool,
     index,
+    onAdd,
     onChange,
     onRemove,
+    onUsePreviousSchool,
     removable,
-    schoolField = null,
     turma,
 }) {
     const headingId = `turma-${turma.id}-titulo`;
@@ -21,11 +24,43 @@ function TurmaForm({
 
     return (
         <section aria-labelledby={headingId} className="turma-form">
-        <h2 id={headingId}>
-            TURMA {index + 1}
-        </h2>
+        <div className="turma-form__header">
+            <h2 id={headingId}>
+                TURMA {index + 1}
+            </h2>
 
-        {schoolField}
+            {removable && (
+                <Button
+                className="turma-form__remove"
+                onClick={onRemove}
+                variant="danger"
+                >
+                × Remover
+                </Button>
+            )}
+        </div>
+
+        <FormField
+            id={`escola-${turma.id}`}
+            label="Nome da escola"
+            labelVisuallyHidden
+            maxLength={200}
+            onChange={(value) => update("nomeEscola", value)}
+            placeholder="Nome da Escola"
+            required
+            value={turma.nomeEscola}
+        />
+
+        {index > 0 && (
+            <Button
+            className="turma-form__reuse-school"
+            disabled={!canReuseSchool}
+            onClick={onUsePreviousSchool}
+            variant="secondary"
+            >
+            ↳ Usar escola anterior
+            </Button>
+        )}
 
         <div className="turma-form__fields">
             <FormField
@@ -56,15 +91,19 @@ function TurmaForm({
             />
         </div>
 
-        {removable && (
+        <div className="turma-form__actions">
             <Button
-            className="turma-form__remove"
-            onClick={onRemove}
-            variant="danger"
+            disabled={!canAdd}
+            onClick={onAdd}
+            variant="secondary"
             >
-            REMOVER TURMA
+            + ADICIONAR TURMA
             </Button>
-        )}
+
+            <Button type="submit" variant="success">
+            INICIAR QUIZ DA MEDIAÇÃO
+            </Button>
+        </div>
         </section>
     );
 }
