@@ -16,6 +16,7 @@ import {
     isCorrectAnswer,
     normalizeQuestion,
 } from "../../utils/quiz";
+import { getMediationSchools } from "../../utils/mediation";
 
 import {
     getMediation,
@@ -205,12 +206,27 @@ function QuizPage() {
         setError("");
 
         try {
-        const result =
-            await registrarSessao({
-            ...mediation,
-            idempotencyKey,
-            pontuacaoFinal: score,
-            });
+        const schools =
+            getMediationSchools(mediation);
+
+        const results = await Promise.all(
+            schools.map((school, index) =>
+            registrarSessao({
+                ...school,
+                idempotencyKey: `${idempotencyKey}-${index}`,
+                pontuacaoFinal: score,
+            }),
+            ),
+        );
+
+        const result = results.length === 1
+            ? results[0]
+            : {
+                partida: {
+                    pontuacaoFinal: score,
+                },
+                resultados: results,
+            };
 
         saveResult(result);
 
