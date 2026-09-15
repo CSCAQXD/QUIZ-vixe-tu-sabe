@@ -7,8 +7,20 @@
     border: 0;
 }
 
+.turma-form + .turma-form {
+    margin-top: clamp(24px, 4vh, 44px);
+    padding-top: clamp(52px, 7vh, 76px);
+    border-top: 2px solid #f7c181;
+}
+
+.turma-form__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
 .turma-form h2 {
-    justify-self: start;
     width: clamp(160px, 13vw, 195px);
     margin: 0 0 6px;
     padding: 13px 24px;
@@ -17,37 +29,78 @@
     color: #000;
     text-align: center;
     background: #ffce94;
-    font-family:
-        Montserrat,
-        Arial,
-        sans-serif;
+    font-family: Montserrat, Arial, sans-serif;
     font-size: 1.25rem;
     font-weight: 700;
 }
 
 .turma-form__fields {
     display: grid;
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(30px, 4.2vw, 80px);
 }
 
-.turma-form__remove {
-    min-height: 42px;
-    justify-self: end;
-    padding: 8px 16px;
+.turma-form__reuse-school {
+    width: max-content;
+    min-height: 32px;
+    justify-self: start;
+    margin-top: -18px;
+    padding: 3px 2px;
     border: 0;
+    color: #6f3d25;
+    background: transparent;
+    box-shadow: none;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: clamp(0.8rem, 0.9vw, 0.95rem);
+    text-decoration: underline;
+    text-decoration-color: #f09b32;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+
+.turma-form__reuse-school:hover:not(:disabled) {
+    color: #3c1423;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+.turma-form__remove {
+    min-height: 36px;
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    border-radius: 999px;
     color: #a52d37;
     background: transparent;
     box-shadow: none;
-    font-size: 0.875rem;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 0.82rem;
 }
 
 .turma-form__remove:hover:not(:disabled) {
-    color: #fff;
-    background: #a52d37;
+    color: #7d1f29;
+    border-color: #a52d37;
+    background: rgb(165 45 55 / 8%);
     box-shadow: none;
     transform: none;
+}
+
+.turma-form__actions {
+    display: grid;
+    gap: clamp(18px, 2.4vh, 26px);
+    margin-top: clamp(20px, 2vh, 24px);
+}
+
+.turma-form__actions .button {
+    width: 100%;
+    min-height: clamp(62px, 8.2vh, 89px);
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: clamp(1rem, 1.3vw, 1.55rem);
+}
+
+.turma-form__actions .button--secondary {
+    border: 0;
+    background: #f7c181;
 }
 
 @media (max-width: 720px) {
@@ -57,6 +110,6 @@
     }
 
     .turma-form__remove {
-        justify-self: stretch;
+        flex: 0 0 auto;
     }
 }
