@@ -1,46 +1,9 @@
 .registration-page {
-    min-height: 100svh;
+    height: 100svh;
     display: grid;
-    grid-template-columns: minmax(320px, 48.2fr) minmax(500px, 51.8fr);
+    grid-template-columns: 48.2% 51.8%;
     overflow: hidden;
     background: #f7c181;
-}
-
-.registration-page__intro {
-    position: relative;
-    min-height: 100svh;
-    overflow: hidden;
-}
-
-.registration-page__logo {
-    position: absolute;
-    z-index: 2;
-    top: 9.5%;
-    left: 11%;
-    display: block;
-    width: 72%;
-    height: auto;
-}
-
-.registration-page__fence {
-    position: absolute;
-    z-index: 1;
-    right: -1px;
-    bottom: 8.5%;
-    left: 0;
-    width: 100%;
-    height: 33%;
-}
-
-.registration-page__ground {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: block;
-    width: 100%;
-    height: 15.5%;
-    object-fit: cover;
 }
 
 .registration-page__panel {
@@ -49,21 +12,31 @@
     max-height: 100svh;
     display: flex;
     flex-direction: column;
-    gap: clamp(18px, 2.6vh, 30px);
-    padding: clamp(30px, 3.3vw, 64px) clamp(38px, 6.3vw, 120px);
+    gap: 0;
+    padding: clamp(30px, 3.7vh, 40px) clamp(48px, 6.55vw, 126px) clamp(42px, 7vh, 76px) clamp(62px, 7.85vw, 151px);
     overflow-y: auto;
+    overscroll-behavior: contain;
     border-radius: 36px 0 0 36px;
     background: #fff0df;
     box-shadow: -4px 4px 12px rgb(0 0 0 / 25%);
 }
 
 .registration-page__panel > .back-button {
-    width: 62px;
-    min-height: 62px;
+    position: absolute;
+    top: clamp(30px, 3.7vh, 40px);
+    left: clamp(30px, 2.2vw, 42px);
+    width: clamp(60px, 3.8vw, 73px);
+    min-height: 0;
+    aspect-ratio: 1;
     justify-content: center;
     padding: 0;
     border: 0;
+    color: #000;
     background: #f7c181;
+}
+
+.registration-page__panel > .back-button span:first-child {
+    font-size: clamp(1.5rem, 1.7vw, 2rem);
 }
 
 .registration-page__panel > .back-button span:last-child {
@@ -75,26 +48,54 @@
 }
 
 .registration-page__panel h1 {
-    max-width: 650px;
-    margin: clamp(22px, 4vh, 48px) 0 0;
-    color: #050505;
-    font-size: clamp(2rem, 2.45vw, 3rem);
-    line-height: 1.02;
+    max-width: 680px;
+    margin: clamp(130px, 16.5vh, 178px) 0 clamp(28px, 3vh, 34px);
+    color: #000;
+    font-family: Montserrat, Arial, sans-serif;
+    font-size: clamp(2.25rem, 2.6vw, 3.125rem);
+    font-weight: 700;
+    line-height: 1.05;
 }
 
-.registration-page__school,
 .registration-page__forms,
 .registration-page__actions {
     display: grid;
     gap: 18px;
 }
 
-.registration-page__school {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+.registration-page__forms {
+    order: 1;
+    gap: clamp(32px, 5vh, 54px);
 }
 
-.registration-page__forms {
-    gap: clamp(22px, 3.5vh, 42px);
+.turma-form .form-field__input {
+    min-height: clamp(72px, 8.25vh, 89px);
+    background: transparent;
+    font-size: clamp(1.05rem, 1.3vw, 1.5625rem);
+    font-weight: 600;
+}
+
+.registration-page__actions .button {
+    width: 100%;
+    min-height: clamp(62px, 8.2vh, 89px);
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: clamp(1rem, 1.3vw, 1.55rem);
+}
+
+.registration-page__actions .button--secondary {
+    border: 0;
+    background: #f7c181;
+}
+
+.registration-page__actions {
+    order: 3;
+    margin-top: clamp(36px, 4.6vh, 50px);
+    gap: clamp(18px, 2.4vh, 26px);
+}
+
+.registration-page__error {
+    order: 4;
+    margin-top: 18px;
 }
 
 .registration-page__error {
@@ -103,10 +104,10 @@
     font-weight: 800;
 }
 
-@media (max-width: 840px) {
+@media (max-width: 1000px) {
     .registration-page { grid-template-columns: 1fr; overflow: visible; }
-    .registration-page__intro { min-height: 52svh; }
-    .registration-page__panel { max-height: none; border-radius: 30px 30px 0 0; }
+    .registration-page { height: auto; min-height: 100svh; }
+    .registration-page__panel { max-height: none; overflow: visible; border-radius: 30px 30px 0 0; }
 }
 
 @media (max-width: 560px) {
