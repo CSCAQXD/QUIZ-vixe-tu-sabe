@@ -1,19 +1,22 @@
 .turma-form {
     min-width: 0;
     display: grid;
-    gap: 20px;
+    gap: clamp(24px, 2.8vh, 30px);
     margin: 0;
     padding: 0;
     border: 0;
 }
 
-.turma-form legend {
-    margin-bottom: 14px;
-    padding: 12px 52px;
+.turma-form h2 {
+    justify-self: start;
+    width: clamp(160px, 13vw, 195px);
+    margin: 0 0 6px;
+    padding: 13px 24px;
     border: 1px solid #000;
     border-radius: 162px;
     color: #000;
-    background: #f7c181;
+    text-align: center;
+    background: #ffce94;
     font-family:
         Montserrat,
         Arial,
@@ -26,7 +29,7 @@
     display: grid;
     grid-template-columns:
         repeat(2, minmax(0, 1fr));
-    gap: clamp(30px, 4vw, 80px);
+    gap: clamp(30px, 4.2vw, 80px);
 }
 
 .turma-form__remove {
