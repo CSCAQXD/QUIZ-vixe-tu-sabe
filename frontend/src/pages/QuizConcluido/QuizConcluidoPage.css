@@ -54,6 +54,12 @@
     margin-bottom: 4px;
 }
 
+.completed-page__school + .completed-page__school {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 2px solid var(--color-orange);
+}
+
 .completed-page__ranking p {
     margin-top: 0;
 }
