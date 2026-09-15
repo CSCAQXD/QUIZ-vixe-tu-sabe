@@ -27,6 +27,11 @@ function QuizConcluidoPage() {
     const finalScore =
         result.partida?.pontuacaoFinal ?? 0;
 
+    const rankingResults =
+        Array.isArray(result.resultados)
+        ? result.resultados
+        : [result];
+
     function returnHome() {
         clearQuizStorage();
         navigate("/");
@@ -58,39 +63,37 @@ function QuizConcluidoPage() {
             SUA PONTUAÇÃO NOS RANKINGS
             </h2>
 
-            <h3>
-            {result.escola?.nome}
-            </h3>
+            {rankingResults.map((schoolResult) => (
+            <section
+                className="completed-page__school"
+                key={schoolResult.escola?.id ?? schoolResult.partida?.id}
+            >
+                <h3>{schoolResult.escola?.nome}</h3>
 
-            <p>
-            {result.escola?.cidade}
-            </p>
+                <ul>
+                {schoolResult.turmas?.map(
+                    (turma) => (
+                    <li key={turma.id}>
+                        <strong>
+                        {turma.serie}º ano —{" "}
+                        Turma {turma.turma}
+                        </strong>
 
-            <ul>
-            {result.turmas?.map(
-                (turma) => (
-                <li key={turma.id}>
-                    <strong>
-                    {turma.serie}º ano —{" "}
-                    Turma {turma.turma}
-                    </strong>
+                        <span>
+                        Posição interna:{" "}
+                        {turma.posicaoRankingInterno ?? "—"}{" "}
+                        de {turma.totalTurmasNoRankingInterno}
+                        </span>
 
-                    <span>
-                    Posição interna:{" "}
-                    {turma.posicaoRankingInterno ??
-                        "—"}{" "}
-                    de{" "}
-                    {turma.totalTurmasNoRankingInterno}
-                    </span>
-
-                    <span>
-                    Pontuação acumulada:{" "}
-                    {turma.pontuacaoAcumulada}
-                    </span>
-                </li>
-                ),
-            )}
-            </ul>
+                        <span>
+                        Pontuação acumulada: {turma.pontuacaoAcumulada}
+                        </span>
+                    </li>
+                    ),
+                )}
+                </ul>
+            </section>
+            ))}
         </section>
 
         <div className="completed-page__actions">
