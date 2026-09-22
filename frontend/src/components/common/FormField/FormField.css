@@ -38,9 +38,11 @@
 }
 
 .form-field__error {
+    min-height: 1.25em;
     color: #a52d37;
     font-size: 0.875rem;
     font-weight: 700;
+    line-height: 1.25;
 }
 
 @media (max-width: 1100px) {
