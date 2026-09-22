@@ -33,11 +33,18 @@
 
 .modal__close {
     position: absolute;
-    top: 12px;
-    right: 16px;
+    top: 18px;
+    right: 18px;
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    padding: 0 0 5px;
     border: 0;
-    color: var(--color-wine-dark);
-    background: transparent;
-    font-size: 2rem;
+    border-radius: 50%;
+    color: #a71313;
+    background: #ff383c;
+    font-size: 3rem;
+    font-weight: 600;
     line-height: 1;
 }
