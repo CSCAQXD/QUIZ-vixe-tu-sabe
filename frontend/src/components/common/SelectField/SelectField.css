@@ -1,0 +1,71 @@
+.select-field {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.select-field__label {
+  color: #000;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.select-field__control-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.select-field__control {
+  width: 100%;
+  min-height: 89px;
+  padding: 18px 44px 18px 16px;
+  border: 1px solid #000;
+  border-radius: 10px;
+  appearance: none;
+  color: #000;
+  background: transparent;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.select-field__arrow {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  border-right: 3px solid currentcolor;
+  border-bottom: 3px solid currentcolor;
+  color: #3c1423;
+  transform: translateY(-70%) rotate(45deg);
+}
+
+.select-field__control:invalid {
+  color: rgb(0 0 0 / 35%);
+}
+
+.select-field__control[aria-invalid="true"] {
+  border-color: #a52d37;
+}
+
+.select-field__control:focus-visible {
+  outline: 3px solid rgb(240 155 50 / 45%);
+  outline-offset: 2px;
+}
+
+.select-field__error {
+  min-height: 1.25em;
+  color: #a52d37;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+@media (max-width: 1100px) {
+  .select-field__control {
+    min-height: 64px;
+  }
+}
