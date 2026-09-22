@@ -34,7 +34,7 @@ const RANKING_CONFIG = {
             label: "Cidade",
         },
         {
-            key: "serie",
+            key: "serieFormatada",
             label: "Série",
         },
         {
@@ -74,7 +74,7 @@ const RANKING_CONFIG = {
         title: "Ranking interno por escola",
         columns: [
         {
-            key: "serie",
+            key: "serieFormatada",
             label: "Série",
         },
         {
