@@ -62,7 +62,7 @@
     color: #000;
     background: #f09b32;
     box-shadow: 0.5208cqw 0.9259cqh 0 #3c1423;
-    font-family: "Cascadia Mono", Consolas, monospace;
+    font-family: var(--font-family-base);
     font-size: 1.8229cqw;
     font-style: normal;
     font-weight: 600;
