@@ -40,6 +40,7 @@ async function buscarParticipacoes(
             },
         },
         select: {
+            etapaEnsino: true,
             serie: true,
             turma: true,
             partida: {
