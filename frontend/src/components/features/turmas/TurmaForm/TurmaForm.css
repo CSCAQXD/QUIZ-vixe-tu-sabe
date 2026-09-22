@@ -29,7 +29,7 @@
     color: #000;
     text-align: center;
     background: #ffce94;
-    font-family: Montserrat, Arial, sans-serif;
+    font-family: var(--font-family-base);
     font-size: 1.25rem;
     font-weight: 700;
 }
@@ -57,7 +57,7 @@
     color: #6f3d25;
     background: transparent;
     box-shadow: none;
-    font-family: "Cascadia Mono", Consolas, monospace;
+    font-family: var(--font-family-base);
     font-size: clamp(0.8rem, 0.9vw, 0.95rem);
     text-decoration: underline;
     text-decoration-color: #f09b32;
@@ -80,7 +80,7 @@
     color: #a52d37;
     background: transparent;
     box-shadow: none;
-    font-family: "Cascadia Mono", Consolas, monospace;
+    font-family: var(--font-family-base);
     font-size: 0.82rem;
 }
 
