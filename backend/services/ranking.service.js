@@ -64,11 +64,16 @@ function agruparParticipacoes(
         const participacao
         of participacoes
     ) {
+        const etapaEnsino =
+            participacao.etapaEnsino ||
+            "FUNDAMENTAL";
+
         const escola =
             participacao.partida.escola;
 
         const chave = [
             escola.id,
+            etapaEnsino,
             participacao.serie,
             participacao.turma,
         ].join("|||");
@@ -91,8 +96,11 @@ function agruparParticipacoes(
             escolaId: escola.id,
             escola: escola.nome,
             cidade: escola.cidade,
+            etapaEnsino,
             serie:
                 participacao.serie,
+            serieFormatada:
+                `${participacao.serie}º ano — Ensino ${etapaEnsino === "MEDIO" ? "Médio" : "Fundamental"}`,
             turma:
                 participacao.turma,
             pontuacaoTotal:
@@ -128,6 +136,16 @@ function ordenarRankingDeTurmas(
 
             if (diferencaEscola !== 0) {
                 return diferencaEscola;
+            }
+
+            const diferencaEtapa =
+                compararTexto(
+                    primeiro.etapaEnsino,
+                    segundo.etapaEnsino
+                );
+
+            if (diferencaEtapa !== 0) {
+                return diferencaEtapa;
             }
 
             const diferencaSerie =
@@ -284,7 +302,11 @@ async function listarRankingInterno(
         agruparParticipacoes(
             participacoes
         ).map((item) => ({
+            etapaEnsino:
+                item.etapaEnsino,
             serie: item.serie,
+            serieFormatada:
+                item.serieFormatada,
             turma: item.turma,
             pontuacaoTotal:
                 item.pontuacaoTotal,
@@ -307,6 +329,16 @@ async function listarRankingInterno(
 
             if (diferencaPontos !== 0) {
                 return diferencaPontos;
+            }
+
+            const diferencaEtapa =
+                compararTexto(
+                    primeiro.etapaEnsino,
+                    segundo.etapaEnsino
+                );
+
+            if (diferencaEtapa !== 0) {
+                return diferencaEtapa;
             }
 
             const diferencaSerie =
