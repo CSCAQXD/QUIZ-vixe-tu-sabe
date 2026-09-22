@@ -38,7 +38,7 @@
     display: grid;
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     align-items: start;
-    gap: clamp(30px, 4.2vw, 80px);
+    gap: clamp(16px, 2vw, 32px);
 }
 
 .turma-form .select-field__control {
