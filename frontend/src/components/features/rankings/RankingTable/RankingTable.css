@@ -1,51 +1,81 @@
-.ranking-table__scroll {
-    width: 100%;
-    overflow-x: auto;
+.ranking-table {
+    width: min(79.5rem, 100%);
+    max-height: min(47rem, 62svh);
+    margin-inline: auto;
+    overflow: auto;
+    scrollbar-color: #b8b8b8 transparent;
+    scrollbar-width: thin;
 }
 
-.ranking-table {
+.ranking-table table {
     width: 100%;
-    border-collapse: collapse;
+    min-width: 720px;
+    border-collapse: separate;
+    border-spacing: 0 0.8125rem;
+    table-layout: fixed;
+}
+
+.ranking-table thead {
+    position: sticky;
+    z-index: 2;
+    top: 0;
+    filter: drop-shadow(0 0.25rem 0.28125rem rgb(0 0 0 / 18%));
 }
 
 .ranking-table th,
 .ranking-table td {
-    padding: 16px;
-    border-bottom: 1px solid rgb(0 0 0 / 15%);
-    text-align: left;
-    white-space: nowrap;
+    height: clamp(4.5rem, 6.7vw, 8rem);
+    padding: 0.75rem clamp(0.7rem, 1.5vw, 1.75rem);
+    text-align: center;
 }
 
 .ranking-table th {
-    color: var(--color-white);
-    background: var(--color-wine-dark);
+    height: clamp(4rem, 5.4vw, 6.5rem);
+    background: #fff;
+    font-size: clamp(0.875rem, 1.25vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
 
-.ranking-table__position {
-    width: 46px;
-    height: 46px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    color: white;
-    background: var(--color-wine);
-    font-weight: 900;
+.ranking-table th:first-child,
+.ranking-table td:first-child {
+    width: 9%;
+    border-radius: 1.875rem 0 0 1.875rem;
 }
 
-.ranking-table__position--1 {
-    background: #b8860b;
+.ranking-table th:last-child,
+.ranking-table td:last-child {
+    border-radius: 0 1.875rem 1.875rem 0;
 }
 
-.ranking-table__position--2 {
-    background: #777;
+.ranking-table td {
+    background: #fff0df;
+    font-size: clamp(1rem, 1.9vw, 2.25rem);
+    font-weight: 700;
 }
 
-.ranking-table__position--3 {
-    background: #a15d2a;
+.ranking-table__row--current td {
+    background: #f4c368;
+}
+
+.ranking-table__row--current td:first-child {
+    box-shadow: inset 0.35rem 0 #219653;
 }
 
 .ranking-table__empty {
-    padding: 32px;
+    width: min(79.5rem, 100%);
+    margin: 3rem auto;
+    padding: 2.5rem;
+    border-radius: 1.875rem;
+    background: #fff;
     text-align: center;
+    font-size: clamp(1.1rem, 1.5vw, 1.75rem);
     font-weight: 700;
+}
+
+@media (max-width: 760px) {
+    .ranking-table {
+        max-height: 54svh;
+    }
 }
