@@ -1,11 +1,25 @@
 import Button from "../../../common/Button/Button";
 import FormField from "../../../common/FormField/FormField";
+import SelectField from "../../../common/SelectField/SelectField";
 import "./TurmaForm.css";
+
+const GRADE_OPTIONS = [
+    ...Array.from({ length: 9 }, (_, index) => ({
+        label: `${index + 1}º ano — Ensino Fundamental`,
+        value: `FUNDAMENTAL:${index + 1}`,
+    })),
+    ...Array.from({ length: 3 }, (_, index) => ({
+        label: `${index + 1}º ano — Ensino Médio`,
+        value: `MEDIO:${index + 1}`,
+    })),
+];
 
 function TurmaForm({
     canReuseSchool,
+    errors = {},
     index,
     onChange,
+    onFieldBlur,
     onRemove,
     onUsePreviousSchool,
     removable,
@@ -19,6 +33,20 @@ function TurmaForm({
         [field]: value,
         });
     }
+
+    function updateGrade(value) {
+        const [etapaEnsino, serie] = value.split(":");
+
+        onChange({
+        ...turma,
+        etapaEnsino,
+        serie,
+        });
+    }
+
+    const gradeValue = turma.etapaEnsino && turma.serie
+        ? `${turma.etapaEnsino}:${turma.serie}`
+        : "";
 
     return (
         <section aria-labelledby={headingId} className="turma-form">
@@ -42,7 +70,10 @@ function TurmaForm({
             id={`escola-${turma.id}`}
             label="Nome da escola"
             labelVisuallyHidden
+            error={errors.nomeEscola}
             maxLength={200}
+            minLength={3}
+            onBlur={() => onFieldBlur("nomeEscola")}
             onChange={(value) => update("nomeEscola", value)}
             placeholder="Nome da Escola"
             required
@@ -61,25 +92,26 @@ function TurmaForm({
         )}
 
         <div className="turma-form__fields">
-            <FormField
+            <SelectField
             id={`serie-${turma.id}`}
             label="Série"
             labelVisuallyHidden
-            min="1"
-            onChange={(value) =>
-                update("serie", value)
-            }
+            error={errors.serie}
+            onBlur={() => onFieldBlur("serie")}
+            onChange={updateGrade}
+            options={GRADE_OPTIONS}
             placeholder="Série"
             required
-            type="number"
-            value={turma.serie}
+            value={gradeValue}
             />
 
             <FormField
             id={`turma-${turma.id}`}
             label="Turma"
             labelVisuallyHidden
+            error={errors.turma}
             maxLength={30}
+            onBlur={() => onFieldBlur("turma")}
             onChange={(value) =>
                 update("turma", value)
             }
