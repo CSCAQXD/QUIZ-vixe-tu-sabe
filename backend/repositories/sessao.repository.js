@@ -15,6 +15,9 @@ async function buscarPorIdempotencyKey(
             participacoes: {
                 orderBy: [
                     {
+                        etapaEnsino: "asc",
+                    },
+                    {
                         serie: "asc",
                     },
                     {
@@ -41,6 +44,8 @@ async function criar(
             participacoes: {
                 create: dados.turmas.map(
                     (turma) => ({
+                        etapaEnsino:
+                            turma.etapaEnsino,
                         serie: turma.serie,
                         turma: turma.turma,
                     })
@@ -51,6 +56,9 @@ async function criar(
             escola: true,
             participacoes: {
                 orderBy: [
+                    {
+                        etapaEnsino: "asc",
+                    },
                     {
                         serie: "asc",
                     },
@@ -72,6 +80,9 @@ async function buscarPorId(id) {
             escola: true,
             participacoes: {
                 orderBy: [
+                    {
+                        etapaEnsino: "asc",
+                    },
                     {
                         serie: "asc",
                     },
@@ -100,6 +111,9 @@ async function listarPorEscola(
         include: {
             participacoes: {
                 orderBy: [
+                    {
+                        etapaEnsino: "asc",
+                    },
                     {
                         serie: "asc",
                     },
