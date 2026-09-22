@@ -14,7 +14,7 @@
     color: #050505;
     background: #fff0df;
     box-shadow: 0 4px 12px rgb(0 0 0 / 25%);
-    font-family: Montserrat, Arial, sans-serif;
+    font-family: var(--font-family-base);
 }
 
 .quiz-board__header,
@@ -161,7 +161,7 @@
     border: 0;
     color: #fff;
     background: #219653;
-    font-family: "Cascadia Mono", Consolas, monospace;
+    font-family: var(--font-family-base);
     font-size: clamp(1rem, 1.82vw, 2.1875rem);
     font-weight: 600;
     text-transform: uppercase;
