@@ -75,7 +75,8 @@ function QuizConcluidoPage() {
                     (turma) => (
                     <li key={turma.id}>
                         <strong>
-                        {turma.serie}º ano —{" "}
+                        {turma.serie}º ano do Ensino{" "}
+                        {turma.etapaEnsino === "MEDIO" ? "Médio" : "Fundamental"} —{" "}
                         Turma {turma.turma}
                         </strong>
 
