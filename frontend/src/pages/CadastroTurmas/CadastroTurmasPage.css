@@ -52,7 +52,7 @@
     max-width: 680px;
     margin: clamp(130px, 16.5vh, 178px) 0 clamp(28px, 3vh, 34px);
     color: #000;
-    font-family: Montserrat, Arial, sans-serif;
+    font-family: var(--font-family-base);
     font-size: clamp(2.25rem, 2.6vw, 3.125rem);
     font-weight: 700;
     line-height: 1.05;
@@ -78,7 +78,7 @@
 .registration-page__actions .button {
     width: 100%;
     min-height: clamp(62px, 8.2vh, 89px);
-    font-family: "Cascadia Mono", Consolas, monospace;
+    font-family: var(--font-family-base);
     font-size: clamp(1rem, 1.3vw, 1.55rem);
 }
 
