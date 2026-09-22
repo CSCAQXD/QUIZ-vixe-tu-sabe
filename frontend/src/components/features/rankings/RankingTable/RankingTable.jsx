@@ -33,7 +33,7 @@ function RankingTable({
                 <tr
                 key={
                     record.id ??
-                    `${record.posicao}-${record.escola ?? ""}-${record.turma ?? ""}`
+                    `${record.posicao}-${record.escola ?? ""}-${record.etapaEnsino ?? ""}-${record.serie ?? ""}-${record.turma ?? ""}`
                 }
                 >
                 <td>
