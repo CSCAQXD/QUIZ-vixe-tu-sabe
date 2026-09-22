@@ -18,6 +18,7 @@ export function groupClassroomsBySchool(classrooms) {
     }
 
     schools.get(key).turmas.push({
+      etapaEnsino: classroom.etapaEnsino,
       serie: Number(classroom.serie),
       turma: classroom.turma.trim(),
     });
