@@ -51,6 +51,8 @@ test(
                 pontuacaoFinal: 100,
                 turmas: [
                     {
+                        etapaEnsino:
+                            "FUNDAMENTAL",
                         serie: 9,
                         turma: "A",
                     },
@@ -94,14 +96,20 @@ test(
             resultado.turmas,
             [
                 {
+                    etapaEnsino:
+                        "FUNDAMENTAL",
                     serie: 8,
                     turma: "A",
                 },
                 {
+                    etapaEnsino:
+                        "FUNDAMENTAL",
                     serie: 8,
                     turma: "B",
                 },
                 {
+                    etapaEnsino:
+                        "FUNDAMENTAL",
                     serie: 9,
                     turma: "A",
                 },
@@ -237,7 +245,71 @@ test(
                         serie: 13,
                     })
                 ),
-            /entre 1 e 12/
+            /entre 1 e 9/
+        );
+    }
+);
+
+test(
+    "distingue o terceiro ano fundamental do terceiro ano médio",
+    () => {
+        const resultado =
+            validarSessao(
+                criarSessaoValida({
+                    serie: undefined,
+                    turma: undefined,
+                    turmas: [
+                        {
+                            etapaEnsino:
+                                "FUNDAMENTAL",
+                            serie: 3,
+                            turma: "A",
+                        },
+                        {
+                            etapaEnsino:
+                                "MEDIO",
+                            serie: 3,
+                            turma: "A",
+                        },
+                    ],
+                })
+            );
+
+        assert.equal(
+            resultado.turmas.length,
+            2
+        );
+    }
+);
+
+test(
+    "rejeita série acima do terceiro ano do ensino médio",
+    () => {
+        assert.throws(
+            () =>
+                validarSessao(
+                    criarSessaoValida({
+                        etapaEnsino:
+                            "MEDIO",
+                        serie: 4,
+                    })
+                ),
+            /entre 1 e 3/
+        );
+    }
+);
+
+test(
+    "rejeita nome de escola com menos de três letras",
+    () => {
+        assert.throws(
+            () =>
+                validarSessao(
+                    criarSessaoValida({
+                        nomeEscola: "AB",
+                    })
+                ),
+            /pelo menos 3/
         );
     }
 );
