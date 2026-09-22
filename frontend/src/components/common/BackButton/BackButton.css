@@ -11,6 +11,9 @@
     font-weight: 800;
 }
 
-.back-button span:first-child {
-    font-size: 1.5rem;
+.back-button__icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: block;
+    flex: 0 0 auto;
 }
