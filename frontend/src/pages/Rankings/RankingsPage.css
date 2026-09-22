@@ -1,93 +1,177 @@
 .rankings-page {
-    width: min(1240px, calc(100% - 32px));
-    min-height: calc(100vh - 48px);
-    margin-inline: auto;
-    padding: 32px 0 64px;
-}
-
-.rankings-page__header {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 24px;
-}
-
-.rankings-page__header h1 {
-    margin: 20px 0 0;
-    color: var(--color-wine-dark);
-    font-size: clamp(3rem, 7vw, 6rem);
-    line-height: 1;
-}
-
-.rankings-page__year,
-.rankings-page__school {
-    display: grid;
-    gap: 8px;
-    font-weight: 800;
-}
-
-.rankings-page__year input,
-.rankings-page__school select {
-    min-height: 48px;
-    padding: 8px 12px;
-    border: 1px solid var(--color-black);
-    border-radius: 10px;
-    background: var(--color-cream);
-}
-
-.rankings-page__tabs {
-    display: grid;
-    grid-template-columns: repeat(
-        3,
-        minmax(0, 1fr)
-    );
-    margin: 32px 0 20px;
-    border: 2px solid var(--color-wine-dark);
-    border-radius: 14px;
+    position: relative;
+    height: 100svh;
+    min-height: 620px;
     overflow: hidden;
+    isolation: isolate;
+    padding: clamp(1rem, 4.5svh, 3rem) clamp(1rem, 4.7vw, 5.625rem);
+    background: #f7c181;
 }
 
-.rankings-page__tabs button {
-    min-height: 62px;
-    padding: 12px;
-    border: 0;
-    color: var(--color-black);
-    background: var(--color-cream);
-    font-weight: 800;
+.rankings-page__fence {
+    z-index: -2;
+    right: 50%;
+    bottom: clamp(110px, 14svh, 152px);
+    width: max(110%, 1920px);
+    height: clamp(145px, 27svh, 294px);
+    object-fit: fill;
+    transform: translateX(50%);
 }
 
-.rankings-page__tabs button[aria-pressed="true"] {
-    color: var(--color-white);
-    background: var(--color-wine-dark);
-}
-
-.rankings-page__school {
-    width: min(520px, 100%);
-    margin-bottom: 20px;
+.rankings-page__ground {
+    z-index: -1;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: clamp(115px, 24svh, 260px);
+    object-fit: cover;
+    object-position: center top;
 }
 
 .rankings-page__panel {
-    padding: clamp(18px, 4vw, 40px);
-    border-radius: 30px;
-    background: white;
-    box-shadow: 0 4px 14px rgb(0 0 0 / 25%);
+    width: min(108.6875rem, 100%);
+    height: 100%;
+    margin-inline: auto;
+    padding: clamp(1.5rem, 3vw, 3.75rem) clamp(1rem, 5.2vw, 6.25rem) 5rem;
+    overflow-y: auto;
+    border-radius: 1.875rem;
+    background: #fff0df;
+    box-shadow: 0 0.25rem 0.875rem rgb(0 0 0 / 25%);
+    scrollbar-color: #b8b8b8 transparent;
+    scrollbar-width: thin;
 }
 
-.rankings-page__panel > h2 {
-    margin-top: 0;
+.rankings-page__header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 4.5625rem;
 }
 
-.rankings-page__panel .page-status {
-    margin: 24px auto;
+.rankings-page__header .back-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4.5625rem;
+    height: 4.5625rem;
+    min-height: 0;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    color: #000;
+    background: #f7c181;
 }
 
-@media (max-width: 680px) {
+.rankings-page__header .back-button__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.rankings-page__header h1 {
+    margin: 0;
+    color: #000;
+    font-size: clamp(2.8rem, 5vw, 6rem);
+    font-weight: 800;
+    line-height: 1;
+    text-align: center;
+}
+
+.rankings-page__tabs {
+    width: min(87rem, 100%);
+    min-height: clamp(5.4rem, 6.4vw, 7.6875rem);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.5rem, 1.2vw, 1.25rem);
+    margin: clamp(2.5rem, 5vh, 5rem) auto 2.5rem;
+    padding: clamp(0.55rem, 1vw, 1.1875rem);
+    border-radius: 3.75rem;
+    background: #fff;
+    box-shadow: 0 0.25rem 0.5625rem rgb(0 0 0 / 25%);
+}
+
+.rankings-page__tabs button {
+    min-width: 0;
+    min-height: clamp(4rem, 4.5vw, 5.3125rem);
+    padding: 0.75rem;
+    border: 0;
+    border-radius: 3rem;
+    color: #000;
+    background: transparent;
+    font-size: clamp(0.9rem, 1.45vw, 1.75rem);
+    font-weight: 800;
+    cursor: pointer;
+    transition: background-color 140ms ease, color 140ms ease;
+}
+
+.rankings-page__tabs button[aria-pressed="true"] {
+    color: #fff;
+    background: #219653;
+}
+
+.rankings-page__school {
+    width: min(37rem, 100%);
+    display: grid;
+    gap: 0.625rem;
+    margin: 0 auto 1.5rem;
+    font-size: clamp(1rem, 1.25vw, 1.5rem);
+    font-weight: 800;
+}
+
+.rankings-page__school select {
+    width: 100%;
+    min-height: 5.5625rem;
+    padding: 1rem 1.75rem;
+    border: 0;
+    border-radius: 1.25rem;
+    background: #fff;
+    box-shadow: 0 0.25rem 0.5625rem rgb(0 0 0 / 25%);
+    font-weight: 700;
+}
+
+.rankings-page__panel > .page-status {
+    width: min(47rem, 100%);
+    margin: clamp(4rem, 14vh, 10rem) auto;
+}
+
+@media (max-width: 760px) {
+    .rankings-page {
+        height: auto;
+        min-height: 100svh;
+        overflow-y: auto;
+        padding: 0;
+    }
+
+    .rankings-page__panel {
+        min-height: 100svh;
+        border-radius: 0;
+    }
+
     .rankings-page__header {
-        align-items: stretch;
-        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .rankings-page__header h1 {
+        width: calc(100% - 5.25rem);
     }
 
     .rankings-page__tabs {
         grid-template-columns: 1fr;
+        border-radius: 1.875rem;
+    }
+
+    .rankings-page__tabs button {
+        border-radius: 1.375rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rankings-page__tabs button {
+        transition: none;
     }
 }
