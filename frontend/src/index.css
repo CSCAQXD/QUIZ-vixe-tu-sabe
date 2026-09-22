@@ -1,4 +1,5 @@
 :root {
+    --font-family-base: "DM Sans", Arial, sans-serif;
     --color-black: #000;
     --color-cream: #fff0df;
     --color-error: #a52d37;
@@ -27,5 +28,12 @@ body {
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--font-family-base);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
 }
