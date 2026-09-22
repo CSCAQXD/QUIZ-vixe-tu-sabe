@@ -38,6 +38,8 @@ function validarSessao(dados = {}) {
             ? dados.turmas
             : [
                     {
+                        etapaEnsino:
+                            dados.etapaEnsino,
                         serie: dados.serie,
                         turma: dados.turma,
                     },
@@ -49,9 +51,21 @@ function validarSessao(dados = {}) {
         );
     }
 
+    if (nomeEscola.length < 3 || nomeEscola.length > 200) {
+        throw criarErroValidacao(
+            "O nome da escola deve possuir pelo menos 3 e no máximo 200 caracteres."
+        );
+    }
+
     if (!cidade) {
         throw criarErroValidacao(
             "A cidade é obrigatória."
+        );
+    }
+
+    if (cidade.length < 3 || cidade.length > 120) {
+        throw criarErroValidacao(
+            "A cidade deve possuir pelo menos 3 e no máximo 120 caracteres."
         );
     }
 
@@ -83,6 +97,10 @@ function validarSessao(dados = {}) {
 
     const turmas = turmasRecebidas.map(
         (item, indice) => {
+            const etapaEnsino = String(
+                item?.etapaEnsino ?? "FUNDAMENTAL"
+            ).trim().toUpperCase();
+
             const serie = Number(
                 item?.serie
             );
@@ -91,13 +109,21 @@ function validarSessao(dados = {}) {
                 item?.turma ?? ""
             ).trim();
 
+            if (!["FUNDAMENTAL", "MEDIO"].includes(etapaEnsino)) {
+                throw criarErroValidacao(
+                    `A etapa de ensino da turma ${indice + 1} deve ser FUNDAMENTAL ou MEDIO.`
+                );
+            }
+
+            const serieMaxima = etapaEnsino === "MEDIO" ? 3 : 9;
+
             if (
                 !Number.isInteger(serie) ||
                 serie < 1 ||
-                serie > 12
+                serie > serieMaxima
             ) {
                 throw criarErroValidacao(
-                    `A série da turma ${indice + 1} deve ser um número inteiro entre 1 e 12.`
+                    `A série da turma ${indice + 1} deve ser um número inteiro entre 1 e ${serieMaxima} para a etapa informada.`
                 );
             }
 
@@ -111,7 +137,7 @@ function validarSessao(dados = {}) {
             }
 
             const identificador =
-                `${serie}|||${turma.toUpperCase()}`;
+                `${etapaEnsino}|||${serie}|||${turma.toUpperCase()}`;
 
             if (
                 identificadores.has(
@@ -128,6 +154,7 @@ function validarSessao(dados = {}) {
             );
 
             return {
+                etapaEnsino,
                 serie,
                 turma,
             };
