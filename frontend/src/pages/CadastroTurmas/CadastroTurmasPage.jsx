@@ -11,11 +11,63 @@ import "./CadastroTurmasPage.css";
 
 function createClassroom() {
     return {
+        etapaEnsino: "",
         id: crypto.randomUUID(),
         nomeEscola: "",
         serie: "",
         turma: "",
     };
+}
+
+function validateClassrooms(classrooms) {
+    const errors = {};
+    const identifiers = new Set();
+
+    classrooms.forEach((classroom) => {
+        const classroomErrors = {};
+        const schoolName = classroom.nomeEscola
+            .trim()
+            .replace(/\s+/g, " ");
+        const className = classroom.turma.trim();
+        const grade = Number(classroom.serie);
+        const maxGrade = classroom.etapaEnsino === "MEDIO" ? 3 : 9;
+
+        if (!schoolName) {
+            classroomErrors.nomeEscola = "Campo obrigatório.";
+        } else if (schoolName.length < 3) {
+            classroomErrors.nomeEscola = "Digite pelo menos 3 letras.";
+        }
+
+        if (!classroom.etapaEnsino || !classroom.serie) {
+            classroomErrors.serie = "Campo obrigatório.";
+        } else if (!Number.isInteger(grade) || grade < 1 || grade > maxGrade) {
+            classroomErrors.serie = `Informe uma série entre 1 e ${maxGrade}.`;
+        }
+
+        if (!className) {
+            classroomErrors.turma = "Campo obrigatório.";
+        }
+
+        if (Object.keys(classroomErrors).length === 0) {
+            const identifier = [
+                schoolName.toLocaleUpperCase("pt-BR"),
+                classroom.etapaEnsino,
+                grade,
+                className.toLocaleUpperCase("pt-BR"),
+            ].join(":");
+
+            if (identifiers.has(identifier)) {
+                classroomErrors.turma =
+                    "Esta série e turma já foram adicionadas para esta escola.";
+            }
+
+            identifiers.add(identifier);
+        }
+
+        errors[classroom.id] = classroomErrors;
+    });
+
+    return errors;
 }
 
 function CadastroTurmasPage() {
@@ -27,58 +79,35 @@ function CadastroTurmasPage() {
     const [error, setError] =
         useState("");
 
-    const isValid = useMemo(() => {
-        if (
-        classrooms.length === 0
-        ) {
-        return false;
-        }
+    const [submitted, setSubmitted] =
+        useState(false);
 
-        const identifiers = new Set();
+    const [touched, setTouched] =
+        useState({});
 
-        return classrooms.every(
-        (classroom) => {
-            const grade =
-            Number(classroom.serie);
+    const validationErrors = useMemo(
+        () => validateClassrooms(classrooms),
+        [classrooms],
+    );
 
-            const schoolName =
-            classroom.nomeEscola
-                .trim()
-                .replace(/\s+/g, " ");
+    const isValid = classrooms.length > 0 && Object.values(validationErrors)
+        .every((classroomErrors) => Object.keys(classroomErrors).length === 0);
 
-            const className =
-            classroom.turma.trim();
+    function touchField(classroomId, field) {
+        setTouched((current) => ({
+            ...current,
+            [`${classroomId}:${field}`]: true,
+        }));
+    }
 
-            if (
-            !schoolName ||
-            schoolName.length > 200 ||
-            !Number.isInteger(grade) ||
-            grade < 1 ||
-            grade > 12 ||
-            !className ||
-            className.length > 30
-            ) {
-            return false;
-            }
-
-            const identifier =
-            `${schoolName.toLocaleUpperCase("pt-BR")}:${grade}:${className.toLocaleUpperCase(
-                "pt-BR",
-            )}`;
-
-            if (
-            identifiers.has(identifier)
-            ) {
-            return false;
-            }
-
-            identifiers.add(identifier);
-            return true;
-        },
+    function visibleErrors(classroom) {
+        return Object.fromEntries(
+            Object.entries(validationErrors[classroom.id] ?? {})
+                .filter(([field]) =>
+                    submitted || touched[`${classroom.id}:${field}`]
+                ),
         );
-    }, [
-        classrooms,
-    ]);
+    }
 
     function updateClassroom(
         classroomId,
@@ -148,12 +177,11 @@ function CadastroTurmasPage() {
 
     function handleSubmit(event) {
         event.preventDefault();
+        setSubmitted(true);
 
         if (!isValid) {
-        setError(
-            "Preencha os dados corretamente e não repita a mesma série e turma.",
-        );
-        return;
+            setError("");
+            return;
         }
 
         const escolas =
@@ -175,6 +203,7 @@ function CadastroTurmasPage() {
 
         <form
             className="registration-page__panel"
+            noValidate
             onSubmit={handleSubmit}
         >
             <BackButton fallback="/" label="Voltar" />
@@ -185,6 +214,7 @@ function CadastroTurmasPage() {
             {classrooms.map(
                 (classroom, index) => (
                 <TurmaForm
+                    errors={visibleErrors(classroom)}
                     index={index}
                     key={classroom.id}
                     onChange={(newClassroom) =>
@@ -192,6 +222,9 @@ function CadastroTurmasPage() {
                         classroom.id,
                         newClassroom,
                     )
+                    }
+                    onFieldBlur={(field) =>
+                    touchField(classroom.id, field)
                     }
                     onRemove={() =>
                     removeClassroom(
