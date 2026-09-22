@@ -34,13 +34,14 @@ model Partida {
 }
 
 model Participacao {
-  id        String  @id @default(uuid())
-  serie     Int
-  turma     String
-  partidaId String
-  partida   Partida @relation(fields: [partidaId], references: [id], onDelete: Cascade)
+  id          String  @id @default(uuid())
+  etapaEnsino String  @default("FUNDAMENTAL")
+  serie       Int
+  turma       String
+  partidaId   String
+  partida     Partida @relation(fields: [partidaId], references: [id], onDelete: Cascade)
 
-  @@unique([partidaId, serie, turma])
+  @@unique([partidaId, etapaEnsino, serie, turma])
   @@index([partidaId])
-  @@index([serie, turma])
+  @@index([etapaEnsino, serie, turma])
 }
