@@ -35,6 +35,8 @@ async function montarResultado(
                 const itemRanking =
                     rankingInterno.ranking.find(
                         (item) =>
+                            item.etapaEnsino ===
+                                participacao.etapaEnsino &&
                             item.serie ===
                                 participacao.serie &&
                             item.turma ===
@@ -43,6 +45,8 @@ async function montarResultado(
 
                 return {
                     id: participacao.id,
+                    etapaEnsino:
+                        participacao.etapaEnsino,
                     serie:
                         participacao.serie,
                     turma:
@@ -113,6 +117,8 @@ async function registrarSessoes(dados) {
     const turmas =
         dados.turmas.map(
             (turma) => ({
+                etapaEnsino:
+                    turma.etapaEnsino,
                 serie: turma.serie,
                 turma: limpar(
                     turma.turma
@@ -239,6 +245,8 @@ async function listarPartidasPorEscola(
                     (participacao) => ({
                         id:
                             participacao.id,
+                        etapaEnsino:
+                            participacao.etapaEnsino,
                         serie:
                             participacao.serie,
                         turma:
