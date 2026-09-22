@@ -6,10 +6,7 @@
 
 .form-field__label {
     color: #000;
-    font-family:
-        "Cascadia Mono",
-        Consolas,
-        monospace;
+    font-family: var(--font-family-base);
     font-size: 1rem;
     font-weight: 600;
 }
@@ -22,10 +19,7 @@
     border-radius: 10px;
     color: #000;
     background: transparent;
-    font-family:
-        "Cascadia Mono",
-        Consolas,
-        monospace;
+    font-family: var(--font-family-base);
     font-size: 1.15rem;
 }
 
