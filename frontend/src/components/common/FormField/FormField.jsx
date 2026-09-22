@@ -5,8 +5,11 @@ function FormField({
     id,
     label,
     labelVisuallyHidden = false,
+    max,
     maxLength,
     min,
+    minLength,
+    onBlur,
     onChange,
     placeholder = "",
     required = false,
@@ -30,8 +33,11 @@ function FormField({
             className="form-field__input"
             id={id}
             aria-label={labelVisuallyHidden ? label : undefined}
+            max={max}
             maxLength={maxLength}
             min={min}
+            minLength={minLength}
+            onBlur={onBlur}
             onChange={(event) =>
             onChange(event.target.value)
             }
@@ -41,14 +47,13 @@ function FormField({
             value={value}
         />
 
-        {error && (
-            <span
+        <span
+            aria-live="polite"
             className="form-field__error"
             id={errorId}
-            >
+        >
             {error}
-            </span>
-        )}
+        </span>
         </div>
     );
 }
