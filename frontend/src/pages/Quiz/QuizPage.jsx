@@ -9,6 +9,7 @@ import { listarPerguntas } from "../../api/perguntaApi";
 import { registrarSessao } from "../../api/sessaoApi";
 import Button from "../../components/common/Button/Button";
 import PageStatus from "../../components/common/PageStatus/PageStatus";
+import ScenicBackdrop from "../../components/common/ScenicBackdrop/ScenicBackdrop";
 import QuizBoard from "../../components/features/quiz/QuizBoard/QuizBoard";
 
 import {
@@ -294,6 +295,11 @@ function QuizPage() {
 
     return (
         <section className="quiz-page">
+        <ScenicBackdrop
+            fenceClassName="quiz-page__fence"
+            groundClassName="quiz-page__ground"
+        />
+
         <QuizBoard
             answerState={answerState}
             availablePoints={availablePoints}
