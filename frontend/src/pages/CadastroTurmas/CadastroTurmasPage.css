@@ -35,11 +35,12 @@
     background: #f7c181;
 }
 
-.registration-page__panel > .back-button span:first-child {
-    font-size: clamp(1.5rem, 1.7vw, 2rem);
+.registration-page__panel > .back-button .back-button__icon {
+    width: clamp(1.5rem, 1.7vw, 2rem);
+    height: clamp(1.5rem, 1.7vw, 2rem);
 }
 
-.registration-page__panel > .back-button span:last-child {
+.registration-page__panel > .back-button .back-button__label {
     position: absolute;
     width: 1px;
     height: 1px;
