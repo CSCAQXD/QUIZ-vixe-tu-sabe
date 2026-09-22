@@ -9,7 +9,7 @@
     border-radius: 15px;
     color: var(--color-black);
     background: #fff0df;
-    font-family: Montserrat, Arial, sans-serif;
+    font-family: var(--font-family-base);
     font-size: clamp(1rem, 1.46vw, 1.75rem);
     font-weight: 700;
     text-align: left;
