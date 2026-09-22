@@ -3,6 +3,7 @@ import "./Modal.css";
 
 function Modal({
     children,
+    className = "",
     isOpen,
     onClose,
     title,
@@ -53,7 +54,7 @@ function Modal({
             type="button"
         />
 
-        <section className="modal__content">
+        <section className={`modal__content ${className}`.trim()}>
             <button
             aria-label="Fechar"
             className="modal__close"
