@@ -1,6 +1,7 @@
 import AnswerOption from "../AnswerOption/AnswerOption";
 import Button from "../../../common/Button/Button";
 import Modal from "../../../common/Modal/Modal";
+import HintIcon from "../HintIcon/HintIcon";
 import "./QuizBoard.css";
 
 function QuizBoard({
@@ -40,7 +41,7 @@ function QuizBoard({
         return "wrong";
         }
 
-        return "muted";
+        return "default";
     }
 
     function getFeedback() {
@@ -67,8 +68,22 @@ function QuizBoard({
     return (
         <>
         <section className="quiz-board">
+            {answered ? (
+            <header
+                aria-live="polite"
+                className={`quiz-board__feedback quiz-board__feedback--${answerState}`}
+            >
+                <div>
+                <strong>{feedback.title}</strong>
+                <span>{feedback.description}</span>
+                </div>
+
+                <span className="quiz-board__score quiz-board__score--feedback">
+                PONTUAÇÃO: {score}
+                </span>
+            </header>
+            ) : (
             <header className="quiz-board__header">
-            {!answered ? (
                 <button
                     aria-label="Ver dica"
                     className="quiz-board__hint-button"
@@ -76,24 +91,16 @@ function QuizBoard({
                     onClick={onOpenHint}
                     type="button"
                 >
-                    💡
+                    <HintIcon className="quiz-board__hint-icon" />
                 </button>
-                ) : (
-                <div
-                    aria-live="polite"
-                    className={`quiz-board__feedback quiz-board__feedback--${answerState}`}
-                >
-                    <strong>{feedback.title}</strong>
-                    <span>{feedback.description}</span>
-                </div>
-                )}
 
-            <span className="quiz-board__school">ESCOLA {schoolName}</span>
+                <span className="quiz-board__school">ESCOLA {schoolName}</span>
 
-            <div className="quiz-board__score">
+                <div className="quiz-board__score">
                 <span>PONTUAÇÃO: {score}</span>
-            </div>
+                </div>
             </header>
+            )}
 
             <div className="quiz-board__meta">
             <span>SOBRE O POETA</span>
@@ -144,10 +151,15 @@ function QuizBoard({
         </section>
 
         <Modal
+            className="quiz-board__hint-modal"
             isOpen={isHintOpen}
             onClose={onCloseHint}
             title="Dica"
         >
+            <div className="quiz-board__hint-illustration">
+            <HintIcon className="quiz-board__hint-modal-icon" />
+            </div>
+
             <p>{currentHint}</p>
 
             <p className="quiz-board__hint-warning">
