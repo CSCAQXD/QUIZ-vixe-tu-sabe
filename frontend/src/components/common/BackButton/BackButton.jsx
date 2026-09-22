@@ -23,8 +23,22 @@ function BackButton({
         onClick={handleBack}
         type="button"
         >
-        <span aria-hidden="true">←</span>
-        <span>{label}</span>
+        <svg
+            aria-hidden="true"
+            className="back-button__icon"
+            fill="none"
+            viewBox="0 0 32 32"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path
+                d="M26 16H7M14 9l-7 7 7 7"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+            />
+        </svg>
+        <span className="back-button__label">{label}</span>
         </button>
     );
 }
