@@ -5,14 +5,19 @@
     border-radius: 10px;
     font-weight: 700;
     transition:
-        transform 150ms ease,
-        opacity 150ms ease,
-        box-shadow 150ms ease;
+        opacity 120ms ease,
+        box-shadow 120ms ease,
+        filter 120ms ease;
 }
 
 .button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 0 rgb(0 0 0 / 18%);
+    box-shadow: 0 2px 0 rgb(0 0 0 / 14%);
+    filter: brightness(1.02);
+}
+
+.button:active:not(:disabled) {
+    box-shadow: none;
+    filter: brightness(0.98);
 }
 
 .button:disabled {
@@ -82,7 +87,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .button--home-action {
+    .button {
         transition: none;
     }
 }
