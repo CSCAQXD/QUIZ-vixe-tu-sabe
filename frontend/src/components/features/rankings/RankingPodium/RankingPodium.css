@@ -1,0 +1,78 @@
+.ranking-podium {
+    width: min(856px, 100%);
+    height: clamp(260px, 22vw, 416px);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: end;
+    margin: clamp(28px, 5vh, 54px) auto clamp(7rem, 10vw, 9rem);
+}
+
+.ranking-podium__place {
+    position: relative;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: clamp(24px, 3vw, 48px) 12px 0;
+    color: #fff;
+    background: #f7c181;
+}
+
+.ranking-podium__place--1 {
+    height: 100%;
+    background: #a52d37;
+}
+
+.ranking-podium__place--2 {
+    height: 77.88%;
+}
+
+.ranking-podium__place--3 {
+    height: 59.86%;
+}
+
+.ranking-podium__place strong {
+    font-size: clamp(2.5rem, 4.17vw, 5rem);
+    line-height: 1;
+}
+
+.ranking-podium__place span {
+    font-size: clamp(1rem, 1.56vw, 1.875rem);
+    font-weight: 700;
+}
+
+.ranking-podium__place b {
+    position: absolute;
+    bottom: clamp(-10rem, -8.5vw, -4.8rem);
+    width: clamp(6rem, 10.9vw, 13.0625rem);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    font-size: clamp(5rem, 7.8vw, 9.375rem);
+    line-height: 1;
+}
+
+.ranking-podium__place--1 b {
+    background: #f4c368;
+}
+
+.ranking-podium__place--2 b {
+    background: #b9b9b9;
+}
+
+.ranking-podium__place--3 b {
+    background: #9a6207;
+}
+
+.ranking-podium__place--empty {
+    opacity: 0.35;
+}
+
+@media (max-width: 720px) {
+    .ranking-podium {
+        height: 300px;
+    }
+}
