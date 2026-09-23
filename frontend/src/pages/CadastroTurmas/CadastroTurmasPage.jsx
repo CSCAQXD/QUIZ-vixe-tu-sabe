@@ -208,6 +208,7 @@ function CadastroTurmasPage() {
         >
             <BackButton fallback="/" label="Voltar" />
 
+            <div className="registration-page__content">
             <h1>REGISTRE OS DADOS DA TURMA</h1>
 
             <div className="registration-page__forms">
@@ -268,6 +269,7 @@ function CadastroTurmasPage() {
                 {error}
             </p>
             )}
+            </div>
 
         </form>
         </section>
