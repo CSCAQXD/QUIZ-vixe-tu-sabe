@@ -1,22 +1,33 @@
 import {
+    lazy,
+    Suspense,
+} from "react";
+import {
     BrowserRouter,
     Navigate,
     Route,
     Routes,
 } from "react-router-dom";
 
+import PageStatus from "./components/common/PageStatus/PageStatus";
 import MainLayout from "./layouts/MainLayout/MainLayout";
-import CadastroTurmasPage from "./pages/CadastroTurmas/CadastroTurmasPage";
-import QuizConcluidoPage from "./pages/QuizConcluido/QuizConcluidoPage";
-import QuizPage from "./pages/Quiz/QuizPage";
-import RankingsPage from "./pages/Rankings/RankingsPage";
-import TelaInicialPage from "./pages/TelaInicial/TelaInicialPage";
+
+const CadastroTurmasPage = lazy(() =>
+    import("./pages/CadastroTurmas/CadastroTurmasPage"),
+);
+const QuizConcluidoPage = lazy(() =>
+    import("./pages/QuizConcluido/QuizConcluidoPage"),
+);
+const QuizPage = lazy(() => import("./pages/Quiz/QuizPage"));
+const RankingsPage = lazy(() => import("./pages/Rankings/RankingsPage"));
+const TelaInicialPage = lazy(() => import("./pages/TelaInicial/TelaInicialPage"));
 
 import "./App.css";
 
 function App() {
     return (
         <BrowserRouter>
+        <Suspense fallback={<PageStatus message="Carregando tela..." />}>
         <Routes>
             <Route element={<MainLayout />}>
             <Route index element={<TelaInicialPage />} />
@@ -47,6 +58,7 @@ function App() {
             />
             </Route>
         </Routes>
+        </Suspense>
         </BrowserRouter>
     );
 }
