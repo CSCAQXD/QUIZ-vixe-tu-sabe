@@ -7,7 +7,7 @@
     "dev": "node --watch index.js",
     "start": "node index.js",
     "test": "node --test",
-    "test:coverage": "node --test --experimental-test-coverage",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=**/*.js --test-coverage-exclude=test/** --test-coverage-exclude=node_modules/** --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=80",
     "check": "node --check index.js && prisma validate",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
