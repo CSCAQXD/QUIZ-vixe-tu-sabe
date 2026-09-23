@@ -62,34 +62,38 @@
 
 .registration-page__panel h1 {
     max-width: 680px;
-    margin: clamp(130px, 16.5vh, 178px) 0 clamp(28px, 3vh, 34px);
+    margin: clamp(112px, 13vh, 140px) 0 10px;
     color: #000;
     font-family: var(--font-family-base);
-    font-size: clamp(2.25rem, 2.6vw, 3.125rem);
+    font-size: clamp(2rem, 2.35vw, 2.8rem);
     font-weight: 700;
     line-height: 1.05;
 }
 
-.registration-page__forms {
-    display: grid;
-    gap: 18px;
+.registration-page__intro {
+    max-width: 580px;
+    margin: 0 0 clamp(28px, 4vh, 42px);
+    color: #6f3d25;
+    font-size: clamp(1rem, 1.05vw, 1.15rem);
+    line-height: 1.5;
 }
 
 .registration-page__forms {
     order: 1;
-    gap: clamp(32px, 5vh, 54px);
+    display: grid;
+    gap: 22px;
 }
 
 .registration-page__actions {
     order: 2;
     display: grid;
     gap: clamp(18px, 2.4vh, 26px);
-    margin-top: clamp(36px, 4.6vh, 50px);
+    margin: 28px 0 8px;
 }
 
 .registration-page__actions .button {
     width: 100%;
-    min-height: clamp(62px, 8.2vh, 89px);
+    min-height: 64px;
     font-family: var(--font-family-base);
     font-size: clamp(1rem, 1.3vw, 1.55rem);
 }
@@ -100,10 +104,10 @@
 }
 
 .turma-form .form-field__input {
-    min-height: clamp(72px, 8.25vh, 89px);
-    background: transparent;
-    font-size: clamp(1.05rem, 1.3vw, 1.5625rem);
-    font-weight: 600;
+    min-height: 62px;
+    background: #fffaf4;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
 .registration-page__error {

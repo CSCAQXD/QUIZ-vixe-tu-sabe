@@ -210,6 +210,9 @@ function CadastroTurmasPage() {
 
             <div className="registration-page__content">
             <h1>REGISTRE OS DADOS DA TURMA</h1>
+            <p className="registration-page__intro">
+                Identifique cada grupo que participará desta mediação.
+            </p>
 
             <div className="registration-page__forms">
             {classrooms.map(
