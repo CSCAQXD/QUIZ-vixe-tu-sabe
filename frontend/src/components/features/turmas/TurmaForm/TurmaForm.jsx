@@ -14,14 +14,6 @@ const GRADE_OPTIONS = [
     })),
 ];
 
-const CLASS_OPTIONS = [
-    { label: "Turma única", value: "UNICA" },
-    ...["A", "B", "C", "D"].map((value) => ({
-        label: `Turma ${value}`,
-        value,
-    })),
-];
-
 function TurmaForm({
     canReuseSchool,
     errors = {},
@@ -111,14 +103,16 @@ function TurmaForm({
             value={gradeValue}
             />
 
-            <SelectField
+            <FormField
             id={`turma-${turma.id}`}
-            label="Organização da turma"
+            label="Identificação da turma"
             error={errors.turma}
+            maxLength={30}
             onBlur={() => onFieldBlur("turma")}
-            onChange={(value) => update("turma", value)}
-            options={CLASS_OPTIONS}
-            placeholder="Selecione a turma"
+            onChange={(value) =>
+                update("turma", value)
+            }
+            placeholder="Ex.: A ou Única"
             required
             value={turma.turma}
             />
