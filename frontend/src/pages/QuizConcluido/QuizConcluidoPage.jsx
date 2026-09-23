@@ -23,14 +23,13 @@ function formatClass(schoolClass) {
     return `${schoolClass.serie}º ano — ${educationLevel} · Turma ${schoolClass.turma}`;
 }
 
-function findClassRanking(ranking, schoolResult, schoolClass) {
-    return ranking.find(
-        (item) =>
-            item.escolaId === schoolResult.escola?.id &&
-            item.etapaEnsino === schoolClass.etapaEnsino &&
-            Number(item.serie) === Number(schoolClass.serie) &&
-            normalize(item.turma) === normalize(schoolClass.turma),
-    );
+function classRankingKey(schoolId, schoolClass) {
+    return [
+        schoolId,
+        schoolClass.etapaEnsino,
+        Number(schoolClass.serie),
+        normalize(schoolClass.turma),
+    ].join("|||");
 }
 
 function CelebrationIcon() {
@@ -65,6 +64,20 @@ function QuizConcluidoPage() {
         if (!result) return [];
         return Array.isArray(result.resultados) ? result.resultados : [result];
     }, [result]);
+    const schoolsById = useMemo(
+        () => new Map(rankingData.schools.map((item) => [item.escolaId, item])),
+        [rankingData.schools],
+    );
+    const classesByKey = useMemo(
+        () =>
+            new Map(
+                rankingData.classes.map((item) => [
+                    classRankingKey(item.escolaId, item),
+                    item,
+                ]),
+            ),
+        [rankingData.classes],
+    );
 
     useEffect(() => {
         if (!result) return undefined;
@@ -131,8 +144,8 @@ function QuizConcluidoPage() {
                     )}
 
                     {rankingResults.map((schoolResult) => {
-                        const schoolRanking = rankingData.schools.find(
-                            (item) => item.escolaId === schoolResult.escola?.id,
+                        const schoolRanking = schoolsById.get(
+                            schoolResult.escola?.id,
                         );
 
                         return (
@@ -144,10 +157,11 @@ function QuizConcluidoPage() {
 
                                 <div className="completed-page__cards">
                                     {schoolResult.turmas?.map((schoolClass) => {
-                                        const classRanking = findClassRanking(
-                                            rankingData.classes,
-                                            schoolResult,
-                                            schoolClass,
+                                        const classRanking = classesByKey.get(
+                                            classRankingKey(
+                                                schoolResult.escola?.id,
+                                                schoolClass,
+                                            ),
                                         );
 
                                         return (
