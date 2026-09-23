@@ -14,6 +14,16 @@ const GRADE_OPTIONS = [
     })),
 ];
 
+const ORGANIZATION_OPTIONS = [
+    { label: "Escola regular", value: "REGULAR" },
+    { label: "Ensino técnico ou profissional", value: "TECNICA" },
+];
+
+const CLASS_TYPE_OPTIONS = [
+    { label: "Turma única", value: "UNICA" },
+    { label: "Turma dividida", value: "DIVIDIDA" },
+];
+
 function TurmaForm({
     canReuseSchool,
     errors = {},
@@ -90,6 +100,42 @@ function TurmaForm({
             </Button>
         )}
 
+        <SelectField
+            id={`organizacao-${turma.id}`}
+            label="Tipo de organização"
+            onChange={(value) => onChange({
+                ...turma,
+                cursoNome: value === "REGULAR" ? "" : turma.cursoNome,
+                tipoOrganizacao: value,
+            })}
+            options={ORGANIZATION_OPTIONS}
+            value={turma.tipoOrganizacao}
+        />
+
+        {turma.tipoOrganizacao === "TECNICA" && (
+            <FormField
+                id={`curso-${turma.id}`}
+                label="Curso"
+                maxLength={120}
+                onChange={(value) => update("cursoNome", value)}
+                placeholder="Busque ou cadastre o curso"
+                required
+                value={turma.cursoNome}
+            />
+        )}
+
+        <SelectField
+            id={`tipo-turma-${turma.id}`}
+            label="Organização da turma"
+            onChange={(value) => onChange({
+                ...turma,
+                organizacaoTurma: value,
+                turma: value === "UNICA" ? "UNICA" : "",
+            })}
+            options={CLASS_TYPE_OPTIONS}
+            value={turma.organizacaoTurma}
+        />
+
         <div className="turma-form__fields">
             <SelectField
             id={`serie-${turma.id}`}
@@ -103,7 +149,7 @@ function TurmaForm({
             value={gradeValue}
             />
 
-            <FormField
+            {turma.organizacaoTurma === "DIVIDIDA" && <FormField
             id={`turma-${turma.id}`}
             label="Identificação da turma"
             error={errors.turma}
@@ -115,7 +161,7 @@ function TurmaForm({
             placeholder="Ex.: A ou Única"
             required
             value={turma.turma}
-            />
+            />}
         </div>
 
         </section>

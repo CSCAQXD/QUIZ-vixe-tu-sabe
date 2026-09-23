@@ -21,7 +21,7 @@ describe("componentes interativos", () => {
         const onRemove = vi.fn();
         const onReuse = vi.fn();
         const onBlur = vi.fn();
-        render(<TurmaForm canReuseSchool errors={{ turma: "Obrigatório" }} index={1} onChange={onChange} onFieldBlur={onBlur} onRemove={onRemove} onUsePreviousSchool={onReuse} removable turma={{ id: "1", nomeEscola: "Escola", etapaEnsino: "", serie: "", turma: "" }} />);
+        render(<TurmaForm canReuseSchool errors={{ turma: "Obrigatório" }} index={1} onChange={onChange} onFieldBlur={onBlur} onRemove={onRemove} onUsePreviousSchool={onReuse} removable turma={{ id: "1", nomeEscola: "Escola", etapaEnsino: "", serie: "", turma: "", tipoOrganizacao: "REGULAR", organizacaoTurma: "DIVIDIDA" }} />);
         await userEvent.type(screen.getByLabelText("Nome da escola"), " X");
         await userEvent.selectOptions(screen.getByLabelText("Série"), "MEDIO:3");
         await userEvent.type(screen.getByLabelText("Identificação da turma"), "A");
