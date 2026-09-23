@@ -314,13 +314,6 @@ async function listarRankingInterno(
                 item.quantidadePartidas,
         }));
 
-    ordenarRankingDeTurmas(
-        ranking.map((item) => ({
-            ...item,
-            escola: escola.nome,
-        }))
-    );
-
     ranking.sort(
         (primeiro, segundo) => {
             const diferencaPontos =
