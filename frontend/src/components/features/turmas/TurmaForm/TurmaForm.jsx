@@ -69,13 +69,12 @@ function TurmaForm({
         <FormField
             id={`escola-${turma.id}`}
             label="Nome da escola"
-            labelVisuallyHidden
             error={errors.nomeEscola}
             maxLength={200}
             minLength={3}
             onBlur={() => onFieldBlur("nomeEscola")}
             onChange={(value) => update("nomeEscola", value)}
-            placeholder="Nome da Escola"
+            placeholder="Ex.: EEEP Maria Cavalcante Costa"
             required
             value={turma.nomeEscola}
         />
@@ -95,7 +94,6 @@ function TurmaForm({
             <SelectField
             id={`serie-${turma.id}`}
             label="Série"
-            labelVisuallyHidden
             error={errors.serie}
             onBlur={() => onFieldBlur("serie")}
             onChange={updateGrade}
@@ -107,15 +105,14 @@ function TurmaForm({
 
             <FormField
             id={`turma-${turma.id}`}
-            label="Turma"
-            labelVisuallyHidden
+            label="Identificação da turma"
             error={errors.turma}
             maxLength={30}
             onBlur={() => onFieldBlur("turma")}
             onChange={(value) =>
                 update("turma", value)
             }
-            placeholder="Turma"
+            placeholder="Ex.: A ou Única"
             required
             value={turma.turma}
             />

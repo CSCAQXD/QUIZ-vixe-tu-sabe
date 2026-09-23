@@ -20,7 +20,7 @@ it("salva uma mediação válida e abre o quiz", async () => {
 
     await userEvent.type(screen.getByLabelText("Nome da escola"), "Escola Modelo");
     await userEvent.selectOptions(screen.getByLabelText("Série"), "FUNDAMENTAL:3");
-    await userEvent.type(screen.getByLabelText("Turma"), "A");
+    await userEvent.type(screen.getByLabelText("Identificação da turma"), "A");
     await userEvent.click(screen.getByRole("button", {
         name: "INICIAR QUIZ DA MEDIAÇÃO",
     }));
