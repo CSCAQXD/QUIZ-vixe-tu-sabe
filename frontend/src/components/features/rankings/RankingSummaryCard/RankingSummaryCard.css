@@ -1,0 +1,65 @@
+.ranking-summary {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    background: #fff;
+    box-shadow: 0 0.25rem 0.5625rem rgb(0 0 0 / 25%);
+}
+
+.ranking-summary h3 {
+    margin: 0;
+    padding: 0.85rem 1.5rem;
+    color: #fff;
+    background: #a52d37;
+    font-size: clamp(0.8rem, 1.05vw, 0.9375rem);
+    font-weight: 800;
+    letter-spacing: 0.035em;
+    text-align: left;
+}
+
+.ranking-summary--green h3 {
+    background: #413c19;
+}
+
+.ranking-summary--orange h3 {
+    background: #e4491a;
+}
+
+.ranking-summary__content {
+    min-height: 8.0625rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.2rem 1.75rem;
+}
+
+.ranking-summary__content > div {
+    min-width: 0;
+    display: grid;
+    gap: 0.35rem;
+    text-align: left;
+}
+
+.ranking-summary__content strong {
+    overflow-wrap: anywhere;
+    font-size: clamp(1rem, 1.35vw, 1.25rem);
+}
+
+.ranking-summary__content span:not(.ranking-summary__position) {
+    color: #f09b32;
+    font-size: clamp(0.78rem, 1vw, 0.9375rem);
+    font-weight: 800;
+}
+
+.ranking-summary__position {
+    width: 4.8125rem;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    border-radius: 0.625rem;
+    color: #fff;
+    background: #f09b32;
+    font-size: clamp(1.8rem, 2.7vw, 2.5rem);
+    font-weight: 800;
+}
