@@ -1,118 +1,199 @@
-import {
-    Navigate,
-    useNavigate,
-} from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
-import Button from "../../components/common/Button/Button";
 import {
-    clearQuizStorage,
-    getResult,
-} from "../../utils/storage";
+    listarRankingEscolas,
+    listarRankingTurmas,
+} from "../../api/rankingApi";
+import Button from "../../components/common/Button/Button";
+import ScenicBackdrop from "../../components/common/ScenicBackdrop/ScenicBackdrop";
+import RankingSummaryCard from "../../components/features/rankings/RankingSummaryCard/RankingSummaryCard";
+import { getResult } from "../../utils/storage";
 
 import "./QuizConcluidoPage.css";
 
+function normalize(value) {
+    return String(value ?? "").trim().toLocaleUpperCase("pt-BR");
+}
+
+function formatClass(schoolClass) {
+    const educationLevel =
+        schoolClass.etapaEnsino === "MEDIO" ? "Ensino Médio" : "Ensino Fundamental";
+
+    return `${schoolClass.serie}º ano — ${educationLevel} · Turma ${schoolClass.turma}`;
+}
+
+function findClassRanking(ranking, schoolResult, schoolClass) {
+    return ranking.find(
+        (item) =>
+            item.escolaId === schoolResult.escola?.id &&
+            item.etapaEnsino === schoolClass.etapaEnsino &&
+            Number(item.serie) === Number(schoolClass.serie) &&
+            normalize(item.turma) === normalize(schoolClass.turma),
+    );
+}
+
+function CelebrationIcon() {
+    return (
+        <svg
+            aria-hidden="true"
+            className="completed-page__celebration"
+            fill="none"
+            viewBox="0 0 350 283"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path d="M32 248 118 151l34-73 22-3c43 57 70 125 78 204l-83-8-92-12-45 9c-21 7-32-8-22-20l22-20Z" fill="#ffb33a" />
+            <path d="M151 78c17 71 45 139 94 201l-27 3c-42-51-72-112-83-179l16-25Z" fill="#bf6728" />
+            <path d="m223 89 17-20-14-18 20-17M267 112l24-3-5-24 25-9M244 158l36-11M270 220l31 9M272 181c16-17 28 10 45-8 16-17 23 15 8 25" stroke="#f09b32" strokeLinecap="round" strokeWidth="11" />
+            <path d="m61 198-19-17M92 159l-10-27M289 40l5-25M326 118l20-9" stroke="#e4491a" strokeLinecap="round" strokeWidth="8" />
+        </svg>
+    );
+}
+
 function QuizConcluidoPage() {
     const navigate = useNavigate();
-    const result = getResult();
+    const result = useMemo(() => getResult(), []);
+    const [rankingData, setRankingData] = useState({
+        schools: [],
+        schoolsTotal: 0,
+        classes: [],
+        classesTotal: 0,
+    });
+    const [rankingError, setRankingError] = useState("");
+
+    const rankingResults = useMemo(() => {
+        if (!result) return [];
+        return Array.isArray(result.resultados) ? result.resultados : [result];
+    }, [result]);
+
+    useEffect(() => {
+        if (!result) return undefined;
+
+        let isActive = true;
+        const year = result.partida?.ano ?? rankingResults[0]?.partida?.ano;
+
+        Promise.all([
+            listarRankingTurmas({ ano: year }),
+            listarRankingEscolas({ ano: year }),
+        ])
+            .then(([classResponse, schoolResponse]) => {
+                if (!isActive) return;
+
+                setRankingData({
+                    schools: schoolResponse.ranking ?? [],
+                    schoolsTotal: schoolResponse.total ?? 0,
+                    classes: classResponse.ranking ?? [],
+                    classesTotal: classResponse.total ?? 0,
+                });
+            })
+            .catch(() => {
+                if (isActive) {
+                    setRankingError("Não foi possível atualizar todos os rankings.");
+                }
+            });
+
+        return () => {
+            isActive = false;
+        };
+    }, [rankingResults, result]);
 
     if (!result) {
-        return (
-        <Navigate
-            replace
-            to="/"
-        />
-        );
+        return <Navigate replace to="/" />;
     }
 
-    const finalScore =
-        result.partida?.pontuacaoFinal ?? 0;
-
-    const rankingResults =
-        Array.isArray(result.resultados)
-        ? result.resultados
-        : [result];
-
-    function returnHome() {
-        clearQuizStorage();
-        navigate("/");
-    }
+    const finalScore = result.partida?.pontuacaoFinal ?? 0;
 
     return (
         <section className="completed-page">
-        <span
-            aria-hidden="true"
-            className="completed-page__star"
-        >
-            ★
-        </span>
+            <ScenicBackdrop
+                fenceClassName="completed-page__fence"
+                groundClassName="completed-page__ground"
+            />
 
-        <h1>PARABÉNS</h1>
+            <main className="completed-page__panel">
+                <CelebrationIcon />
+                <h1>PARABÉNS</h1>
+                <p className="completed-page__success">QUIZ CONCLUÍDO COM SUCESSO</p>
 
-        <p>
-            QUIZ CONCLUÍDO COM SUCESSO
-        </p>
+                <div className="completed-page__score">
+                    <span>PONTUAÇÃO FINAL</span>
+                    <strong>{finalScore}</strong>
+                    <b>PONTOS</b>
+                </div>
 
-        <div className="completed-page__score">
-            <span>PONTUAÇÃO FINAL</span>
-            <strong>{finalScore}</strong>
-            <span>PONTOS</span>
-        </div>
+                <section className="completed-page__rankings">
+                    <h2>SUA PONTUAÇÃO NOS RANKINGS</h2>
 
-        <section className="completed-page__ranking">
-            <h2>
-            SUA PONTUAÇÃO NOS RANKINGS
-            </h2>
+                    {rankingError && (
+                        <p className="completed-page__ranking-warning">
+                            {rankingError}
+                        </p>
+                    )}
 
-            {rankingResults.map((schoolResult) => (
-            <section
-                className="completed-page__school"
-                key={schoolResult.escola?.id ?? schoolResult.partida?.id}
-            >
-                <h3>{schoolResult.escola?.nome}</h3>
+                    {rankingResults.map((schoolResult) => {
+                        const schoolRanking = rankingData.schools.find(
+                            (item) => item.escolaId === schoolResult.escola?.id,
+                        );
 
-                <ul>
-                {schoolResult.turmas?.map(
-                    (turma) => (
-                    <li key={turma.id}>
-                        <strong>
-                        {turma.serie}º ano do Ensino{" "}
-                        {turma.etapaEnsino === "MEDIO" ? "Médio" : "Fundamental"} —{" "}
-                        Turma {turma.turma}
-                        </strong>
+                        return (
+                            <section
+                                className="completed-page__school"
+                                key={schoolResult.escola?.id ?? schoolResult.partida?.id}
+                            >
+                                <h3>{schoolResult.escola?.nome}</h3>
 
-                        <span>
-                        Posição interna:{" "}
-                        {turma.posicaoRankingInterno ?? "—"}{" "}
-                        de {turma.totalTurmasNoRankingInterno}
-                        </span>
+                                <div className="completed-page__cards">
+                                    {schoolResult.turmas?.map((schoolClass) => {
+                                        const classRanking = findClassRanking(
+                                            rankingData.classes,
+                                            schoolResult,
+                                            schoolClass,
+                                        );
 
-                        <span>
-                        Pontuação acumulada: {turma.pontuacaoAcumulada}
-                        </span>
-                    </li>
-                    ),
-                )}
-                </ul>
-            </section>
-            ))}
-        </section>
+                                        return (
+                                            <RankingSummaryCard
+                                                description={`${schoolResult.escola?.nome} · ${formatClass(schoolClass)}`}
+                                                key={`geral-${schoolClass.id}`}
+                                                participants={rankingData.classesTotal || "—"}
+                                                position={classRanking?.posicao}
+                                                title="RANKING GERAL DE TURMAS"
+                                            />
+                                        );
+                                    })}
 
-        <div className="completed-page__actions">
-            <Button
-            onClick={() =>
-                navigate("/rankings")
-            }
-            >
-            VER TODOS OS RANKINGS
-            </Button>
+                                    <RankingSummaryCard
+                                        description={schoolResult.escola?.nome}
+                                        participants={rankingData.schoolsTotal || "—"}
+                                        position={schoolRanking?.posicao}
+                                        title="RANKING ENTRE ESCOLAS"
+                                        tone="green"
+                                    />
 
-            <Button
-            onClick={returnHome}
-            variant="secondary"
-            >
-            VOLTAR AO INÍCIO
-            </Button>
-        </div>
+                                    {schoolResult.turmas?.map((schoolClass) => (
+                                        <RankingSummaryCard
+                                            description={formatClass(schoolClass)}
+                                            key={`interno-${schoolClass.id}`}
+                                            participants={
+                                                schoolClass.totalTurmasNoRankingInterno ?? "—"
+                                            }
+                                            position={schoolClass.posicaoRankingInterno}
+                                            title="RANKING INTERNO POR ESCOLA"
+                                            tone="orange"
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+                        );
+                    })}
+                </section>
+
+                <Button
+                    className="completed-page__rankings-button"
+                    onClick={() => navigate("/rankings")}
+                >
+                    VER TODOS OS RANKINGS
+                </Button>
+            </main>
         </section>
     );
 }
