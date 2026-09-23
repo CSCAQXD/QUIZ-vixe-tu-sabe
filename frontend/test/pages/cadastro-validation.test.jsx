@@ -12,7 +12,7 @@ it("mostra os erros dos campos obrigatórios", async () => {
         name: "INICIAR QUIZ DA MEDIAÇÃO",
     }));
 
-    expect(screen.getAllByText("Campo obrigatório.")).toHaveLength(3);
+    expect(screen.getAllByText("Campo obrigatório.")).toHaveLength(2);
 });
 
 it("valida o tamanho mínimo do nome da escola", async () => {

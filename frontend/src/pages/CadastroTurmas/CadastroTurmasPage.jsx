@@ -12,10 +12,13 @@ import "./CadastroTurmasPage.css";
 function createClassroom() {
     return {
         etapaEnsino: "",
+        cursoNome: "",
         id: crypto.randomUUID(),
         nomeEscola: "",
+        organizacaoTurma: "UNICA",
         serie: "",
-        turma: "",
+        tipoOrganizacao: "REGULAR",
+        turma: "UNICA",
     };
 }
 
