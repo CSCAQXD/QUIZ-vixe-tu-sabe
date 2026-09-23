@@ -29,18 +29,27 @@ async function montarResultado(
             null
         );
 
+    const rankingPorTurma = new Map(
+        rankingInterno.ranking.map((item) => [
+            [
+                item.etapaEnsino || "FUNDAMENTAL",
+                item.serie,
+                item.turma,
+            ].join("|||"),
+            item,
+        ])
+    );
+
     const turmas =
         partida.participacoes.map(
             (participacao) => {
                 const itemRanking =
-                    rankingInterno.ranking.find(
-                        (item) =>
-                            item.etapaEnsino ===
-                                participacao.etapaEnsino &&
-                            item.serie ===
-                                participacao.serie &&
-                            item.turma ===
-                                participacao.turma
+                    rankingPorTurma.get(
+                        [
+                            participacao.etapaEnsino || "FUNDAMENTAL",
+                            participacao.serie,
+                            participacao.turma,
+                        ].join("|||")
                     );
 
                 return {
