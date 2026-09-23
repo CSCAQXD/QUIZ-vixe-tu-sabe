@@ -12,9 +12,22 @@ model Escola {
   nome      String
   cidade    String
   partidas Partida[]
+  cursos   Curso[]
 
   @@unique([nome, cidade])
   @@index([nome])
+}
+
+model Curso {
+  id            String          @id @default(uuid())
+  nome          String
+  nomeBusca     String
+  escolaId      String
+  escola        Escola          @relation(fields: [escolaId], references: [id], onDelete: Cascade)
+  participacoes Participacao[]
+
+  @@unique([escolaId, nomeBusca])
+  @@index([escolaId])
 }
 
 model Partida {
@@ -38,6 +51,8 @@ model Participacao {
   etapaEnsino String  @default("FUNDAMENTAL")
   serie       Int
   turma       String
+  cursoId     String?
+  curso       Curso?  @relation(fields: [cursoId], references: [id])
   partidaId   String
   partida     Partida @relation(fields: [partidaId], references: [id], onDelete: Cascade)
 
