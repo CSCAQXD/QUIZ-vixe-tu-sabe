@@ -86,6 +86,7 @@ function errorMiddleware(
         .status(statusCode)
         .json({
             erro: mensagem,
+            ...(error.sugestao ? { sugestao: error.sugestao } : {}),
         });
 }
 

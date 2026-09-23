@@ -8,6 +8,7 @@ const perguntaRouter = require(
 const escolaRouter = require(
     "./routers/escola.router"
 );
+const cursoRouter = require("./routers/curso.router");
 
 const sessaoRouter = require(
     "./routers/sessao.router"
@@ -109,6 +110,7 @@ app.use(
     "/escolas",
     escolaRouter
 );
+app.use("/escolas", cursoRouter);
 
 app.use(
     "/sessao",
