@@ -1,16 +1,13 @@
 .turma-form {
     min-width: 0;
     display: grid;
-    gap: clamp(24px, 2.8vh, 30px);
+    gap: 18px;
     margin: 0;
-    padding: 0;
-    border: 0;
-}
-
-.turma-form + .turma-form {
-    margin-top: clamp(24px, 4vh, 44px);
-    padding-top: clamp(52px, 7vh, 76px);
-    border-top: 2px solid #f7c181;
+    padding: clamp(22px, 2vw, 30px);
+    border: 1px solid rgb(111 61 37 / 18%);
+    border-radius: 20px;
+    background: rgb(255 250 244 / 72%);
+    box-shadow: 0 8px 24px rgb(60 20 35 / 7%);
 }
 
 .turma-form__header {
@@ -21,16 +18,16 @@
 }
 
 .turma-form h2 {
-    width: clamp(160px, 13vw, 195px);
-    margin: 0 0 6px;
-    padding: 13px 24px;
-    border: 1px solid #000;
+    width: auto;
+    margin: 0;
+    padding: 9px 18px;
+    border: 1px solid #6f3d25;
     border-radius: 162px;
     color: #000;
     text-align: center;
-    background: #ffce94;
+    background: #f7c181;
     font-family: var(--font-family-base);
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 700;
 }
 
@@ -38,13 +35,13 @@
     display: grid;
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     align-items: start;
-    gap: clamp(16px, 2vw, 32px);
+    gap: 16px;
 }
 
 .turma-form .select-field__control {
-    min-height: clamp(72px, 8.25vh, 89px);
-    background-color: transparent;
-    font-size: clamp(1rem, 1.15vw, 1.35rem);
+    min-height: 62px;
+    background-color: #fffaf4;
+    font-size: 1rem;
 }
 
 .turma-form__reuse-school {
