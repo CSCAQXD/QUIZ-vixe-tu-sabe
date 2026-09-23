@@ -371,3 +371,21 @@ test(
         );
     }
 );
+
+test("aceita curso técnico sem misturá-lo à divisão", () => {
+    const resultado = validarSessao(criarSessaoValida({
+        cursoNome: "  Redes de Computadores  ",
+        serie: 2,
+        turma: "Única",
+    }));
+
+    assert.equal(resultado.turmas[0].cursoNome, "Redes de Computadores");
+    assert.equal(resultado.turmas[0].turma, "Única");
+});
+
+test("rejeita nome de curso muito curto", () => {
+    assert.throws(
+        () => validarSessao(criarSessaoValida({ cursoNome: "TI" })),
+        /curso da turma 1/
+    );
+});

@@ -42,6 +42,7 @@ function validarSessao(dados = {}) {
                             dados.etapaEnsino,
                         serie: dados.serie,
                         turma: dados.turma,
+                        cursoNome: dados.cursoNome,
                     },
                 ];
 
@@ -109,6 +110,10 @@ function validarSessao(dados = {}) {
                 item?.turma ?? ""
             ).trim();
 
+            const cursoNome = String(
+                item?.cursoNome ?? ""
+            ).trim().replace(/\s+/g, " ");
+
             if (!["FUNDAMENTAL", "MEDIO"].includes(etapaEnsino)) {
                 throw criarErroValidacao(
                     `A etapa de ensino da turma ${indice + 1} deve ser FUNDAMENTAL ou MEDIO.`
@@ -136,8 +141,14 @@ function validarSessao(dados = {}) {
                 );
             }
 
+            if (cursoNome && (cursoNome.length < 3 || cursoNome.length > 120)) {
+                throw criarErroValidacao(
+                    `O curso da turma ${indice + 1} deve possuir entre 3 e 120 caracteres.`
+                );
+            }
+
             const identificador =
-                `${etapaEnsino}|||${serie}|||${turma.toUpperCase()}`;
+                `${etapaEnsino}|||${serie}|||${cursoNome.toUpperCase()}|||${turma.toUpperCase()}`;
 
             if (
                 identificadores.has(
@@ -157,6 +168,7 @@ function validarSessao(dados = {}) {
                 etapaEnsino,
                 serie,
                 turma,
+                ...(cursoNome ? { cursoNome } : {}),
             };
         }
     );
