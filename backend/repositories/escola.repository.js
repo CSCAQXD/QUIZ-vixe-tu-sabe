@@ -1,6 +1,7 @@
 const prisma = require(
     "../config/prisma"
 );
+const { chaveEntidade } = require("../utils/sanitize");
 
 async function buscarTodas() {
     return prisma.escola.findMany({
@@ -55,6 +56,21 @@ async function buscarOuCriar(
     });
 
     if (existente) return existente;
+
+    const legadas = await cliente.escola.findMany({
+        where: { nomeBusca: null },
+    });
+    const legada = legadas.find((escola) =>
+        chaveEntidade(escola.nome, true) === nomeBusca &&
+        chaveEntidade(escola.cidade) === cidadeBusca
+    );
+
+    if (legada) {
+        return cliente.escola.update({
+            where: { id: legada.id },
+            data: { nomeBusca, cidadeBusca },
+        });
+    }
 
     return cliente.escola.create({
         data: {
