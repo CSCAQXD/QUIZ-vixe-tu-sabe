@@ -41,19 +41,27 @@ async function buscarPorNomeECidade(
 async function buscarOuCriar(
     nome,
     cidade,
+    nomeBusca,
+    cidadeBusca,
     cliente = prisma
 ) {
-    return cliente.escola.upsert({
+    const existente = await cliente.escola.findFirst({
         where: {
-            nome_cidade: {
-                nome,
-                cidade,
-            },
+            OR: [
+                { nomeBusca, cidadeBusca },
+                { nome, cidade },
+            ],
         },
-        update: {},
-        create: {
+    });
+
+    if (existente) return existente;
+
+    return cliente.escola.create({
+        data: {
             nome,
             cidade,
+            nomeBusca,
+            cidadeBusca,
         },
     });
 }

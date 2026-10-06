@@ -17,6 +17,7 @@ const rankingService = require(
 );
 
 const {
+    chaveEntidade,
     limpar,
 } = require("../utils/sanitize");
 
@@ -129,6 +130,12 @@ async function registrarSessoes(dados) {
     const cidade =
         limpar(dados.cidade);
 
+    const nomeBusca =
+        chaveEntidade(nomeEscola, true);
+
+    const cidadeBusca =
+        chaveEntidade(cidade);
+
     const turmas =
         dados.turmas.map(
             (turma) => ({
@@ -154,6 +161,8 @@ async function registrarSessoes(dados) {
                             .buscarOuCriar(
                                 nomeEscola,
                                 cidade,
+                                nomeBusca,
+                                cidadeBusca,
                                 transaction
                             );
 
