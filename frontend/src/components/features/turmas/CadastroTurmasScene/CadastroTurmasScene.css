@@ -34,13 +34,6 @@
 
 @media (max-width: 1000px) {
   .registration-scene {
-    height: min(52svh, 520px);
-  }
-
-  .registration-scene__logo {
-    top: 8%;
-    left: 50%;
-    width: min(58%, 480px);
-    transform: translateX(-50%);
+    display: none;
   }
 }
