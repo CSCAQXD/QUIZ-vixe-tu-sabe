@@ -6,6 +6,7 @@ import {
     listarRankingTurmas,
 } from "../../api/rankingApi";
 import Button from "../../components/common/Button/Button";
+import HomeButton from "../../components/common/HomeButton/HomeButton";
 import ScenicBackdrop from "../../components/common/ScenicBackdrop/ScenicBackdrop";
 import RankingSummaryCard from "../../components/features/rankings/RankingSummaryCard/RankingSummaryCard";
 import { getResult } from "../../utils/storage";
@@ -209,12 +210,15 @@ function QuizConcluidoPage() {
                     })}
                 </section>
 
-                <Button
-                    className="completed-page__rankings-button"
-                    onClick={() => navigate("/rankings")}
-                >
-                    VER TODOS OS RANKINGS
-                </Button>
+                <div className="completed-page__actions">
+                    <Button
+                        className="completed-page__rankings-button"
+                        onClick={() => navigate("/rankings")}
+                    >
+                        VER TODOS OS RANKINGS
+                    </Button>
+                    <HomeButton className="completed-page__home-button" />
+                </div>
             </main>
         </section>
     );

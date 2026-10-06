@@ -123,16 +123,25 @@
     gap: 1.25rem;
 }
 
-.completed-page__rankings-button {
+.completed-page__actions {
+    display: grid;
+    gap: 1rem;
+    margin-top: 3rem;
+}
+
+.completed-page__rankings-button,
+.completed-page__home-button {
     width: 100%;
     min-height: 5.125rem;
-    margin-top: 3rem;
     border: 0;
-    color: #fff;
-    background: #f09b32;
     font-family: var(--font-family-base);
     font-size: clamp(1rem, 1.8vw, 1.5625rem);
     font-weight: 700;
+}
+
+.completed-page__rankings-button {
+    color: #fff;
+    background: #f09b32;
 }
 
 @media (max-width: 640px) {
