@@ -100,6 +100,7 @@ function TurmaForm({
             </Button>
         )}
 
+        <div className="turma-form__configuration">
         <SelectField
             id={`organizacao-${turma.id}`}
             label="Tipo de organização"
@@ -137,6 +138,7 @@ function TurmaForm({
             options={CLASS_TYPE_OPTIONS}
             value={turma.organizacaoTurma}
         />
+        </div>
 
         <div className="turma-form__fields">
             <SelectField
