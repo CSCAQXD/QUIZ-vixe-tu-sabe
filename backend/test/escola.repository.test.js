@@ -32,3 +32,37 @@ test("reutiliza escola encontrada pela identidade normalizada", async () => {
     assert.equal(resultado, escola);
     assert.equal(dadosCriacao, undefined);
 });
+
+test("reconhece escola antiga mesmo com acento e prefixo diferentes", async () => {
+    const escola = {
+        id: "e1",
+        nome: "EEEP Júlio França",
+        cidade: "Quixadá",
+    };
+    let atualizacao;
+    const cliente = {
+        escola: {
+            findFirst: async () => null,
+            findMany: async () => [escola],
+            update: async (dados) => {
+                atualizacao = dados;
+                return { ...escola, ...dados.data };
+            },
+            create: async () => assert.fail("não deve duplicar a escola"),
+        },
+    };
+
+    const resultado = await escolaRepository.buscarOuCriar(
+        "JULIO FRANCA",
+        "QUIXADA",
+        "JULIO FRANCA",
+        "QUIXADA",
+        cliente,
+    );
+
+    assert.equal(resultado.id, escola.id);
+    assert.deepEqual(atualizacao, {
+        where: { id: escola.id },
+        data: { nomeBusca: "JULIO FRANCA", cidadeBusca: "QUIXADA" },
+    });
+});
