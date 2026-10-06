@@ -25,3 +25,17 @@ it("valida o tamanho mínimo do nome da escola", async () => {
     expect(screen.getByText("Digite pelo menos 3 letras."))
         .toBeInTheDocument();
 });
+
+it("exige curso somente no ensino técnico", async () => {
+    render(<MemoryRouter><CadastroTurmasPage /></MemoryRouter>);
+
+    await userEvent.selectOptions(
+        screen.getByLabelText("Tipo de organização"),
+        "TECNICA",
+    );
+    await userEvent.click(screen.getByRole("button", {
+        name: "INICIAR QUIZ DA MEDIAÇÃO",
+    }));
+
+    expect(screen.getByText("Informe o curso.")).toBeInTheDocument();
+});

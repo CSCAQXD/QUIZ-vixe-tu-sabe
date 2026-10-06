@@ -116,7 +116,9 @@ function TurmaForm({
             <FormField
                 id={`curso-${turma.id}`}
                 label="Curso"
+                error={errors.cursoNome}
                 maxLength={120}
+                onBlur={() => onFieldBlur("cursoNome")}
                 onChange={(value) => update("cursoNome", value)}
                 placeholder="Busque ou cadastre o curso"
                 required

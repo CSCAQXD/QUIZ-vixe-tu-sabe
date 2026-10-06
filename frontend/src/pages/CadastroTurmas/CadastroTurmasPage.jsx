@@ -51,6 +51,15 @@ function validateClassrooms(classrooms) {
             classroomErrors.turma = "Campo obrigatório.";
         }
 
+        if (classroom.tipoOrganizacao === "TECNICA") {
+            const courseName = classroom.cursoNome.trim().replace(/\s+/g, " ");
+            if (!courseName) {
+                classroomErrors.cursoNome = "Informe o curso.";
+            } else if (courseName.length < 3) {
+                classroomErrors.cursoNome = "Digite pelo menos 3 letras.";
+            }
+        }
+
         if (Object.keys(classroomErrors).length === 0) {
             const identifier = [
                 schoolName.toLocaleUpperCase("pt-BR"),
