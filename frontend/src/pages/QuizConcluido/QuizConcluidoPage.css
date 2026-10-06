@@ -46,8 +46,8 @@
     padding: clamp(2rem, 4vw, 4rem);
     overflow: hidden;
     border-radius: 1.875rem;
-    background: #fff0df;
-    box-shadow: 0 0.25rem 0.875rem rgb(0 0 0 / 25%);
+    background: #fff7ed;
+    box-shadow: 0 0.5rem 2rem rgb(60 20 35 / 18%);
     scrollbar-color: #b8b8b8 transparent;
     scrollbar-width: thin;
     text-align: center;
@@ -57,7 +57,7 @@
     grid-area: title;
     align-self: end;
     margin: 0;
-    color: #000;
+    color: #a52d37;
     font-size: clamp(2.8rem, 5vw, 4.375rem);
     font-weight: 800;
     line-height: 1;
@@ -76,7 +76,7 @@
     display: grid;
     justify-items: center;
     padding: 1.75rem;
-    border: 1px solid rgb(60 20 35 / 12%);
+    border: 1px solid rgb(165 45 55 / 18%);
     border-radius: 1.5rem;
     background: #fffaf4;
     font-weight: 800;
@@ -110,7 +110,8 @@
 }
 
 .completed-page__rankings > h2 {
-    margin: 0 0 2rem;
+    margin: 0 0 1.25rem;
+    color: #a52d37;
     font-weight: 800;
 }
 
@@ -123,12 +124,13 @@
 .completed-page__school > h3 {
     width: fit-content;
     max-width: 100%;
-    margin: 0 auto 1.75rem;
-    padding: 0.7rem 2.5rem;
-    border-radius: 999px;
-    color: #fff;
-    background: #3c1423;
-    font-size: clamp(1rem, 2vw, 1.875rem);
+    margin: 0 0 1rem;
+    padding: 0 0 0.65rem;
+    border-bottom: 2px solid rgb(165 45 55 / 22%);
+    border-radius: 0;
+    color: #a52d37;
+    background: transparent;
+    font-size: clamp(1rem, 1.5vw, 1.35rem);
     overflow-wrap: anywhere;
 }
 
@@ -140,7 +142,8 @@
 
 .completed-page__cards {
     display: grid;
-    gap: 1.25rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.875rem;
 }
 
 .completed-page__actions {
@@ -190,5 +193,9 @@
 
     .ranking-summary__content {
         padding-inline: 1.15rem;
+    }
+
+    .completed-page__cards {
+        grid-template-columns: 1fr;
     }
 }
