@@ -100,7 +100,11 @@ function TurmaForm({
             </Button>
         )}
 
-        <div className="turma-form__configuration">
+        <div className={`turma-form__configuration${
+            turma.tipoOrganizacao === "TECNICA"
+                ? " turma-form__configuration--technical"
+                : ""
+        }`}>
         <SelectField
             id={`organizacao-${turma.id}`}
             label="Tipo de organização"
