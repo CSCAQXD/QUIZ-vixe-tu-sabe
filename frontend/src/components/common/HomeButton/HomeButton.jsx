@@ -10,8 +10,7 @@ function HomeButton({ className = "" }) {
             onClick={() => navigate("/")}
             variant="secondary"
         >
-            <span aria-hidden="true">⌂</span>
-            Ir para o início
+            Tela inicial
         </Button>
     );
 }
