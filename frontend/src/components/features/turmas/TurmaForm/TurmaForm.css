@@ -44,6 +44,17 @@
     font-size: 1rem;
 }
 
+.turma-form .form-field,
+.turma-form .select-field {
+    gap: 6px;
+}
+
+.turma-form .form-field__error,
+.turma-form .select-field__error {
+    min-height: 1em;
+    font-size: 0.8rem;
+}
+
 .turma-form__reuse-school {
     width: max-content;
     min-height: 32px;
@@ -90,6 +101,11 @@
 }
 
 @media (max-width: 720px) {
+    .turma-form {
+        gap: 16px;
+        padding: 18px;
+    }
+
     .turma-form__fields {
         grid-template-columns: 1fr;
         gap: 18px;
