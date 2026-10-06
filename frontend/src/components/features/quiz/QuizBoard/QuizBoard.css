@@ -238,21 +238,6 @@
     text-align: left;
 }
 
-.quiz-board__hint-illustration {
-    width: 88px;
-    height: 88px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    color: #413c19;
-    background: #f7c181;
-}
-
-.quiz-board__hint-modal-icon {
-    width: 52%;
-    height: 66%;
-}
-
 .quiz-board__hint-warning {
     padding: 16px 18px;
     border-left: 5px solid #a52d37;
@@ -266,12 +251,8 @@
 .quiz-board__hint-modal .modal__close {
     top: 22px;
     right: 22px;
-    width: 42px;
-    height: 42px;
-    padding: 0 0 3px;
-    color: #3c1423;
-    background: #f7c181;
-    font-size: 2rem;
+    color: #a52d37;
+    background: transparent;
 }
 
 @media (max-width: 900px) {
