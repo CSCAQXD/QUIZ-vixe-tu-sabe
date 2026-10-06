@@ -13,6 +13,7 @@ async function buscarPorIdempotencyKey(
         include: {
             escola: true,
             participacoes: {
+                include: { curso: true },
                 orderBy: [
                     {
                         etapaEnsino: "asc",
@@ -56,6 +57,7 @@ async function criar(
         include: {
             escola: true,
             participacoes: {
+                include: { curso: true },
                 orderBy: [
                     {
                         etapaEnsino: "asc",
@@ -80,6 +82,7 @@ async function buscarPorId(id) {
         include: {
             escola: true,
             participacoes: {
+                include: { curso: true },
                 orderBy: [
                     {
                         etapaEnsino: "asc",
@@ -111,6 +114,7 @@ async function listarPorEscola(
         },
         include: {
             participacoes: {
+                include: { curso: true },
                 orderBy: [
                     {
                         etapaEnsino: "asc",

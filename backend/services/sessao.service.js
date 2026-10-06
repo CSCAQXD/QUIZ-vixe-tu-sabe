@@ -36,6 +36,7 @@ async function montarResultado(
             [
                 item.etapaEnsino || "FUNDAMENTAL",
                 item.serie,
+                item.cursoId || "SEM_CURSO",
                 item.turma,
             ].join("|||"),
             item,
@@ -50,6 +51,7 @@ async function montarResultado(
                         [
                             participacao.etapaEnsino || "FUNDAMENTAL",
                             participacao.serie,
+                            participacao.cursoId || "SEM_CURSO",
                             participacao.turma,
                         ].join("|||")
                     );
@@ -62,6 +64,8 @@ async function montarResultado(
                         participacao.serie,
                     turma:
                         participacao.turma,
+                    cursoId: participacao.cursoId || null,
+                    cursoNome: participacao.curso?.nome || null,
                     pontuacaoDaRodada:
                         partida.pontuacaoFinal,
                     pontuacaoAcumulada:
@@ -284,6 +288,8 @@ async function listarPartidasPorEscola(
                             participacao.serie,
                         turma:
                             participacao.turma,
+                        cursoId: participacao.cursoId || null,
+                        cursoNome: participacao.curso?.nome || null,
                     })
                 ),
         }));
