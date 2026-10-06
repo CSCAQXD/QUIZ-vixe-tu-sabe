@@ -20,7 +20,14 @@ function formatClass(schoolClass) {
     const educationLevel =
         schoolClass.etapaEnsino === "MEDIO" ? "Ensino Médio" : "Ensino Fundamental";
 
-    return `${schoolClass.serie}º ano — ${educationLevel} · Turma ${schoolClass.turma}`;
+    const course = schoolClass.cursoNome
+        ? ` · ${schoolClass.cursoNome}`
+        : "";
+    const division = schoolClass.turma === "UNICA"
+        ? "Turma única"
+        : `Turma ${schoolClass.turma}`;
+
+    return `${schoolClass.serie}º ano — ${educationLevel}${course} · ${division}`;
 }
 
 function classRankingKey(schoolId, schoolClass) {
@@ -28,6 +35,7 @@ function classRankingKey(schoolId, schoolClass) {
         schoolId,
         schoolClass.etapaEnsino,
         Number(schoolClass.serie),
+        schoolClass.cursoId ?? "SEM_CURSO",
         normalize(schoolClass.turma),
     ].join("|||");
 }
