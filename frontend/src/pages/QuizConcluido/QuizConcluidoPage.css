@@ -30,17 +30,17 @@
 }
 
 .completed-page__panel {
-    width: min(76rem, calc(100% - 2rem));
+    width: min(100rem, calc(100% - 2rem));
     height: calc(100% - 2rem);
     display: grid;
-    grid-template-columns: minmax(17rem, 0.72fr) minmax(0, 1.28fr);
+    grid-template-columns: minmax(20rem, 0.85fr) minmax(28rem, 1.15fr);
     grid-template-areas:
         "title rankings"
         "success rankings"
         "score rankings"
-        "actions rankings";
+        ". actions";
     grid-template-rows: auto auto 1fr auto;
-    column-gap: clamp(2rem, 4vw, 4.5rem);
+    column-gap: clamp(3rem, 6vw, 8rem);
     margin-inline: auto;
     margin-top: 1rem;
     padding: clamp(2rem, 4vw, 4rem);
@@ -75,10 +75,9 @@
     align-self: start;
     display: grid;
     justify-items: center;
-    padding: 1.75rem;
-    border: 1px solid rgb(165 45 55 / 18%);
-    border-radius: 1.5rem;
-    background: #fffaf4;
+    padding: 2rem 0;
+    border-top: 2px solid rgb(165 45 55 / 18%);
+    border-bottom: 2px solid rgb(165 45 55 / 18%);
     font-weight: 800;
 }
 
@@ -111,7 +110,7 @@
 
 .completed-page__rankings > h2 {
     margin: 0 0 1.25rem;
-    color: #a52d37;
+    color: #000;
     font-weight: 800;
 }
 
@@ -142,21 +141,31 @@
 
 .completed-page__cards {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 0.875rem;
+}
+
+.completed-page .ranking-summary__content {
+    min-height: 5.5rem;
+    padding-block: 0.9rem;
+}
+
+.completed-page .ranking-summary__position {
+    width: 3.75rem;
 }
 
 .completed-page__actions {
     grid-area: actions;
     display: grid;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.875rem;
+    margin-top: 1rem;
 }
 
 .completed-page__rankings-button,
 .completed-page__home-button {
     width: 100%;
-    min-height: 5.125rem;
+    min-height: 4rem;
     border: 0;
     font-family: var(--font-family-base);
     font-size: clamp(1rem, 1.8vw, 1.5625rem);
@@ -166,6 +175,28 @@
 .completed-page__rankings-button {
     color: #fff;
     background: #f09b32;
+}
+
+@media (max-width: 960px) {
+    .completed-page {
+        height: auto;
+        min-height: 100svh;
+        overflow-y: auto;
+    }
+
+    .completed-page__panel {
+        width: min(46rem, calc(100% - 2rem));
+        height: auto;
+        min-height: calc(100svh - 2rem);
+        grid-template-columns: 1fr;
+        grid-template-areas: "title" "success" "score" "rankings" "actions";
+        overflow-y: visible;
+    }
+
+    .completed-page__rankings {
+        margin-top: 2.5rem;
+        overflow: visible;
+    }
 }
 
 @media (max-width: 640px) {
@@ -198,4 +229,6 @@
     .completed-page__cards {
         grid-template-columns: 1fr;
     }
+
+    .completed-page__actions { grid-template-columns: 1fr; }
 }
