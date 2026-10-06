@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import BackButton from "../../components/common/BackButton/BackButton";
 import Button from "../../components/common/Button/Button";
 import HomeButton from "../../components/common/HomeButton/HomeButton";
+import Pagination from "../../components/common/Pagination/Pagination";
 import PageStatus from "../../components/common/PageStatus/PageStatus";
 import ScenicBackdrop from "../../components/common/ScenicBackdrop/ScenicBackdrop";
 import RankingPodium from "../../components/features/rankings/RankingPodium/RankingPodium";
@@ -14,6 +15,11 @@ import {
     listarRankingTurmas,
 } from "../../api/rankingApi";
 import { getResult } from "../../utils/storage";
+import {
+    filterRanking,
+    paginateRanking,
+    RANKING_PAGE_SIZE,
+} from "../../utils/rankingView";
 
 import "./RankingsPage.css";
 
@@ -98,7 +104,20 @@ function RankingsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [loadAttempt, setLoadAttempt] = useState(0);
+    const [search, setSearch] = useState("");
+    const [page, setPage] = useState(1);
     const currentClasses = useMemo(() => getCurrentClasses(getResult()), []);
+    const filteredRecords = useMemo(
+        () => filterRanking(records, search),
+        [records, search],
+    );
+    const totalPages = Math.max(
+        1,
+        Math.ceil(filteredRecords.length / RANKING_PAGE_SIZE),
+    );
+    const visibleRecords = paginateRanking(filteredRecords, page);
+
+    useEffect(() => setPage(1), [activeRanking, search, selectedSchoolId]);
 
     useEffect(() => {
         let isActive = true;
@@ -243,6 +262,17 @@ function RankingsPage() {
                     ))}
                 </nav>
 
+                <div className="rankings-page__filters">
+                    <label className="rankings-page__search">
+                        <span>Pesquisar no ranking</span>
+                        <input
+                            onChange={(event) => setSearch(event.target.value)}
+                            placeholder="Escola, série, curso ou turma"
+                            type="search"
+                            value={search}
+                        />
+                    </label>
+
                 {activeRanking === "interno" && (
                     <label className="rankings-page__school">
                         <span>Selecione a escola</span>
@@ -263,6 +293,7 @@ function RankingsPage() {
                         </select>
                     </label>
                 )}
+                </div>
 
                 {isLoading ? (
                     <PageStatus message="Carregando ranking..." />
@@ -278,12 +309,17 @@ function RankingsPage() {
                     />
                 ) : (
                     <>
-                        <RankingPodium records={records} />
+                        <RankingPodium records={filteredRecords} />
                         <RankingTable
                             columns={config.columns}
                             getRecordKey={getRecordKey}
                             highlightedKeys={highlightedKeys}
-                            records={records}
+                            records={visibleRecords}
+                        />
+                        <Pagination
+                            onChange={setPage}
+                            page={page}
+                            totalPages={totalPages}
                         />
                     </>
                 )}
