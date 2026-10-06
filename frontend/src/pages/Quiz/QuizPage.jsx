@@ -82,7 +82,10 @@ function QuizPage() {
 
         let active = true;
 
-        listarPerguntas()
+        const turmas = getMediationSchools(mediation)
+            .flatMap((school) => school.turmas ?? []);
+
+        listarPerguntas(turmas)
         .then((response) => {
             if (!active) {
             return;
