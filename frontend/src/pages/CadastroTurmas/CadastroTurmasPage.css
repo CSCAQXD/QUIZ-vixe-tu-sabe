@@ -34,11 +34,11 @@
 }
 
 .registration-page__panel > .back-button {
-    position: absolute;
-    top: clamp(30px, 3.7vh, 40px);
-    left: clamp(30px, 2.2vw, 42px);
+    position: static;
+    flex: 0 0 auto;
     width: clamp(60px, 3.8vw, 73px);
     min-height: 0;
+    margin-bottom: clamp(26px, 5vh, 54px);
     aspect-ratio: 1;
     justify-content: center;
     padding: 0;
@@ -62,7 +62,7 @@
 
 .registration-page__panel h1 {
     max-width: 680px;
-    margin: clamp(112px, 13vh, 140px) 0 10px;
+    margin: 0 0 10px;
     color: #000;
     font-family: var(--font-family-base);
     font-size: clamp(2rem, 2.35vw, 2.8rem);
@@ -123,10 +123,30 @@
 
 @media (max-width: 1000px) {
     .registration-page { grid-template-columns: 1fr; }
-    .registration-page__panel { max-height: 100svh; border-radius: 30px 30px 0 0; }
+    .registration-page__panel {
+        max-height: 100svh;
+        padding: 28px clamp(22px, 6vw, 64px) 48px;
+        border-radius: 0;
+    }
+
+    .registration-page__content {
+        width: min(760px, 100%);
+        margin-inline: auto;
+    }
+
+    .registration-page__panel > .back-button {
+        margin-bottom: 24px;
+    }
 }
 
 @media (max-width: 560px) {
-    .registration-page__school { grid-template-columns: 1fr; }
     .registration-page__panel { padding: 28px 22px 48px; }
+
+    .registration-page__panel h1 {
+        font-size: clamp(1.75rem, 9vw, 2.25rem);
+    }
+
+    .registration-page__intro {
+        margin-bottom: 24px;
+    }
 }
