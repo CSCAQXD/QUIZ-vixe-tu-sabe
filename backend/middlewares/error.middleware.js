@@ -59,11 +59,7 @@ function errorMiddleware(
     } else if (jsonInvalido) {
         mensagem =
             "O corpo da requisição contém um JSON inválido.";
-    } else if (
-        statusCode >= 500 &&
-        process.env.NODE_ENV ===
-            "production"
-    ) {
+    } else if (statusCode >= 500) {
         mensagem =
             "Erro interno do servidor.";
     } else {
