@@ -8,8 +8,23 @@ it("navega entre páginas e respeita os limites", async () => {
     const onChange = vi.fn();
     render(<Pagination onChange={onChange} page={1} totalPages={3} />);
 
-    expect(screen.getByRole("button", { name: "Anterior" })).toBeDisabled();
-    await userEvent.click(screen.getByRole("button", { name: "Próxima" }));
+    expect(screen.getByRole("button", { name: "Página anterior" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Página 1" })).toHaveAttribute(
+        "aria-current",
+        "page"
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Próxima página" }));
     expect(onChange).toHaveBeenCalledWith(2);
-    expect(screen.getByText(/Página/)).toHaveTextContent("Página 1 de 3");
+});
+
+it("exibe páginas próximas e permite saltos diretos", async () => {
+    const onChange = vi.fn();
+    render(<Pagination onChange={onChange} page={4} totalPages={9} />);
+
+    expect(
+        screen.getAllByText("…", { selector: ".pagination__ellipsis" })
+    ).toHaveLength(2);
+    expect(screen.queryByRole("button", { name: "Página 2" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Página 9" }));
+    expect(onChange).toHaveBeenCalledWith(9);
 });
