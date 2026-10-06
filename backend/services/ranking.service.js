@@ -75,6 +75,7 @@ function agruparParticipacoes(
             escola.id,
             etapaEnsino,
             participacao.serie,
+            participacao.curso?.id || "SEM_CURSO",
             participacao.turma,
         ].join("|||");
 
@@ -103,6 +104,10 @@ function agruparParticipacoes(
                 `${participacao.serie}º ano — Ensino ${etapaEnsino === "MEDIO" ? "Médio" : "Fundamental"}`,
             turma:
                 participacao.turma,
+            cursoId:
+                participacao.curso?.id || null,
+            cursoNome:
+                participacao.curso?.nome || null,
             pontuacaoTotal:
                 participacao.partida
                     .pontuacaoFinal,
@@ -308,6 +313,8 @@ async function listarRankingInterno(
             serieFormatada:
                 item.serieFormatada,
             turma: item.turma,
+            cursoId: item.cursoId,
+            cursoNome: item.cursoNome,
             pontuacaoTotal:
                 item.pontuacaoTotal,
             quantidadePartidas:

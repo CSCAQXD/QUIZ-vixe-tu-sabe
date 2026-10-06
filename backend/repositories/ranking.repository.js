@@ -43,6 +43,12 @@ async function buscarParticipacoes(
             etapaEnsino: true,
             serie: true,
             turma: true,
+            curso: {
+                select: {
+                    id: true,
+                    nome: true,
+                },
+            },
             partida: {
                 select: {
                     id: true,
