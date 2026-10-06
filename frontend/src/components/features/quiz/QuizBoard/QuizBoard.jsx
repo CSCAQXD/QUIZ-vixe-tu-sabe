@@ -154,12 +154,8 @@ function QuizBoard({
             className="quiz-board__hint-modal"
             isOpen={isHintOpen}
             onClose={onCloseHint}
-            title="Dica"
+            title="Uma pista para você"
         >
-            <div className="quiz-board__hint-illustration">
-            <HintIcon className="quiz-board__hint-modal-icon" />
-            </div>
-
             <p>{currentHint}</p>
 
             <p className="quiz-board__hint-warning">
