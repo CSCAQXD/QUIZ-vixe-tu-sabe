@@ -107,6 +107,11 @@ function QuizConcluidoPage() {
     }
 
     const finalScore = result.partida?.pontuacaoFinal ?? 0;
+    const schoolNames = [...new Set(
+        rankingResults
+            .map((item) => item.escola?.nome)
+            .filter(Boolean),
+    )].join(" · ");
 
     return (
         <section className="completed-page">
@@ -116,8 +121,18 @@ function QuizConcluidoPage() {
             />
 
             <main className="completed-page__panel">
+                <div aria-hidden="true" className="completed-page__celebration">
+                    <span />
+                    <i />
+                    <b />
+                </div>
+
                 <h1>PARABÉNS</h1>
                 <p className="completed-page__success">QUIZ CONCLUÍDO COM SUCESSO</p>
+
+                <p className="completed-page__schools">
+                    {schoolNames || "Mediação concluída"}
+                </p>
 
                 <div className="completed-page__score">
                     <span>PONTUAÇÃO FINAL</span>
