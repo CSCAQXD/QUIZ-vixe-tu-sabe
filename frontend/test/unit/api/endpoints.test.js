@@ -26,6 +26,19 @@ describe("endpoints do frontend", () => {
         expect(apiRequest).toHaveBeenNthCalledWith(3, "/ranking-interno/id%2Fescola?limit=10");
     });
 
+    it("envia todas as turmas ao consultar perguntas", async () => {
+        apiRequest.mockResolvedValue({ perguntas: [] });
+
+        await listarPerguntas([
+            { etapaEnsino: "MEDIO", serie: 2 },
+            { etapaEnsino: "FUNDAMENTAL", serie: 4 },
+        ]);
+
+        expect(apiRequest).toHaveBeenCalledWith(
+            "/perguntas?turma=MEDIO%3A2&turma=FUNDAMENTAL%3A4",
+        );
+    });
+
     it("registra uma sessão como JSON", async () => {
         apiRequest.mockResolvedValue({ ok: true });
         await registrarSessao({ pontos: 10 });
