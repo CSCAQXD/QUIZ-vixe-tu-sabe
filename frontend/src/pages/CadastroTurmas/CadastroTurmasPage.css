@@ -16,20 +16,8 @@
     padding: clamp(30px, 3.7vh, 40px) clamp(48px, 6.55vw, 126px) clamp(42px, 7vh, 76px) clamp(62px, 7.85vw, 151px);
     overflow: hidden;
     border-radius: 36px 0 0 36px;
-    background:
-        linear-gradient(135deg, rgb(247 193 129 / 14%), transparent 34%),
-        #fff0df;
-    box-shadow: -8px 0 28px rgb(60 20 35 / 18%);
-}
-
-.registration-page__panel::before {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 36px;
-    height: 7px;
-    background: linear-gradient(90deg, #a52d37 0 42%, #f09b32 42% 72%, #413c19 72%);
-    content: "";
+    background: #fff0df;
+    box-shadow: -6px 0 22px rgb(60 20 35 / 16%);
 }
 
 .registration-page__content {
@@ -87,8 +75,6 @@
     margin: 0 0 clamp(28px, 4vh, 42px);
     color: #6f3d25;
     font-size: clamp(1rem, 1.05vw, 1.15rem);
-    padding-left: 14px;
-    border-left: 4px solid #f09b32;
     line-height: 1.45;
 }
 
@@ -114,8 +100,9 @@
 }
 
 .registration-page__actions .button--secondary {
-    border: 0;
-    background: #f7c181;
+    border-color: #a52d37;
+    color: #a52d37;
+    background: transparent;
 }
 
 .turma-form .form-field__input {
