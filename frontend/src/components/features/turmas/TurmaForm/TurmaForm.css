@@ -42,6 +42,24 @@
     grid-column: 1 / -1;
 }
 
+.turma-form__configuration--technical {
+    grid-template-areas:
+        "organization classroom"
+        "course course";
+}
+
+.turma-form__configuration--technical > .select-field:first-child {
+    grid-area: organization;
+}
+
+.turma-form__configuration--technical > .form-field {
+    grid-area: course;
+}
+
+.turma-form__configuration--technical > .select-field:last-child {
+    grid-area: classroom;
+}
+
 .turma-form__fields {
     display: grid;
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
@@ -125,6 +143,10 @@
     .turma-form__configuration {
         grid-template-columns: 1fr;
         padding: 14px;
+    }
+
+    .turma-form__configuration--technical {
+        grid-template-areas: "organization" "classroom" "course";
     }
 
     .turma-form__remove {
