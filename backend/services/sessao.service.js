@@ -5,6 +5,8 @@
 const escolaRepository = require(
     "../repositories/escola.repository"
 );
+const cursoRepository = require("../repositories/curso.repository");
+const cursoService = require("./curso.service");
 
 const sessaoRepository = require(
     "../repositories/sessao.repository"
@@ -132,6 +134,7 @@ async function registrarSessoes(dados) {
                 turma: limpar(
                     turma.turma
                 ),
+                cursoNome: turma.cursoNome,
             })
         );
 
@@ -150,6 +153,27 @@ async function registrarSessoes(dados) {
                                 transaction
                             );
 
+                    const turmasComCurso = await Promise.all(
+                        turmas.map(async (turma) => {
+                            if (!turma.cursoNome) return turma;
+
+                            const nomeBusca = cursoService.normalizar(turma.cursoNome);
+                            const existente = await cursoRepository.buscarPorNome(
+                                escola.id,
+                                nomeBusca,
+                                transaction
+                            );
+                            const curso = existente || await cursoRepository.criar(
+                                escola.id,
+                                turma.cursoNome,
+                                nomeBusca,
+                                transaction
+                            );
+
+                            return { ...turma, cursoId: curso.id };
+                        })
+                    );
+
                     return sessaoRepository
                         .criar(
                             {
@@ -164,7 +188,7 @@ async function registrarSessoes(dados) {
                                 escolaId:
                                     escola.id,
 
-                                turmas,
+                                turmas: turmasComCurso,
                             },
                             transaction
                         );
