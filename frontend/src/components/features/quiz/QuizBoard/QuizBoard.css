@@ -224,8 +224,8 @@
     margin: 0;
     padding-right: 52px;
     color: #3c1423;
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    font-weight: 900;
+    font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+    font-weight: 800;
 }
 
 .quiz-board__hint-modal > p {
@@ -238,13 +238,25 @@
     text-align: left;
 }
 
+.quiz-board__hint-modal > .quiz-board__hint-text {
+    padding: clamp(18px, 3vw, 26px);
+    border: 2px solid #a52d37;
+    border-radius: 14px;
+    color: #3c1423;
+    background: #fff;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 900;
+    line-height: 1.2;
+}
+
 .quiz-board__hint-warning {
-    padding: 16px 18px;
-    border-left: 5px solid #a52d37;
+    padding: 12px 14px;
+    border-left: 3px solid #a52d37;
     border-radius: 0 12px 12px 0;
-    color: #a52d37;
-    background: #fff0df;
-    font-weight: 800 !important;
+    color: #68434a;
+    background: rgb(165 45 55 / 7%);
+    font-size: clamp(0.875rem, 1.1vw, 1rem) !important;
+    font-weight: 600 !important;
     text-align: left !important;
 }
 
