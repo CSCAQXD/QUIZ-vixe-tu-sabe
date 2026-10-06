@@ -1,6 +1,10 @@
 const perguntaRepository = require(
     "../repositories/pergunta.repository"
 );
+const {
+    normalizarFaixaPergunta,
+    obterMenorFaixa,
+} = require("../utils/faixaEnsino");
 
 const CACHE_TTL_PADRAO =
     5 * 60 * 1000;
@@ -62,6 +66,10 @@ function normalizarPergunta(
             pergunta.pontosIniciais
         );
 
+    const faixa = normalizarFaixaPergunta(
+        pergunta.faixa
+    );
+
     const dicas = [
         pergunta.dica1,
         pergunta.dica2,
@@ -86,6 +94,10 @@ function normalizarPergunta(
         return null;
     }
 
+    if (!faixa) {
+        return null;
+    }
+
     if (
         !Number.isInteger(
             pontosIniciais
@@ -97,6 +109,7 @@ function normalizarPergunta(
 
     return {
         id,
+        faixa,
         pergunta: enunciado,
         opcoes,
         correta,
@@ -160,34 +173,60 @@ async function atualizarCache() {
     return cache;
 }
 
-async function listarPerguntas() {
+async function listarPerguntas(turmas = []) {
     const cacheValido =
         cache &&
         Date.now() <
             cacheExpiraEm;
 
     if (cacheValido) {
-        return cache;
+        return filtrarPorTurmas(cache, turmas);
     }
 
     if (buscaEmAndamento) {
-        return buscaEmAndamento;
+        const perguntas = await buscaEmAndamento;
+        return filtrarPorTurmas(perguntas, turmas);
     }
 
     buscaEmAndamento =
         atualizarCache();
 
     try {
-        return await buscaEmAndamento;
+        const perguntas = await buscaEmAndamento;
+        return filtrarPorTurmas(perguntas, turmas);
     } catch (error) {
         if (cache) {
-            return cache;
+            return filtrarPorTurmas(cache, turmas);
         }
 
         throw error;
     } finally {
         buscaEmAndamento = null;
     }
+}
+
+function filtrarPorTurmas(perguntas, turmas) {
+    const faixa = obterMenorFaixa(turmas);
+
+    if (!faixa) return omitirFaixa(perguntas);
+
+    const filtradas = perguntas.filter(
+        (pergunta) => ["TODAS", faixa].includes(pergunta.faixa)
+    );
+
+    if (filtradas.length === 0) {
+        const erro = new Error(
+            "Nenhuma pergunta disponível para esta faixa de ensino."
+        );
+        erro.statusCode = 404;
+        throw erro;
+    }
+
+    return omitirFaixa(filtradas);
+}
+
+function omitirFaixa(perguntas) {
+    return perguntas.map(({ faixa, ...pergunta }) => pergunta);
 }
 
 function limparCache() {
