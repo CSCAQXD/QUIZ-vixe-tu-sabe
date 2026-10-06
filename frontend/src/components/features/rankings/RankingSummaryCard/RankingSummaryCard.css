@@ -1,9 +1,10 @@
 .ranking-summary {
     width: 100%;
     overflow: hidden;
-    border-radius: 1.25rem;
+    border: 1px solid rgb(165 45 55 / 16%);
+    border-radius: 1rem;
     background: #fff;
-    box-shadow: 0 0.25rem 0.5625rem rgb(0 0 0 / 25%);
+    box-shadow: none;
 }
 
 .ranking-summary h3 {
@@ -18,11 +19,11 @@
 }
 
 .ranking-summary--green h3 {
-    background: #413c19;
+    background: #a52d37;
 }
 
 .ranking-summary--orange h3 {
-    background: #e4491a;
+    background: #a52d37;
 }
 
 .ranking-summary__content {
@@ -59,7 +60,7 @@
     place-items: center;
     border-radius: 0.625rem;
     color: #fff;
-    background: #f09b32;
+    background: #a52d37;
     font-size: clamp(1.8rem, 2.7vw, 2.5rem);
     font-weight: 800;
 }
