@@ -11,10 +11,13 @@ model Escola {
   id        String    @id @default(uuid())
   nome      String
   cidade    String
+  nomeBusca String?
+  cidadeBusca String?
   partidas Partida[]
   cursos   Curso[]
 
   @@unique([nome, cidade])
+  @@unique([nomeBusca, cidadeBusca])
   @@index([nome])
 }
 
