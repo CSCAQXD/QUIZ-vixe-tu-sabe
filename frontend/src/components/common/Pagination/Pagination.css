@@ -1,0 +1,29 @@
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1.25rem auto 0;
+    font-size: 0.9rem;
+}
+
+.pagination button {
+    min-height: 2.75rem;
+    padding: 0.55rem 1rem;
+    border: 1px solid #a52d37;
+    border-radius: 0.65rem;
+    color: #a52d37;
+    background: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pagination button:hover:not(:disabled) {
+    color: #fff;
+    background: #a52d37;
+}
+
+.pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
