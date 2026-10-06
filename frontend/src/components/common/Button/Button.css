@@ -4,20 +4,20 @@
     border: 1px solid var(--color-black);
     border-radius: 10px;
     font-weight: 700;
-    transition:
-        opacity 120ms ease,
-        box-shadow 120ms ease,
-        filter 120ms ease;
+    cursor: pointer;
+    transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
 }
 
 .button:hover:not(:disabled) {
-    box-shadow: 0 2px 0 rgb(0 0 0 / 14%);
-    filter: brightness(1.02);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgb(60 20 35 / 14%);
+    filter: brightness(1.015);
 }
 
 .button:active:not(:disabled) {
-    box-shadow: none;
-    filter: brightness(0.98);
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgb(60 20 35 / 12%);
+    filter: brightness(0.985);
 }
 
 .button:disabled {
@@ -72,13 +72,13 @@
 }
 
 .button--home-action:hover:not(:disabled) {
-    transform: translate(-0.1042cqw, -0.1852cqh);
-    box-shadow: 0.625cqw 1.1111cqh 0 #3c1423;
+    transform: translateY(-1px);
+    box-shadow: 0.5208cqw 0.9259cqh 0 #3c1423;
 }
 
 .button--home-action:active:not(:disabled) {
-    transform: translate(0.3646cqw, 0.6481cqh);
-    box-shadow: 0.1563cqw 0.2778cqh 0 #3c1423;
+    transform: translateY(1px);
+    box-shadow: 0.42cqw 0.74cqh 0 #3c1423;
 }
 
 .button--home-action:focus-visible {
