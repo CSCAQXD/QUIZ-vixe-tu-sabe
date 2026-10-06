@@ -41,23 +41,6 @@ function classRankingKey(schoolId, schoolClass) {
     ].join("|||");
 }
 
-function CelebrationIcon() {
-    return (
-        <svg
-            aria-hidden="true"
-            className="completed-page__celebration"
-            fill="none"
-            viewBox="0 0 350 283"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <path d="M32 248 118 151l34-73 22-3c43 57 70 125 78 204l-83-8-92-12-45 9c-21 7-32-8-22-20l22-20Z" fill="#ffb33a" />
-            <path d="M151 78c17 71 45 139 94 201l-27 3c-42-51-72-112-83-179l16-25Z" fill="#bf6728" />
-            <path d="m223 89 17-20-14-18 20-17M267 112l24-3-5-24 25-9M244 158l36-11M270 220l31 9M272 181c16-17 28 10 45-8 16-17 23 15 8 25" stroke="#f09b32" strokeLinecap="round" strokeWidth="11" />
-            <path d="m61 198-19-17M92 159l-10-27M289 40l5-25M326 118l20-9" stroke="#e4491a" strokeLinecap="round" strokeWidth="8" />
-        </svg>
-    );
-}
-
 function QuizConcluidoPage() {
     const navigate = useNavigate();
     const result = useMemo(() => getResult(), []);
@@ -133,7 +116,6 @@ function QuizConcluidoPage() {
             />
 
             <main className="completed-page__panel">
-                <CelebrationIcon />
                 <h1>PARABÉNS</h1>
                 <p className="completed-page__success">QUIZ CONCLUÍDO COM SUCESSO</p>
 
