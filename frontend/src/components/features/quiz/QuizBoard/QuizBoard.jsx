@@ -156,7 +156,7 @@ function QuizBoard({
             onClose={onCloseHint}
             title="Uma pista para você"
         >
-            <p>{currentHint}</p>
+            <p className="quiz-board__hint-text">{currentHint}</p>
 
             <p className="quiz-board__hint-warning">
             O valor da pergunta agora é de{" "}
