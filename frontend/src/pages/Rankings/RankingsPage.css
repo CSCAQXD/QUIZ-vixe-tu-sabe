@@ -69,6 +69,9 @@
     right: 0;
     min-height: 3.5rem;
     padding: 0.75rem 1.25rem;
+    border-color: #a52d37;
+    color: #a52d37;
+    background: transparent;
 }
 
 .rankings-page__header .back-button__label {
@@ -118,7 +121,7 @@
 
 .rankings-page__tabs button[aria-pressed="true"] {
     color: #fff;
-    background: #3c1423;
+    background: #a52d37;
 }
 
 .rankings-page__filters {
