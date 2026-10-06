@@ -221,3 +221,26 @@ test(
         );
     }
 );
+
+test("filtra perguntas usando a menor faixa da mediação", async () => {
+    mock.method(
+        perguntaRepository,
+        "buscarDaPlanilha",
+        async () => [
+            criarPergunta({ id: "geral", faixa: "Todas" }),
+            criarPergunta({ id: "f1", faixa: "Fundamental I" }),
+            criarPergunta({ id: "f2", faixa: "Fundamental II" }),
+            criarPergunta({ id: "medio", faixa: "Ensino Médio" }),
+        ]
+    );
+
+    const perguntas = await perguntaService.listarPerguntas([
+        { etapaEnsino: "MEDIO", serie: 1 },
+        { etapaEnsino: "FUNDAMENTAL", serie: 4 },
+    ]);
+
+    assert.deepEqual(
+        perguntas.map((pergunta) => pergunta.id),
+        ["geral", "f1"]
+    );
+});
