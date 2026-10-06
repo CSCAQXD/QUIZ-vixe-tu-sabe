@@ -218,13 +218,19 @@ function CadastroTurmasPage() {
             noValidate
             onSubmit={handleSubmit}
         >
-            <BackButton fallback="/" label="Voltar" />
-
             <div className="registration-page__content">
-            <h1>REGISTRE OS DADOS DA TURMA</h1>
-            <p className="registration-page__intro">
-                Identifique cada grupo que participará desta mediação.
-            </p>
+            <header className="registration-page__header">
+                <BackButton fallback="/" label="Voltar" />
+                <div>
+                    <span className="registration-page__eyebrow">
+                        Configuração da mediação
+                    </span>
+                    <h1>REGISTRE OS DADOS DA TURMA</h1>
+                    <p className="registration-page__intro">
+                        Identifique cada grupo que participará desta mediação.
+                    </p>
+                </div>
+            </header>
 
             <div className="registration-page__forms">
             {classrooms.map(
