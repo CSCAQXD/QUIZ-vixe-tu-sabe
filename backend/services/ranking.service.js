@@ -20,13 +20,12 @@ function adicionarPosicoes(ranking) {
     let pontuacaoAnterior = null;
 
     return ranking.map(
-        (item, indice) => {
+        (item) => {
             if (
                 item.pontuacaoTotal !==
                 pontuacaoAnterior
             ) {
-                posicaoAnterior =
-                    indice + 1;
+                posicaoAnterior += 1;
 
                 pontuacaoAnterior =
                     item.pontuacaoTotal;
