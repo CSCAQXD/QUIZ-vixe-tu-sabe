@@ -14,6 +14,6 @@ it("leva diretamente para a tela inicial", async () => {
         </MemoryRouter>,
     );
 
-    await userEvent.click(screen.getByRole("button", { name: /Ir para o início/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Tela inicial" }));
     expect(screen.getByText("Tela inicial")).toBeInTheDocument();
 });
