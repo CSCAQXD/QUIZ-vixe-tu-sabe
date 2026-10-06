@@ -24,6 +24,7 @@ const RANKING_CONFIG = {
         columns: [
             { key: "escola", label: "Escola" },
             { key: "serieFormatada", label: "Série" },
+            { key: "cursoNome", label: "Curso" },
             { key: "turma", label: "Turma" },
             { key: "pontuacaoTotal", label: "Pontuação" },
         ],
@@ -41,6 +42,7 @@ const RANKING_CONFIG = {
         label: "Interno por escola",
         columns: [
             { key: "serieFormatada", label: "Série" },
+            { key: "cursoNome", label: "Curso" },
             { key: "turma", label: "Turma" },
             { key: "quantidadePartidas", label: "Partidas" },
             { key: "pontuacaoTotal", label: "Pontuação" },
@@ -56,12 +58,13 @@ function buildSchoolKey(schoolId) {
     return `escola:${schoolId ?? ""}`;
 }
 
-function buildClassKey({ escolaId, etapaEnsino, serie, turma }) {
+function buildClassKey({ escolaId, etapaEnsino, serie, turma, cursoId }) {
     return [
         "turma",
         escolaId ?? "",
         etapaEnsino ?? "FUNDAMENTAL",
         Number(serie),
+        cursoId ?? "SEM_CURSO",
         normalizeClassName(turma),
     ].join(":");
 }
@@ -81,6 +84,7 @@ function getCurrentClasses(result) {
             etapaEnsino: schoolClass.etapaEnsino,
             serie: schoolClass.serie,
             turma: schoolClass.turma,
+            cursoId: schoolClass.cursoId,
         })),
     );
 }
