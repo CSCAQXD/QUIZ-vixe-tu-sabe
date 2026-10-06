@@ -1,7 +1,5 @@
 import "./RankingPodium.css";
 
-const PODIUM_ORDER = [1, 0, 2];
-
 function RankingPodium({ records }) {
     const topThree = records.slice(0, 3);
 
@@ -11,19 +9,14 @@ function RankingPodium({ records }) {
 
     return (
         <section aria-label="Pódio do ranking" className="ranking-podium">
-        {PODIUM_ORDER.map((recordIndex) => {
-            const record = topThree[recordIndex];
-            const position = recordIndex + 1;
-
-            if (!record) {
-                return (
-                    <div
-                        aria-hidden="true"
-                        className={`ranking-podium__place ranking-podium__place--${position} ranking-podium__place--empty`}
-                        key={position}
-                    />
-                );
-            }
+        {topThree.map((record, index) => {
+            const position = index + 1;
+            const title = record.escola ?? record.serieFormatada ?? `Turma ${record.turma}`;
+            const description = record.escola
+                ? [record.serieFormatada, record.turma && `Turma ${record.turma}`]
+                    .filter(Boolean)
+                    .join(" · ")
+                : record.turma && `Turma ${record.turma}`;
 
             return (
                 <article
@@ -31,9 +24,14 @@ function RankingPodium({ records }) {
                     className={`ranking-podium__place ranking-podium__place--${position}`}
                     key={`${position}-${record.escolaId ?? record.escola ?? record.turma}`}
                 >
-                    <strong>{record.pontuacaoTotal}</strong>
-                    <span>PONTOS</span>
-                    <b aria-hidden="true">{position}</b>
+                    <b aria-hidden="true">{position}º</b>
+                    <div className="ranking-podium__identity">
+                        <strong>{title}</strong>
+                        {description && <span>{description}</span>}
+                    </div>
+                    <span className="ranking-podium__points">
+                        {record.pontuacaoTotal} pts
+                    </span>
                 </article>
             );
         })}
