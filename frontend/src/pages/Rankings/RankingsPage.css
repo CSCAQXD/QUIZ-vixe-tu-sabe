@@ -143,6 +143,14 @@
     width: min(96rem, 100%);
 }
 
+.rankings-page__header,
+.rankings-page__tabs,
+.rankings-page__filters,
+.rankings-page__panel > .ranking-podium,
+.rankings-page__panel > .pagination {
+    flex: 0 0 auto;
+}
+
 .rankings-page__panel > .ranking-table {
     min-height: 12rem;
     flex: 1 1 auto;
