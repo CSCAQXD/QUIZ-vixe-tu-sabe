@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import BackButton from "../../components/common/BackButton/BackButton";
 import Button from "../../components/common/Button/Button";
+import HomeButton from "../../components/common/HomeButton/HomeButton";
 import PageStatus from "../../components/common/PageStatus/PageStatus";
 import ScenicBackdrop from "../../components/common/ScenicBackdrop/ScenicBackdrop";
 import RankingPodium from "../../components/features/rankings/RankingPodium/RankingPodium";
@@ -226,6 +227,7 @@ function RankingsPage() {
                 <header className="rankings-page__header">
                     <BackButton fallback="/" />
                     <h1>Rankings</h1>
+                    <HomeButton className="rankings-page__home" />
                 </header>
 
                 <nav aria-label="Tipos de ranking" className="rankings-page__tabs">
