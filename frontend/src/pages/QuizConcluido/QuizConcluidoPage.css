@@ -30,11 +30,21 @@
 }
 
 .completed-page__panel {
-    width: min(57.375rem, calc(100% - 2rem));
-    height: 100%;
+    width: min(76rem, calc(100% - 2rem));
+    height: calc(100% - 2rem);
+    display: grid;
+    grid-template-columns: minmax(17rem, 0.72fr) minmax(0, 1.28fr);
+    grid-template-areas:
+        "title rankings"
+        "success rankings"
+        "score rankings"
+        "actions rankings";
+    grid-template-rows: auto auto 1fr auto;
+    column-gap: clamp(2rem, 4vw, 4.5rem);
     margin-inline: auto;
-    padding: clamp(2rem, 4vw, 4.5rem) clamp(1.25rem, 5vw, 8.75rem) 5rem;
-    overflow-y: auto;
+    margin-top: 1rem;
+    padding: clamp(2rem, 4vw, 4rem);
+    overflow: hidden;
     border-radius: 1.875rem;
     background: #fff0df;
     box-shadow: 0 0.25rem 0.875rem rgb(0 0 0 / 25%);
@@ -43,15 +53,10 @@
     text-align: center;
 }
 
-.completed-page__celebration {
-    width: min(21.875rem, 58vw);
-    height: auto;
-    display: block;
-    margin-inline: auto;
-}
-
 .completed-page h1 {
-    margin: 1rem 0 0;
+    grid-area: title;
+    align-self: end;
+    margin: 0;
     color: #000;
     font-size: clamp(2.8rem, 5vw, 4.375rem);
     font-weight: 800;
@@ -59,15 +64,21 @@
 }
 
 .completed-page__success {
-    margin: 1rem 0 2.25rem;
+    grid-area: success;
+    margin: 0.75rem 0 2rem;
     font-size: clamp(1rem, 2vw, 1.875rem);
     font-weight: 800;
 }
 
 .completed-page__score {
+    grid-area: score;
+    align-self: start;
     display: grid;
     justify-items: center;
-    margin-bottom: 3.5rem;
+    padding: 1.75rem;
+    border: 1px solid rgb(60 20 35 / 12%);
+    border-radius: 1.5rem;
+    background: #fffaf4;
     font-weight: 800;
 }
 
@@ -75,6 +86,15 @@
 .completed-page__rankings > h2 {
     color: #000;
     font-size: clamp(1rem, 2vw, 1.875rem);
+}
+
+.completed-page__rankings {
+    grid-area: rankings;
+    min-height: 0;
+    padding-right: 0.5rem;
+    overflow-y: auto;
+    scrollbar-color: #f09b32 transparent;
+    scrollbar-width: thin;
 }
 
 .completed-page__score strong {
@@ -124,9 +144,10 @@
 }
 
 .completed-page__actions {
+    grid-area: actions;
     display: grid;
     gap: 1rem;
-    margin-top: 3rem;
+    margin-top: 1.5rem;
 }
 
 .completed-page__rankings-button,
@@ -154,8 +175,17 @@
 
     .completed-page__panel {
         width: 100%;
+        height: auto;
         min-height: 100svh;
+        display: block;
+        margin-top: 0;
+        overflow-y: auto;
         border-radius: 0;
+    }
+
+    .completed-page__rankings {
+        margin-top: 3rem;
+        overflow: visible;
     }
 
     .ranking-summary__content {
