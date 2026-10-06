@@ -135,3 +135,13 @@
     color: #a52d37;
     text-align: left;
 }
+
+@media (max-width: 760px) {
+    .ranking-podium {
+        grid-template-columns: 1fr;
+    }
+
+    .ranking-podium__place {
+        min-height: 6.5rem;
+    }
+}
