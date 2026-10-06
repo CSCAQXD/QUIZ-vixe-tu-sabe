@@ -194,7 +194,7 @@ test(
 );
 
 test(
-    "atribui a mesma posição para pontuações empatadas",
+    "atribui posições densas para pontuações empatadas",
     async () => {
         const escola = {
             id: "escola-1",
@@ -250,7 +250,7 @@ test(
             resultado.ranking.map(
                 (item) => item.posicao
             ),
-            [1, 1, 3]
+            [1, 1, 2]
         );
     }
 );
