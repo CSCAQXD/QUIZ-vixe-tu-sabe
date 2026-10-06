@@ -30,14 +30,14 @@
 }
 
 .rankings-page__panel {
-    width: min(108.6875rem, 100%);
+    width: min(87.5rem, 100%);
     height: 100%;
     margin-inline: auto;
-    padding: clamp(1.5rem, 3vw, 3.75rem) clamp(1rem, 5.2vw, 6.25rem) 5rem;
+    padding: clamp(1.5rem, 3vw, 3rem) clamp(1rem, 3.5vw, 3.5rem) 3rem;
     overflow-y: auto;
     border-radius: 1.875rem;
-    background: #fff0df;
-    box-shadow: 0 0.25rem 0.875rem rgb(0 0 0 / 25%);
+    background: linear-gradient(145deg, #fff7ed, #fff0df);
+    box-shadow: 0 0.5rem 2rem rgb(60 20 35 / 18%);
     scrollbar-color: #b8b8b8 transparent;
     scrollbar-width: thin;
 }
@@ -83,34 +83,34 @@
 .rankings-page__header h1 {
     margin: 0;
     color: #000;
-    font-size: clamp(2.8rem, 5vw, 6rem);
-    font-weight: 800;
+    font-size: clamp(2.25rem, 3.5vw, 3.75rem);
+    font-weight: 900;
     line-height: 1;
     text-align: center;
 }
 
 .rankings-page__tabs {
-    width: min(87rem, 100%);
-    min-height: clamp(5.4rem, 6.4vw, 7.6875rem);
+    width: min(52rem, 100%);
+    min-height: 0;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: clamp(0.5rem, 1.2vw, 1.25rem);
-    margin: clamp(2.5rem, 5vh, 5rem) auto 2.5rem;
-    padding: clamp(0.55rem, 1vw, 1.1875rem);
-    border-radius: 3.75rem;
-    background: #fff;
-    box-shadow: 0 0.25rem 0.5625rem rgb(0 0 0 / 25%);
+    margin: 1.75rem auto 1.5rem;
+    padding: 0.4rem;
+    border: 1px solid rgb(60 20 35 / 12%);
+    border-radius: 1rem;
+    background: #f4dfc6;
 }
 
 .rankings-page__tabs button {
     min-width: 0;
-    min-height: clamp(4rem, 4.5vw, 5.3125rem);
-    padding: 0.75rem;
+    min-height: 3rem;
+    padding: 0.65rem;
     border: 0;
-    border-radius: 3rem;
+    border-radius: 0.75rem;
     color: #000;
     background: transparent;
-    font-size: clamp(0.9rem, 1.45vw, 1.75rem);
+    font-size: clamp(0.8rem, 1vw, 1rem);
     font-weight: 800;
     cursor: pointer;
     transition: background-color 140ms ease, color 140ms ease;
@@ -118,26 +118,26 @@
 
 .rankings-page__tabs button[aria-pressed="true"] {
     color: #fff;
-    background: #219653;
+    background: #3c1423;
 }
 
 .rankings-page__school {
     width: min(37rem, 100%);
     display: grid;
     gap: 0.625rem;
-    margin: 0 auto 1.5rem;
-    font-size: clamp(1rem, 1.25vw, 1.5rem);
+    margin: 0 auto 1.25rem;
+    font-size: 0.9rem;
     font-weight: 800;
 }
 
 .rankings-page__school select {
     width: 100%;
-    min-height: 5.5625rem;
-    padding: 1rem 1.75rem;
-    border: 0;
-    border-radius: 1.25rem;
+    min-height: 3.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgb(60 20 35 / 20%);
+    border-radius: 0.75rem;
     background: #fff;
-    box-shadow: 0 0.25rem 0.5625rem rgb(0 0 0 / 25%);
+    box-shadow: none;
     font-weight: 700;
 }
 
