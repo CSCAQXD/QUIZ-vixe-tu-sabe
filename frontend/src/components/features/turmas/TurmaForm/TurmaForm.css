@@ -62,50 +62,66 @@
     font-size: 0.875rem;
 }
 
-.turma-form__configuration--technical > .form-field {
-    grid-area: course;
+.turma-form .form-field__input,
+.turma-form .select-field__control {
+    min-height: 52px;
+    height: 52px;
+    border-color: #c9b8aa;
+    border-radius: 10px;
+    color: #3c1423;
+    background-color: #fff;
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
-.turma-form__configuration--technical > .select-field:last-child {
-    grid-area: classroom;
+.turma-form .form-field__input {
+    padding: 12px 14px;
 }
 
-.turma-form__fields {
-    display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    align-items: start;
-    gap: 16px;
+.turma-form .form-field__input::placeholder,
+.turma-form .select-field__control:invalid {
+    color: #806f66;
 }
 
 .turma-form .select-field__control {
-    min-height: 56px;
-    background-color: #fffaf4;
-    font-size: 1rem;
+    padding: 12px 42px 12px 14px;
 }
 
-.turma-form .form-field,
-.turma-form .select-field {
-    gap: 6px;
+.turma-form .form-field__input[aria-invalid="true"],
+.turma-form .select-field__control[aria-invalid="true"] {
+    border-color: #a52d37;
+}
+
+.turma-form .form-field__input:focus-visible,
+.turma-form .select-field__control:focus-visible {
+    outline: 2px solid #a52d37;
+    outline-offset: 2px;
 }
 
 .turma-form .form-field__error,
 .turma-form .select-field__error {
-    min-height: 1em;
+    min-height: 1.25em;
     font-size: 0.8rem;
+}
+
+.turma-form > .form-field .form-field__error:empty,
+.turma-form__configuration > .form-field .form-field__error:empty,
+.turma-form__fields--single .select-field__error:empty {
+    display: none;
 }
 
 .turma-form__reuse-school {
     width: max-content;
-    min-height: 32px;
+    max-width: 100%;
+    min-height: 44px;
     justify-self: start;
-    margin-top: -18px;
-    padding: 3px 2px;
+    margin-top: -12px;
+    padding: 8px 0;
     border: 0;
-    color: #6f3d25;
+    color: #a52d37;
     background: transparent;
     box-shadow: none;
-    font-family: var(--font-family-base);
-    font-size: clamp(0.8rem, 0.9vw, 0.95rem);
+    font-size: 0.875rem;
     text-decoration: underline;
     text-decoration-color: #f09b32;
     text-decoration-thickness: 2px;
