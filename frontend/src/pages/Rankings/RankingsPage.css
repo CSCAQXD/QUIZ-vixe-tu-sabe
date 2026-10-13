@@ -310,6 +310,15 @@
     .rankings-page__school {
         width: 100%;
     }
+
+    .rankings-page__highlights[open] {
+        max-height: none;
+        overflow: visible;
+    }
+
+    .rankings-page__panel > .ranking-table {
+        flex: 0 0 auto;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
