@@ -9,53 +9,47 @@
 .registration-page__panel {
     position: relative;
     z-index: 3;
-    max-height: 100svh;
+    min-width: 0;
+    min-height: 0;
     display: flex;
-    flex-direction: column;
-    gap: 0;
-    padding: clamp(30px, 3.7vh, 40px) clamp(48px, 6.55vw, 126px) clamp(42px, 7vh, 76px) clamp(62px, 7.85vw, 151px);
+    padding: clamp(24px, 3vh, 40px) clamp(24px, 3vw, 56px);
     overflow: hidden;
-    border-radius: 36px 0 0 36px;
+    border-radius: 32px 0 0 32px;
     background: #fff0df;
-    box-shadow: -6px 0 22px rgb(60 20 35 / 16%);
+    box-shadow: -6px 0 22px rgb(60 20 35 / 10%);
 }
 
 .registration-page__content {
+    width: 100%;
+    max-width: 760px;
     min-height: 0;
-    flex: 1;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-gutter: stable;
-    scrollbar-width: none;
-}
-
-.registration-page__content::-webkit-scrollbar {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    margin-inline: auto;
 }
 
 .registration-page__header {
+    flex: 0 0 auto;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: 44px minmax(0, 1fr);
     align-items: start;
-    gap: clamp(18px, 2vw, 28px);
-    margin-bottom: clamp(18px, 2.5vh, 26px);
+    gap: 16px;
+    padding-bottom: 24px;
 }
 
 .registration-page__header .back-button {
-    flex: 0 0 auto;
-    width: clamp(60px, 3.8vw, 73px);
-    min-height: 0;
-    aspect-ratio: 1;
+    width: 44px;
+    min-height: 44px;
     justify-content: center;
     padding: 0;
-    border: 0;
-    color: #000;
-    background: #f7c181;
+    border: 1px solid rgb(165 45 55 / 18%);
+    color: #3c1423;
+    background: #ffe1b8;
 }
 
 .registration-page__header .back-button .back-button__icon {
-    width: clamp(1.5rem, 1.7vw, 2rem);
-    height: clamp(1.5rem, 1.7vw, 2rem);
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 .registration-page__header .back-button .back-button__label {
@@ -68,11 +62,11 @@
 
 .registration-page__eyebrow {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     color: #a52d37;
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
 }
 
