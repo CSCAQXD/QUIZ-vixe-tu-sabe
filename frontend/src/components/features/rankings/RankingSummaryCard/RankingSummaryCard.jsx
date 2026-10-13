@@ -3,6 +3,7 @@ import "./RankingSummaryCard.css";
 function RankingSummaryCard({
     description,
     participants,
+    participantLabel = "participantes",
     position,
     title,
     tone = "wine",
@@ -14,14 +15,14 @@ function RankingSummaryCard({
             <div className="ranking-summary__content">
                 <div>
                     <strong>{description}</strong>
-                    <span>{participants} participantes</span>
+                    {participants > 0 && <span>{participants} {participantLabel}</span>}
                 </div>
 
                 <span
                     aria-label={`${position ?? "Sem"} posição no ranking`}
                     className="ranking-summary__position"
                 >
-                    {position ?? "—"}
+                    {position ? `${position}º` : "—"}
                 </span>
             </div>
         </article>
