@@ -9,6 +9,8 @@ import Button from "../../components/common/Button/Button";
 import HomeButton from "../../components/common/HomeButton/HomeButton";
 import ScenicBackdrop from "../../components/common/ScenicBackdrop/ScenicBackdrop";
 import RankingSummaryCard from "../../components/features/rankings/RankingSummaryCard/RankingSummaryCard";
+import ResultRankings from "../../components/features/rankings/ResultRankings/ResultRankings";
+import { buildResultGroups } from "../../utils/completion";
 import { getResult } from "../../utils/storage";
 
 import "./QuizConcluidoPage.css";
@@ -51,11 +53,16 @@ function QuizConcluidoPage() {
         classesTotal: 0,
     });
     const [rankingError, setRankingError] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
     const rankingResults = useMemo(() => {
         if (!result) return [];
         return Array.isArray(result.resultados) ? result.resultados : [result];
     }, [result]);
+    const groups = useMemo(
+        () => buildResultGroups(rankingResults, rankingData),
+        [rankingResults, rankingData],
+    );
     const schoolsById = useMemo(
         () => new Map(rankingData.schools.map((item) => [item.escolaId, item])),
         [rankingData.schools],
@@ -95,7 +102,8 @@ function QuizConcluidoPage() {
                 if (isActive) {
                     setRankingError("Não foi possível atualizar todos os rankings.");
                 }
-            });
+            })
+            .finally(() => { if (isActive) setIsLoading(false); });
 
         return () => {
             isActive = false;
