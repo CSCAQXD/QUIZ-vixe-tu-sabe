@@ -100,11 +100,7 @@ function TurmaForm({
             </Button>
         )}
 
-        <div className={`turma-form__configuration${
-            turma.tipoOrganizacao === "TECNICA"
-                ? " turma-form__configuration--technical"
-                : ""
-        }`}>
+        <div className="turma-form__configuration">
         <SelectField
             id={`organizacao-${turma.id}`}
             label="Tipo de organização"
@@ -117,20 +113,6 @@ function TurmaForm({
             value={turma.tipoOrganizacao}
         />
 
-        {turma.tipoOrganizacao === "TECNICA" && (
-            <FormField
-                id={`curso-${turma.id}`}
-                label="Curso"
-                error={errors.cursoNome}
-                maxLength={120}
-                onBlur={() => onFieldBlur("cursoNome")}
-                onChange={(value) => update("cursoNome", value)}
-                placeholder="Busque ou cadastre o curso"
-                required
-                value={turma.cursoNome}
-            />
-        )}
-
         <SelectField
             id={`tipo-turma-${turma.id}`}
             label="Organização da turma"
@@ -142,9 +124,23 @@ function TurmaForm({
             options={CLASS_TYPE_OPTIONS}
             value={turma.organizacaoTurma}
         />
+        {turma.tipoOrganizacao === "TECNICA" && (
+            <FormField
+                id={`curso-${turma.id}`}
+                label="Curso"
+                error={errors.cursoNome}
+                maxLength={120}
+                onBlur={() => onFieldBlur("cursoNome")}
+                onChange={(value) => update("cursoNome", value)}
+                placeholder="Ex.: Redes de Computadores"
+                required
+                value={turma.cursoNome}
+            />
+        )}
         </div>
 
-        <div className="turma-form__fields">
+        <div className={`turma-form__fields${turma.organizacaoTurma === "UNICA"
+            ? " turma-form__fields--single" : ""}`}>
             <SelectField
             id={`serie-${turma.id}`}
             label="Série"
