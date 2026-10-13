@@ -1,21 +1,21 @@
 .rankings-page {
+    --ranking-ground-height: min(18svh, 13.5514vw);
     position: relative;
     height: 100svh;
-    min-height: 620px;
+    min-height: 0;
     overflow: hidden;
     isolation: isolate;
-    padding: clamp(1rem, 4.5svh, 3rem) clamp(1rem, 4.7vw, 5.625rem);
+    padding: clamp(0.5rem, 1.5svh, 1rem) clamp(1rem, 3vw, 3rem);
     background: #f7c181;
 }
 
 .rankings-page__fence {
     z-index: -2;
-    right: 50%;
-    bottom: clamp(110px, 14svh, 152px);
-    width: max(110%, 1920px);
-    height: clamp(145px, 27svh, 294px);
-    object-fit: fill;
-    transform: translateX(50%);
+    right: 0;
+    bottom: var(--ranking-ground-height);
+    left: 0;
+    width: 100%;
+    height: auto;
 }
 
 .rankings-page__ground {
@@ -24,7 +24,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: clamp(115px, 24svh, 260px);
+    height: var(--ranking-ground-height);
     object-fit: cover;
     object-position: center top;
 }
@@ -35,8 +35,8 @@
     display: flex;
     flex-direction: column;
     margin-inline: auto;
-    padding: clamp(1.5rem, 3vw, 3rem) clamp(1rem, 3.5vw, 3.5rem) 3rem;
-    overflow-y: auto;
+    padding: clamp(0.75rem, 2svh, 1.25rem) clamp(1rem, 2vw, 2rem);
+    overflow: hidden;
     border-radius: 1.875rem;
     background: linear-gradient(145deg, #fff7ed, #fff0df);
     box-shadow: 0 0.5rem 2rem rgb(60 20 35 / 18%);
@@ -49,15 +49,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 4.5625rem;
+    min-height: 3rem;
 }
 
 .rankings-page__header .back-button {
     position: absolute;
     top: 0;
     left: 0;
-    width: 4.5625rem;
-    height: 4.5625rem;
+    width: 3rem;
+    height: 3rem;
     min-height: 0;
     justify-content: center;
     padding: 0;
@@ -69,8 +69,8 @@
 .rankings-page__home {
     position: absolute;
     right: 0;
-    min-height: 3.5rem;
-    padding: 0.75rem 1.25rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
     border-color: #a52d37;
     color: #a52d37;
     background: transparent;
@@ -88,7 +88,7 @@
 .rankings-page__header h1 {
     margin: 0;
     color: #000;
-    font-size: clamp(2.25rem, 3.5vw, 3.75rem);
+    font-size: clamp(1.75rem, 2.2vw, 2.25rem);
     font-weight: 900;
     line-height: 1;
     text-align: center;
@@ -99,9 +99,9 @@
     min-height: 0;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(0.5rem, 1.2vw, 1.25rem);
-    margin: 1.75rem auto 1.5rem;
-    padding: 0.4rem;
+    gap: 0.5rem;
+    margin: 0.5rem auto;
+    padding: 0.25rem;
     border: 1px solid rgb(60 20 35 / 12%);
     border-radius: 1rem;
     background: #f4dfc6;
@@ -109,8 +109,8 @@
 
 .rankings-page__tabs button {
     min-width: 0;
-    min-height: 3rem;
-    padding: 0.65rem;
+    min-height: 2.75rem;
+    padding: 0.5rem;
     border: 0;
     border-radius: 0.75rem;
     color: #000;
@@ -131,8 +131,8 @@
     display: flex;
     align-items: end;
     gap: 1rem;
-    margin: 0 auto 1.25rem;
-    padding: 1rem;
+    margin: 0 auto 0.75rem;
+    padding: 0.75rem;
     border: 1px solid rgb(165 45 55 / 18%);
     border-radius: 1rem;
     background: rgb(255 255 255 / 72%);
@@ -146,15 +146,19 @@
 .rankings-page__header,
 .rankings-page__tabs,
 .rankings-page__filters,
-.rankings-page__panel > .ranking-podium,
+.rankings-page__highlights,
 .rankings-page__panel > .pagination {
     flex: 0 0 auto;
 }
 
 .rankings-page__panel > .ranking-table {
-    min-height: 12rem;
-    flex: 1 1 auto;
+    min-height: 0;
+    flex: 1 1 0;
     max-height: none;
+}
+
+.rankings-page__panel > .pagination {
+    margin-top: 0.5rem;
 }
 
 .rankings-page__search {
@@ -168,6 +172,7 @@
 }
 
 .rankings-page__search input {
+    min-width: 0;
     width: 100%;
     min-height: 3.5rem;
     padding: 0.75rem 1rem;
