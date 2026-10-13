@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 import BackButton from "../../components/common/BackButton/BackButton";
 import Button from "../../components/common/Button/Button";
@@ -97,6 +98,7 @@ function getCurrentClasses(result) {
 }
 
 function RankingsPage() {
+    const showRecentResult = useLocation().state?.highlightRecentResult === true;
     const [activeRanking, setActiveRanking] = useState("turmas");
     const [schools, setSchools] = useState([]);
     const [selectedSchoolId, setSelectedSchoolId] = useState("");
@@ -106,7 +108,10 @@ function RankingsPage() {
     const [loadAttempt, setLoadAttempt] = useState(0);
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
-    const currentClasses = useMemo(() => getCurrentClasses(getResult()), []);
+    const currentClasses = useMemo(
+        () => showRecentResult ? getCurrentClasses(getResult()) : [],
+        [showRecentResult],
+    );
     const filteredRecords = useMemo(
         () => filterRanking(records, search),
         [records, search],
@@ -116,8 +121,6 @@ function RankingsPage() {
         Math.ceil(filteredRecords.length / RANKING_PAGE_SIZE),
     );
     const visibleRecords = paginateRanking(filteredRecords, page);
-
-    useEffect(() => setPage(1), [activeRanking, search, selectedSchoolId]);
 
     useEffect(() => {
         let isActive = true;
@@ -216,6 +219,7 @@ function RankingsPage() {
     }
 
     function changeRanking(newRanking) {
+        setPage(1);
         setActiveRanking(newRanking);
         setRecords([]);
         setError("");
@@ -223,6 +227,7 @@ function RankingsPage() {
     }
 
     function changeSchool(schoolId) {
+        setPage(1);
         setSelectedSchoolId(schoolId);
         setRecords([]);
         setError("");
@@ -233,6 +238,11 @@ function RankingsPage() {
         setError("");
         setIsLoading(true);
         setLoadAttempt((value) => value + 1);
+    }
+
+    function changeSearch(value) {
+        setSearch(value);
+        setPage(1);
     }
 
     return (
@@ -266,7 +276,7 @@ function RankingsPage() {
                     <label className="rankings-page__search">
                         <span>Pesquisar no ranking</span>
                         <input
-                            onChange={(event) => setSearch(event.target.value)}
+                            onChange={(event) => changeSearch(event.target.value)}
                             placeholder="Escola, série, curso ou turma"
                             type="search"
                             value={search}
@@ -309,7 +319,10 @@ function RankingsPage() {
                     />
                 ) : (
                     <>
-                        <RankingPodium records={filteredRecords} />
+                        {filteredRecords.length > 0 && <details className="rankings-page__highlights">
+                            <summary>Destaques do ranking</summary>
+                            <RankingPodium records={filteredRecords} />
+                        </details>}
                         <RankingTable
                             columns={config.columns}
                             getRecordKey={getRecordKey}
