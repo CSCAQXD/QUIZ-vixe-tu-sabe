@@ -70,53 +70,39 @@
 }
 
 .completed-page__score {
-    grid-area: score;
-    align-self: start;
     display: grid;
     justify-items: center;
-    padding: 2rem 0;
-    border-top: 2px solid rgb(165 45 55 / 18%);
-    border-bottom: 2px solid rgb(165 45 55 / 18%);
-    font-weight: 800;
+    margin: clamp(1.5rem, 4vh, 3rem) 0 1.5rem;
 }
 
-.completed-page__score span,
-.completed-page__rankings > h2 {
-    color: #000;
-    font-size: clamp(1rem, 2vw, 1.875rem);
-}
-
-.completed-page__rankings {
-    grid-area: rankings;
-    min-height: 0;
-    padding-right: 0.5rem;
-    overflow-y: auto;
-    scrollbar-color: #f09b32 transparent;
-    scrollbar-width: thin;
+.completed-page__score span {
+    color: #735e53;
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
 .completed-page__score strong {
-    margin-top: 0.5rem;
+    max-width: 100%;
+    margin: 0.375rem 0;
     color: #a52d37;
-    font-size: clamp(4.5rem, 8vw, 6.25rem);
-    line-height: 0.95;
+    font-size: clamp(4rem, 6.5vw, 7rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.055em;
+    overflow-wrap: anywhere;
 }
 
 .completed-page__score b {
     color: #a52d37;
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-size: 1rem;
+    font-weight: 600;
 }
 
-.completed-page__rankings > h2 {
-    margin: 0 0 1.25rem;
-    color: #000;
-    font-weight: 800;
-}
-
-.completed-page__ranking-warning {
-    margin: 0 0 1.25rem;
-    color: #a52d37;
-    font-weight: 700;
+.completed-page__schools {
+    width: min(26rem, 100%);
+    max-height: 7rem;
+    margin-inline: auto;
+    overflow-y: auto;
 }
 
 .completed-page__school > h3 {
