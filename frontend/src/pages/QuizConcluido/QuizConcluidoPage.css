@@ -126,51 +126,25 @@
     margin-top: 1.5rem;
 }
 
-.completed-page__rankings-button,
-.completed-page__home-button {
-    width: 100%;
-    min-height: 4rem;
-    border: 0;
-    font-family: var(--font-family-base);
-    font-size: clamp(1rem, 1.8vw, 1.5625rem);
-    font-weight: 700;
+.completed-page__actions .button {
+    min-height: 48px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
 }
 
 .completed-page__rankings-button {
+    border-color: #a52d37;
     color: #fff;
-    background: #f09b32;
+    background: #a52d37;
 }
 
-@media (max-width: 960px) {
-    .completed-page {
-        height: auto;
-        min-height: 100svh;
-        overflow-y: auto;
-    }
-
-    .completed-page__panel {
-        width: min(46rem, calc(100% - 2rem));
-        height: auto;
-        min-height: calc(100svh - 2rem);
-        grid-template-columns: 1fr;
-        grid-template-areas: "celebration" "title" "success" "schools" "score" "rankings" "actions";
-        overflow-y: visible;
-    }
-
-    .completed-page__rankings {
-        margin-top: 2.5rem;
-        overflow: visible;
-    }
+.completed-page__home-button {
+    border-color: #dbc9b7;
+    color: #3c1423;
+    background: transparent;
 }
 
-@media (max-width: 640px) {
-    .completed-page {
-        height: auto;
-        min-height: 100svh;
-        overflow-y: auto;
-        padding: 0;
-    }
-
+@media (max-width: 760px) {
     .completed-page__panel {
         width: 100%;
         height: auto;
