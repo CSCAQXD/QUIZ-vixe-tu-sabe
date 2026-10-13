@@ -146,27 +146,19 @@
 
 @media (max-width: 760px) {
     .completed-page__panel {
-        width: 100%;
-        height: auto;
-        min-height: 100svh;
-        display: block;
-        margin-top: 0;
-        overflow-y: auto;
-        border-radius: 0;
-    }
-
-    .completed-page__rankings {
-        margin-top: 3rem;
-        overflow: visible;
-    }
-
-    .ranking-summary__content {
-        padding-inline: 1.15rem;
-    }
-
-    .completed-page__cards {
+        width: min(36rem, 100%);
         grid-template-columns: 1fr;
     }
 
+    .completed-page__details {
+        padding: 1.5rem 0 0;
+        border-left: 0;
+        border-top: 1px solid #e7d3bc;
+    }
+
+    .completed-page__score { margin-block: 1.25rem; }
+}
+
+@media (max-width: 400px) {
     .completed-page__actions { grid-template-columns: 1fr; }
 }
