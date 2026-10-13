@@ -8,7 +8,6 @@ import {
 import Button from "../../components/common/Button/Button";
 import HomeButton from "../../components/common/HomeButton/HomeButton";
 import ScenicBackdrop from "../../components/common/ScenicBackdrop/ScenicBackdrop";
-import RankingSummaryCard from "../../components/features/rankings/RankingSummaryCard/RankingSummaryCard";
 import ResultRankings from "../../components/features/rankings/ResultRankings/ResultRankings";
 import { buildResultGroups } from "../../utils/completion";
 import { getResult } from "../../utils/storage";
@@ -151,38 +150,7 @@ function QuizConcluidoPage() {
                 <ResultRankings groups={groups} isLoading={isLoading}
                     error={rankingError} schoolsTotal={rankingData.schoolsTotal}
                     classesTotal={rankingData.classesTotal} />
-                <section className="completed-page__rankings">
-                    <h2>SUA PONTUAÇÃO NOS RANKINGS</h2>
 
-                    {rankingError && (
-                        <p className="completed-page__ranking-warning">
-                            {rankingError}
-                        </p>
-                    )}
-
-                    {rankingResults.map((schoolResult) => {
-                        const schoolRanking = schoolsById.get(
-                            schoolResult.escola?.id,
-                        );
-
-                        return (
-                            <section
-                                className="completed-page__school"
-                                key={schoolResult.escola?.id ?? schoolResult.partida?.id}
-                            >
-                                <h3>{schoolResult.escola?.nome}</h3>
-
-                                <div className="completed-page__cards">
-
-
-
-
-
-                                </div>
-                            </section>
-                        );
-                    })}
-                </section>
 
                 <div className="completed-page__actions">
                     <Button
