@@ -106,3 +106,10 @@
     background: #fff0df;
     font-size: 1.375rem;
 }
+
+.result-rankings__warning {
+    margin: 1rem 0 0;
+    color: #a52d37;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
