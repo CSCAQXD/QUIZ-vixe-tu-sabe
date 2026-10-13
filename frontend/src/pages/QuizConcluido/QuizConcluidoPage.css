@@ -41,54 +41,32 @@
     box-shadow: 0 12px 40px rgb(60 20 35 / 12%);
 }
 
-.completed-page__celebration {
-    position: relative;
-    width: 8.5rem;
-    height: 7rem;
-    grid-area: celebration;
-    align-self: end;
-    justify-self: center;
+.completed-page__overview {
+    min-width: 0;
+    text-align: center;
 }
 
-.completed-page__celebration span {
-    position: absolute;
-    inset: 1.4rem 1.4rem 0.5rem 0.5rem;
-    background: #f09b32;
-    clip-path: polygon(0 58%, 82% 0, 100% 100%);
-    transform: rotate(-8deg);
+.completed-page__eyebrow {
+    color: #a52d37;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 }
 
-.completed-page__celebration i,
-.completed-page__celebration b {
-    position: absolute;
-    width: 2rem;
-    height: 0.35rem;
-    right: 0;
-    top: 1.2rem;
-    border-radius: 1rem;
-    background: #f09b32;
-    transform: rotate(-28deg);
+.completed-page h1 {
+    margin: 0.75rem 0 0.5rem;
+    color: #3c1423;
+    font-size: clamp(2.75rem, 4.5vw, 5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
 }
-
-.completed-page__celebration b { top: 3rem; transform: rotate(18deg); }
 
 .completed-page__success {
-    grid-area: success;
-    margin: 0.75rem 0 2rem;
-    font-size: clamp(1rem, 2vw, 1.875rem);
-    font-weight: 800;
-}
-
-.completed-page__schools {
-    max-width: 22rem;
-    grid-area: schools;
-    justify-self: center;
-    margin: 0 0 1.25rem;
-    padding: 0.65rem 1.5rem;
-    border-radius: 999px;
-    color: #fff;
-    background: #f09b32;
-    font-weight: 800;
+    margin: 0;
+    color: #735e53;
+    font-size: clamp(1rem, 1.3vw, 1.25rem);
 }
 
 .completed-page__score {
