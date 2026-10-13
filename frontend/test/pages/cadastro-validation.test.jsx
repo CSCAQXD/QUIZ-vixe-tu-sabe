@@ -13,6 +13,7 @@ it("mostra os erros dos campos obrigatórios", async () => {
     }));
 
     expect(screen.getAllByText("Campo obrigatório.")).toHaveLength(2);
+    expect(screen.getByLabelText("Nome da escola")).toHaveFocus();
 });
 
 it("valida o tamanho mínimo do nome da escola", async () => {
