@@ -105,56 +105,25 @@
     overflow-y: auto;
 }
 
-.completed-page__school > h3 {
-    width: fit-content;
-    max-width: 100%;
-    margin: 0 0 1rem;
-    padding: 0 0 0.65rem;
-    border-bottom: 2px solid rgb(165 45 55 / 22%);
-    border-radius: 0;
-    color: #a52d37;
-    background: transparent;
-    font-size: clamp(1rem, 1.5vw, 1.35rem);
+.completed-page__schools p {
+    margin: 0.25rem 0;
+    color: #735e53;
+    font-size: 0.9375rem;
+    line-height: 1.5;
     overflow-wrap: anywhere;
 }
 
-.completed-page__school + .completed-page__school {
-    margin-top: 3.25rem;
-    padding-top: 3.25rem;
-    border-top: 0.3125rem solid #f09b32;
+.completed-page__details {
+    min-width: 0;
+    padding-left: clamp(1.5rem, 3vw, 3rem);
+    border-left: 1px solid #e7d3bc;
 }
-
-.completed-page__cards {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.875rem;
-}
-
-.completed-page .ranking-summary__content {
-    min-height: 5.5rem;
-    grid-template-columns: auto minmax(0, 1fr);
-    padding-block: 0.9rem;
-}
-
-.completed-page .ranking-summary__content > div { grid-column: 2; }
-
-.completed-page .ranking-summary__position {
-    width: 3.75rem;
-    grid-column: 1;
-    grid-row: 1;
-    background: #f09b32;
-}
-
-.completed-page .ranking-summary--wine h3 { background: #f09b32; }
-.completed-page .ranking-summary--green h3 { background: #413c19; }
-.completed-page .ranking-summary--orange h3 { background: #e4491a; }
 
 .completed-page__actions {
-    grid-area: actions;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.875rem;
-    margin-top: 1rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
 }
 
 .completed-page__rankings-button,
