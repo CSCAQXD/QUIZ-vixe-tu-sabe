@@ -1,6 +1,7 @@
 .completed-page {
     position: relative;
     min-height: 100svh;
+    overflow-x: clip;
     display: grid;
     place-items: center;
     isolation: isolate;
