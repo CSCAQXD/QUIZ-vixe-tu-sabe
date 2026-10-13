@@ -148,6 +148,9 @@ function QuizConcluidoPage() {
                     <b>PONTOS</b>
                 </div>
 
+                <ResultRankings groups={groups} isLoading={isLoading}
+                    error={rankingError} schoolsTotal={rankingData.schoolsTotal}
+                    classesTotal={rankingData.classesTotal} />
                 <section className="completed-page__rankings">
                     <h2>SUA PONTUAÇÃO NOS RANKINGS</h2>
 
@@ -170,24 +173,7 @@ function QuizConcluidoPage() {
                                 <h3>{schoolResult.escola?.nome}</h3>
 
                                 <div className="completed-page__cards">
-                                    {schoolResult.turmas?.map((schoolClass) => {
-                                        const classRanking = classesByKey.get(
-                                            classRankingKey(
-                                                schoolResult.escola?.id,
-                                                schoolClass,
-                                            ),
-                                        );
 
-                                        return (
-                                            <RankingSummaryCard
-                                                description={`${schoolResult.escola?.nome} · ${formatClass(schoolClass)}`}
-                                                key={`geral-${schoolClass.id}`}
-                                                participants={rankingData.classesTotal || "—"}
-                                                position={classRanking?.posicao}
-                                                title="RANKING GERAL DE TURMAS"
-                                            />
-                                        );
-                                    })}
 
                                     <RankingSummaryCard
                                         description={schoolResult.escola?.nome}
