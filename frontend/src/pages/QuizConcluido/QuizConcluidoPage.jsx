@@ -175,26 +175,9 @@ function QuizConcluidoPage() {
                                 <div className="completed-page__cards">
 
 
-                                    <RankingSummaryCard
-                                        description={schoolResult.escola?.nome}
-                                        participants={rankingData.schoolsTotal || "—"}
-                                        position={schoolRanking?.posicao}
-                                        title="RANKING ENTRE ESCOLAS"
-                                        tone="green"
-                                    />
 
-                                    {schoolResult.turmas?.map((schoolClass) => (
-                                        <RankingSummaryCard
-                                            description={formatClass(schoolClass)}
-                                            key={`interno-${schoolClass.id}`}
-                                            participants={
-                                                schoolClass.totalTurmasNoRankingInterno ?? "—"
-                                            }
-                                            position={schoolClass.posicaoRankingInterno}
-                                            title="RANKING INTERNO POR ESCOLA"
-                                            tone="orange"
-                                        />
-                                    ))}
+
+
                                 </div>
                             </section>
                         );
