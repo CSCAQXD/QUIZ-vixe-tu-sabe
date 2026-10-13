@@ -54,3 +54,11 @@ it("retorna ao início quando não há resultado salvo", async () => {
     expect(await screen.findByRole("heading", { name: "Início" })).toBeInTheDocument();
     expect(listarRankingTurmas).not.toHaveBeenCalled();
 });
+
+it.each([["Tela inicial", "Início"], ["Ver todos os rankings", "Todos os rankings"]])(
+    "navega usando a ação %s", async (action, destination) => {
+        renderPage();
+        fireEvent.click(screen.getByRole("button", { name: action }));
+        expect(await screen.findByRole("heading", { name: destination })).toBeInTheDocument();
+    },
+);
