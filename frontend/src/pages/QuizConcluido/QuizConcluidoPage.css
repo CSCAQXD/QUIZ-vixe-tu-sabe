@@ -1,10 +1,10 @@
 .completed-page {
     position: relative;
-    height: 100svh;
-    min-height: 620px;
-    overflow: hidden;
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
     isolation: isolate;
-    padding-block: 0.0625rem;
+    padding: clamp(1rem, 3vh, 2.5rem) clamp(1rem, 4vw, 5rem);
     background: #f7c181;
 }
 
@@ -30,39 +30,15 @@
 }
 
 .completed-page__panel {
-    width: min(100rem, calc(100% - 2rem));
-    height: calc(100% - 2rem);
+    width: min(88rem, 100%);
     display: grid;
-    grid-template-columns: minmax(20rem, 0.85fr) minmax(28rem, 1.15fr);
-    grid-template-areas:
-        "celebration rankings"
-        "title rankings"
-        "success rankings"
-        "schools rankings"
-        "score rankings"
-        ". actions";
-    grid-template-rows: auto auto 1fr auto;
-    column-gap: clamp(3rem, 6vw, 8rem);
-    margin-inline: auto;
-    margin-top: 1rem;
-    padding: clamp(2rem, 4vw, 4rem);
-    overflow: hidden;
-    border-radius: 1.875rem;
-    background: #fff7ed;
-    box-shadow: 0 0.5rem 2rem rgb(60 20 35 / 18%);
-    scrollbar-color: #b8b8b8 transparent;
-    scrollbar-width: thin;
-    text-align: center;
-}
-
-.completed-page h1 {
-    grid-area: title;
-    align-self: end;
-    margin: 0;
-    color: #000;
-    font-size: clamp(2.8rem, 5vw, 4.375rem);
-    font-weight: 800;
-    line-height: 1;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 5rem);
+    padding: clamp(1.5rem, 3vw, 3rem);
+    border-radius: 1.75rem;
+    background: #fff0df;
+    box-shadow: 0 12px 40px rgb(60 20 35 / 12%);
 }
 
 .completed-page__celebration {
