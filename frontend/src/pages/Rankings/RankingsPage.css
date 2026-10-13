@@ -174,7 +174,7 @@
 .rankings-page__search input {
     min-width: 0;
     width: 100%;
-    min-height: 3.5rem;
+    min-height: 3rem;
     padding: 0.75rem 1rem;
     border: 1px solid rgb(165 45 55 / 28%);
     border-radius: 0.75rem;
@@ -191,6 +191,7 @@
 
 .rankings-page__school {
     width: min(26rem, 100%);
+    min-width: 0;
     display: grid;
     gap: 0.625rem;
     margin: 0;
@@ -200,8 +201,9 @@
 }
 
 .rankings-page__school select {
+    min-width: 0;
     width: 100%;
-    min-height: 3.5rem;
+    min-height: 3rem;
     padding: 0.75rem 1rem;
     border: 1px solid rgb(60 20 35 / 20%);
     border-radius: 0.75rem;
@@ -215,21 +217,71 @@
     margin: clamp(4rem, 14vh, 10rem) auto;
 }
 
+.rankings-page__highlights {
+    width: min(96rem, 100%);
+    margin: 0 auto 0.5rem;
+}
+
+.rankings-page__highlights > summary {
+    width: fit-content;
+    min-height: 2.75rem;
+    padding: 0.65rem 0.25rem;
+    color: #3c1423;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.rankings-page__highlights > summary::marker {
+    color: #a52d37;
+}
+
+.rankings-page__highlights > summary:focus-visible {
+    outline: 3px solid rgb(165 45 55 / 35%);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+}
+
+.rankings-page__highlights[open] {
+    max-height: 32svh;
+    overflow-y: auto;
+}
+
+@media (min-width: 1024px) and (max-height: 760px) {
+    .rankings-page__header {
+        justify-content: flex-start;
+        padding-left: 4rem;
+    }
+
+    .rankings-page__header h1 {
+        font-size: 1.5rem;
+    }
+
+    .rankings-page__tabs {
+        width: min(52rem, calc(100% - 23rem));
+        margin-top: -3rem;
+        margin-bottom: 0.75rem;
+    }
+}
+
 @media (max-width: 760px) {
     .rankings-page {
         height: auto;
         min-height: 100svh;
-        overflow-y: auto;
+        overflow-x: clip;
+        overflow-y: visible;
         padding: 0;
     }
 
     .rankings-page__panel {
+        height: auto;
         min-height: 100svh;
         border-radius: 0;
+        overflow: visible;
     }
 
     .rankings-page__header {
-        padding-top: 4.75rem;
+        padding-top: 3.5rem;
     }
 
     .rankings-page__header h1 {
