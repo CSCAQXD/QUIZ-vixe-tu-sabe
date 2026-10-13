@@ -1,31 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-
-import {
-    listarRankingEscolas,
-    listarRankingTurmas,
-} from "../../api/rankingApi";
+import { listarRankingEscolas, listarRankingTurmas } from "../../api/rankingApi";
 import Button from "../../components/common/Button/Button";
 import HomeButton from "../../components/common/HomeButton/HomeButton";
 import ScenicBackdrop from "../../components/common/ScenicBackdrop/ScenicBackdrop";
 import ResultRankings from "../../components/features/rankings/ResultRankings/ResultRankings";
 import { buildResultGroups } from "../../utils/completion";
 import { getResult } from "../../utils/storage";
-
 import "./QuizConcluidoPage.css";
 
 function QuizConcluidoPage() {
     const navigate = useNavigate();
     const result = useMemo(() => getResult(), []);
     const [rankingData, setRankingData] = useState({
-        schools: [],
-        schoolsTotal: 0,
-        classes: [],
-        classesTotal: 0,
+        schools: [], schoolsTotal: 0, classes: [], classesTotal: 0,
     });
     const [rankingError, setRankingError] = useState("");
     const [isLoading, setIsLoading] = useState(true);
-
     const rankingResults = useMemo(() => {
         if (!result) return [];
         return Array.isArray(result.resultados) ? result.resultados : [result];
@@ -37,17 +28,14 @@ function QuizConcluidoPage() {
 
     useEffect(() => {
         if (!result) return undefined;
-
         let isActive = true;
         const year = result.partida?.ano ?? rankingResults[0]?.partida?.ano;
-
         Promise.all([
             listarRankingTurmas({ ano: year }),
             listarRankingEscolas({ ano: year }),
         ])
             .then(([classResponse, schoolResponse]) => {
                 if (!isActive) return;
-
                 setRankingData({
                     schools: schoolResponse.ranking ?? [],
                     schoolsTotal: schoolResponse.total ?? 0,
@@ -56,35 +44,22 @@ function QuizConcluidoPage() {
                 });
             })
             .catch(() => {
-                if (isActive) {
-                    setRankingError("Não foi possível atualizar todos os rankings.");
-                }
+                if (isActive) setRankingError(
+                    "As posições não puderam ser atualizadas. Sua pontuação está salva. Abra os rankings para tentar novamente.",
+                );
             })
             .finally(() => { if (isActive) setIsLoading(false); });
-
-        return () => {
-            isActive = false;
-        };
+        return () => { isActive = false; };
     }, [rankingResults, result]);
 
-    if (!result) {
-        return <Navigate replace to="/" />;
-    }
-
+    if (!result) return <Navigate replace to="/" />;
     const finalScore = result.partida?.pontuacaoFinal ?? 0;
-    const schoolNames = [...new Set(
-        rankingResults
-            .map((item) => item.escola?.nome)
-            .filter(Boolean),
-    )].join(" · ");
+    const schoolNames = [...new Set(groups.map((group) => group.name))];
 
     return (
         <section className="completed-page">
-            <ScenicBackdrop
-                fenceClassName="completed-page__fence"
-                groundClassName="completed-page__ground"
-            />
-
+            <ScenicBackdrop fenceClassName="completed-page__fence"
+                groundClassName="completed-page__ground" />
             <main className="completed-page__panel">
                 <div aria-hidden="true" className="completed-page__celebration">
                     <span />
