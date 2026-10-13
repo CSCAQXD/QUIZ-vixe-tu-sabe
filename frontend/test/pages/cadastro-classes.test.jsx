@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { expect, it } from "vitest";
@@ -11,6 +11,8 @@ it("adiciona, reutiliza a escola e remove uma turma", async () => {
     await userEvent.click(screen.getByRole("button", { name: "+ ADICIONAR TURMA" }));
 
     expect(screen.getByRole("heading", { name: "TURMA 2" })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getAllByLabelText("Nome da escola")[1])
+        .toHaveFocus());
     await userEvent.click(screen.getByRole("button", { name: /Usar escola anterior/ }));
     expect(screen.getAllByLabelText("Nome da escola")[1]).toHaveValue("Escola Modelo");
 
