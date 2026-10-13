@@ -26,8 +26,8 @@ function RankingPodium({ records }) {
                 >
                     <b aria-hidden="true">{position}º</b>
                     <div className="ranking-podium__identity">
-                        <strong>{title}</strong>
-                        {description && <span>{description}</span>}
+                        <strong title={title}>{title}</strong>
+                        {description && <span title={description}>{description}</span>}
                     </div>
                     <span className="ranking-podium__points">
                         {record.pontuacaoTotal} pts
