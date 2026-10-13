@@ -14,34 +14,6 @@ import { getResult } from "../../utils/storage";
 
 import "./QuizConcluidoPage.css";
 
-function normalize(value) {
-    return String(value ?? "").trim().toLocaleUpperCase("pt-BR");
-}
-
-function formatClass(schoolClass) {
-    const educationLevel =
-        schoolClass.etapaEnsino === "MEDIO" ? "Ensino Médio" : "Ensino Fundamental";
-
-    const course = schoolClass.cursoNome
-        ? ` · ${schoolClass.cursoNome}`
-        : "";
-    const division = schoolClass.turma === "UNICA"
-        ? "Turma única"
-        : `Turma ${schoolClass.turma}`;
-
-    return `${schoolClass.serie}º ano — ${educationLevel}${course} · ${division}`;
-}
-
-function classRankingKey(schoolId, schoolClass) {
-    return [
-        schoolId,
-        schoolClass.etapaEnsino,
-        Number(schoolClass.serie),
-        schoolClass.cursoId ?? "SEM_CURSO",
-        normalize(schoolClass.turma),
-    ].join("|||");
-}
-
 function QuizConcluidoPage() {
     const navigate = useNavigate();
     const result = useMemo(() => getResult(), []);
@@ -61,20 +33,6 @@ function QuizConcluidoPage() {
     const groups = useMemo(
         () => buildResultGroups(rankingResults, rankingData),
         [rankingResults, rankingData],
-    );
-    const schoolsById = useMemo(
-        () => new Map(rankingData.schools.map((item) => [item.escolaId, item])),
-        [rankingData.schools],
-    );
-    const classesByKey = useMemo(
-        () =>
-            new Map(
-                rankingData.classes.map((item) => [
-                    classRankingKey(item.escolaId, item),
-                    item,
-                ]),
-            ),
-        [rankingData.classes],
     );
 
     useEffect(() => {
