@@ -67,8 +67,10 @@
 
 .ranking-podium__points {
     grid-column: 2;
+    font-size: 1.25rem;
+    font-weight: 800;
     color: #a52d37;
-    text-align: left;
+    line-height: 1.3;
 }
 
 @media (max-width: 760px) {
@@ -76,7 +78,4 @@
         grid-template-columns: 1fr;
     }
 
-    .ranking-podium__place {
-        min-height: 6.5rem;
-    }
 }
