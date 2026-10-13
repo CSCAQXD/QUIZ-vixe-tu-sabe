@@ -61,38 +61,30 @@ function QuizConcluidoPage() {
             <ScenicBackdrop fenceClassName="completed-page__fence"
                 groundClassName="completed-page__ground" />
             <main className="completed-page__panel">
-                <div aria-hidden="true" className="completed-page__celebration">
-                    <span />
-                    <i />
-                    <b />
-                </div>
-
-                <h1>PARABÉNS</h1>
-                <p className="completed-page__success">QUIZ CONCLUÍDO COM SUCESSO</p>
-
-                <p className="completed-page__schools">
-                    {schoolNames || "Mediação concluída"}
-                </p>
-
-                <div className="completed-page__score">
-                    <span>PONTUAÇÃO FINAL</span>
-                    <strong>{finalScore}</strong>
-                    <b>PONTOS</b>
-                </div>
-
-                <ResultRankings groups={groups} isLoading={isLoading}
-                    error={rankingError} schoolsTotal={rankingData.schoolsTotal}
-                    classesTotal={rankingData.classesTotal} />
-
-
-                <div className="completed-page__actions">
-                    <Button
-                        className="completed-page__rankings-button"
-                        onClick={() => navigate("/rankings")}
-                    >
-                        VER TODOS OS RANKINGS
-                    </Button>
-                    <HomeButton className="completed-page__home-button" />
+                <section className="completed-page__overview" aria-labelledby="completion-title">
+                    <span className="completed-page__eyebrow">Mediação concluída</span>
+                    <h1 id="completion-title">Parabéns!</h1>
+                    <p className="completed-page__success">Vocês concluíram o quiz.</p>
+                    <div className="completed-page__score">
+                        <span>Pontuação final</span>
+                        <strong>{finalScore.toLocaleString("pt-BR")}</strong>
+                        <b>pontos</b>
+                    </div>
+                    <div className="completed-page__schools">
+                        {schoolNames.map((name) => <p key={name}>{name}</p>)}
+                    </div>
+                </section>
+                <div className="completed-page__details">
+                    <ResultRankings groups={groups} isLoading={isLoading}
+                        error={rankingError} schoolsTotal={rankingData.schoolsTotal}
+                        classesTotal={rankingData.classesTotal} />
+                    <div className="completed-page__actions">
+                        <Button className="completed-page__rankings-button"
+                            onClick={() => navigate("/rankings")}>
+                            Ver todos os rankings
+                        </Button>
+                        <HomeButton className="completed-page__home-button" />
+                    </div>
                 </div>
             </main>
         </section>
