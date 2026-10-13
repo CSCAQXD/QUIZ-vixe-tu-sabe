@@ -1,4 +1,5 @@
 .completed-page {
+    --completed-ground-height: min(18svh, 13.5514vw);
     position: relative;
     min-height: 100svh;
     overflow-x: clip;
@@ -11,12 +12,11 @@
 
 .completed-page__fence {
     z-index: -2;
-    right: 50%;
-    bottom: clamp(110px, 14svh, 152px);
-    width: max(110%, 1920px);
-    height: clamp(145px, 27svh, 294px);
-    object-fit: fill;
-    transform: translateX(50%);
+    right: 0;
+    bottom: var(--completed-ground-height);
+    left: 0;
+    width: 100%;
+    height: auto;
 }
 
 .completed-page__ground {
@@ -25,7 +25,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: clamp(115px, 24svh, 260px);
+    height: var(--completed-ground-height);
     object-fit: cover;
     object-position: center top;
 }
@@ -47,18 +47,17 @@
     text-align: center;
 }
 
-.completed-page__eyebrow {
-    color: #a52d37;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+.completed-page__celebration {
+    display: block;
+    width: clamp(4.5rem, 5.5vw, 5.5rem);
+    height: auto;
+    margin: 0 auto 0.75rem;
 }
 
 .completed-page h1 {
-    margin: 0.75rem 0 0.5rem;
+    margin: 0 0 0.5rem;
     color: #3c1423;
-    font-size: clamp(2.75rem, 4.5vw, 5rem);
+    font-size: clamp(2.5rem, 3.5vw, 3.75rem);
     font-weight: 800;
     line-height: 1.05;
     letter-spacing: -0.04em;
@@ -66,27 +65,33 @@
 
 .completed-page__success {
     margin: 0;
-    color: #735e53;
-    font-size: clamp(1rem, 1.3vw, 1.25rem);
+    color: #3c1423;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
 }
 
 .completed-page__score {
+    width: min(24rem, 100%);
     display: grid;
     justify-items: center;
-    margin: clamp(1.5rem, 4vh, 3rem) 0 1.5rem;
+    margin: 2rem auto 0;
 }
 
 .completed-page__score span {
-    color: #735e53;
-    font-size: 0.875rem;
-    font-weight: 600;
+    color: #3c1423;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .completed-page__score strong {
     max-width: 100%;
-    margin: 0.375rem 0;
+    margin: 0.5rem 0 0.25rem;
     color: #a52d37;
-    font-size: clamp(4rem, 6.5vw, 7rem);
+    font-size: clamp(4.25rem, 6.5vw, 6.5rem);
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.055em;
@@ -96,13 +101,16 @@
 .completed-page__score b {
     color: #a52d37;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 .completed-page__schools {
-    width: min(26rem, 100%);
+    width: min(25rem, 100%);
     max-height: 7rem;
-    margin-inline: auto;
+    display: grid;
+    gap: 0.5rem;
+    margin: 1.25rem auto 0;
     overflow-y: auto;
 }
 
