@@ -1,0 +1,54 @@
+.result-rankings { min-width: 0; }
+
+.result-rankings h2 {
+    margin: 0;
+    color: #3c1423;
+    font-size: clamp(1.25rem, 1.8vw, 1.75rem);
+    line-height: 1.25;
+}
+
+.result-rankings header > p {
+    margin: 0.5rem 0 1.5rem;
+    color: #735e53;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+.result-rankings__filters {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.result-rankings__filters label {
+    min-width: 0;
+    display: grid;
+    gap: 0.375rem;
+    color: #3c1423;
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+
+.result-rankings__filters select {
+    width: 100%;
+    min-height: 46px;
+    padding: 0.625rem 2.5rem 0.625rem 0.75rem;
+    border: 1px solid #dbc9b7;
+    border-radius: 0.625rem;
+    appearance: none;
+    background: #fffaf4 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='m5 7 5 5 5-5' fill='none' stroke='%233c1423' stroke-width='2'/%3E%3C/svg%3E") right 0.75rem center / 1.25rem no-repeat;
+    color: #3c1423;
+    font: inherit;
+}
+
+.result-rankings__filters select:focus-visible {
+    outline: 3px solid rgb(165 45 55 / 25%);
+    outline-offset: 2px;
+}
+
+.result-rankings__list {
+    overflow: hidden;
+    border: 1px solid #ecdccb;
+    border-radius: 1rem;
+    background: #fff;
+}
