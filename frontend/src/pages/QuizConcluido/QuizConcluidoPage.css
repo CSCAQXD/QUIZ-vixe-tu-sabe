@@ -115,9 +115,15 @@
 }
 
 .completed-page__schools p {
-    margin: 0.25rem 0;
-    color: #735e53;
-    font-size: 0.9375rem;
+    max-width: 100%;
+    margin: 0;
+    padding: 0.625rem 1rem;
+    border-radius: 2rem;
+    color: #3c1423;
+    background: #f09b32;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
     line-height: 1.5;
     overflow-wrap: anywhere;
 }
@@ -165,7 +171,7 @@
         border-top: 1px solid #e7d3bc;
     }
 
-    .completed-page__score { margin-block: 1.25rem; }
+    .completed-page__score { margin-top: 1.25rem; }
 }
 
 @media (max-width: 400px) {
