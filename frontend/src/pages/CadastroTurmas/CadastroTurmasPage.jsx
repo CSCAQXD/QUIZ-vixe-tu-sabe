@@ -157,10 +157,15 @@ function CadastroTurmasPage() {
         return;
         }
 
+        const newClassroom = createClassroom();
         setClassrooms((current) => [
         ...current,
-        createClassroom(),
+        newClassroom,
         ]);
+
+        requestAnimationFrame(() => {
+            document.getElementById(`escola-${newClassroom.id}`)?.focus();
+        });
 
         setError("");
     }
@@ -193,6 +198,12 @@ function CadastroTurmasPage() {
 
         if (!isValid) {
             setError("");
+            const invalidClassroom = classrooms.find((classroom) =>
+                Object.keys(validationErrors[classroom.id]).length > 0,
+            );
+            const field = Object.keys(validationErrors[invalidClassroom.id])[0];
+            const prefix = { nomeEscola: "escola", cursoNome: "curso" }[field] ?? field;
+            document.getElementById(`${prefix}-${invalidClassroom.id}`)?.focus();
             return;
         }
 
@@ -225,9 +236,9 @@ function CadastroTurmasPage() {
                     <span className="registration-page__eyebrow">
                         Configuração da mediação
                     </span>
-                    <h1>REGISTRE OS DADOS DA TURMA</h1>
+                    <h1>Cadastre as turmas</h1>
                     <p className="registration-page__intro">
-                        Identifique cada grupo que participará desta mediação.
+                        Informe a escola e os grupos que vão participar do quiz.
                     </p>
                 </div>
             </header>
@@ -269,6 +280,11 @@ function CadastroTurmasPage() {
             </div>
 
             <div className="registration-page__actions">
+            <p aria-live="polite" className="registration-page__summary">
+                {classrooms.length} {classrooms.length === 1 ? "turma adicionada" : "turmas adicionadas"}
+                {classrooms.length === 20 && " · Limite de 20 turmas atingido"}
+            </p>
+            <div className="registration-page__buttons">
             <Button
                 disabled={classrooms.length >= 20}
                 onClick={addClassroom}
@@ -280,6 +296,7 @@ function CadastroTurmasPage() {
             <Button type="submit" variant="success">
                 INICIAR QUIZ DA MEDIAÇÃO
             </Button>
+            </div>
             </div>
 
             {error && (
