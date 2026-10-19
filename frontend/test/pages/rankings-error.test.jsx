@@ -10,6 +10,7 @@ vi.mock("../../src/api/escolaApi", () => ({
 }));
 vi.mock("../../src/api/rankingApi", () => ({
     listarRankingEscolas: vi.fn(),
+    listarRankingCategoria: vi.fn(),
     listarRankingInterno: vi.fn(),
     listarRankingTurmas: vi.fn()
         .mockRejectedValueOnce(new Error("Falha no ranking"))
