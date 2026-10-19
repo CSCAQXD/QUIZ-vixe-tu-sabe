@@ -346,6 +346,18 @@ function RankingsPage() {
                         </select>
                     </label>
                 )}
+                {activeRanking === "categoria" && (
+                    <div className="rankings-page__school">
+                        <SelectField
+                            id="ranking-category"
+                            label="Selecione a categoria"
+                            onChange={changeCategory}
+                            options={CATEGORIES}
+                            placeholder="Selecione a categoria"
+                            value={selectedCategory}
+                        />
+                    </div>
+                )}
                 </div>
 
                 {isLoading ? (
