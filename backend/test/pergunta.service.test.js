@@ -244,3 +244,21 @@ test("filtra perguntas usando a menor faixa da mediação", async () => {
         ["geral", "f1"]
     );
 });
+
+test("retorna quantidade variável de perguntas da faixa e comuns", async () => {
+    mock.method(perguntaRepository, "buscarDaPlanilha", async () => [
+        ...Array.from({ length: 26 }, (_, indice) => criarPergunta({
+            id: `f1-${indice}`, faixa: "FUNDAMENTAL1",
+        })),
+        ...Array.from({ length: 7 }, (_, indice) => criarPergunta({
+            id: `comum-${indice}`, faixa: "COMUM",
+        })),
+        criarPergunta({ id: "medio", faixa: "ENSINOMEDIO" }),
+    ]);
+    const perguntas = await perguntaService.listarPerguntas([
+        { etapaEnsino: "FUNDAMENTAL", serie: 4 },
+    ]);
+    assert.equal(perguntas.length, 33);
+    assert.equal(new Set(perguntas.map((pergunta) => pergunta.id)).size, 33);
+    assert.ok(perguntas.every((pergunta) => pergunta.id !== "medio"));
+});
