@@ -9,17 +9,34 @@ function Modal({
     title,
 }) {
     const closeButtonRef = useRef(null);
+    const contentRef = useRef(null);
 
     useEffect(() => {
         if (!isOpen) {
         return undefined;
         }
 
+        const previousFocus = document.activeElement;
         closeButtonRef.current?.focus();
 
         function handleKeyDown(event) {
         if (event.key === "Escape") {
             onClose();
+        }
+        if (event.key === "Tab") {
+            const controls = contentRef.current?.querySelectorAll(
+                'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]',
+            );
+            const first = controls?.[0];
+            const last = controls?.[controls.length - 1];
+            if (!first) return;
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
         }
         }
 
@@ -33,6 +50,9 @@ function Modal({
             "keydown",
             handleKeyDown,
         );
+        if (previousFocus?.isConnected && !previousFocus.disabled) {
+            previousFocus.focus();
+        }
         };
     }, [isOpen, onClose]);
 
@@ -54,7 +74,7 @@ function Modal({
             type="button"
         />
 
-        <section className={`modal__content ${className}`.trim()}>
+        <section className={`modal__content ${className}`.trim()} ref={contentRef}>
             <button
             aria-label="Fechar"
             className="modal__close"
