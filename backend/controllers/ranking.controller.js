@@ -114,8 +114,22 @@ async function listarRankingInterno(
     }
 }
 
+async function listarRankingPorCategoria(req, res, next) {
+    try {
+        const resultado = await rankingService.listarRankingPorCategoria(
+            req.params.categoria,
+            obterAno(req),
+            obterLimite(req)
+        );
+        return res.json(resultado);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     listarRankingDeTurmas,
     listarRankingDeEscolas,
     listarRankingInterno,
+    listarRankingPorCategoria,
 };
