@@ -47,3 +47,9 @@ export function listarRankingInterno(
         )}${buildQuery(params)}`,
     );
 }
+
+export function listarRankingCategoria(categoria, params = {}) {
+    return apiRequest(
+        `/ranking-categoria/${encodeURIComponent(categoria)}${buildQuery(params)}`,
+    );
+}
