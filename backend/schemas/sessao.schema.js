@@ -1,3 +1,5 @@
+const { LIMITE_CONTEXTO_QUIZ } = require("../utils/contextoQuiz");
+
 function criarErroValidacao(mensagem) {
     const erro = new Error(mensagem);
     erro.statusCode = 400;
@@ -27,6 +29,10 @@ function validarSessao(dados = {}) {
     const idempotencyKey = String(
         dados.idempotencyKey ?? ""
     ).trim();
+
+    const contextoQuiz = typeof dados.contextoQuiz === "string"
+        ? dados.contextoQuiz.trim()
+        : "";
 
     const pontuacaoFinal = Number(
         dados.pontuacaoFinal
@@ -86,6 +92,11 @@ function validarSessao(dados = {}) {
         throw criarErroValidacao(
             "pontuacaoFinal deve ser um número inteiro maior ou igual a zero."
         );
+    }
+
+    if (contextoQuiz.length < 16 || contextoQuiz.length > LIMITE_CONTEXTO_QUIZ ||
+        !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(contextoQuiz)) {
+        throw criarErroValidacao("O contexto do quiz é obrigatório. Inicie uma nova mediação para continuar.");
     }
 
     if (turmasRecebidas.length > 20) {
@@ -178,6 +189,7 @@ function validarSessao(dados = {}) {
         cidade,
         idempotencyKey,
         pontuacaoFinal,
+        contextoQuiz,
         turmas,
     };
 }
