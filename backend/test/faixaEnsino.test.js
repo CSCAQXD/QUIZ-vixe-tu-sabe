@@ -38,3 +38,10 @@ test("aceita nomes amigáveis vindos da planilha", () => {
     assert.equal(normalizarFaixaPergunta("Ensino Médio"), "MEDIO");
     assert.equal(normalizarFaixaPergunta(""), "TODAS");
 });
+
+test("aceita os nomes compactos da planilha e perguntas comuns", () => {
+    assert.equal(normalizarFaixaPergunta("FUNDAMENTAL1"), "FUNDAMENTAL_1");
+    assert.equal(normalizarFaixaPergunta("FUNDAMENTAL2"), "FUNDAMENTAL_2");
+    assert.equal(normalizarFaixaPergunta("ENSINOMEDIO"), "MEDIO");
+    assert.equal(normalizarFaixaPergunta("COMUM"), "TODAS");
+});
