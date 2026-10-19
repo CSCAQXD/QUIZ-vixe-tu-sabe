@@ -20,6 +20,7 @@ function criarPartida() {
         idempotencyKey:
             "550e8400-e29b-41d4-a716-446655440000",
         pontuacaoFinal: 100,
+        categoriaQuiz: "FUNDAMENTAL_2",
         ano: 2026,
         dataPartida:
             new Date(
@@ -78,6 +79,7 @@ test(
         const resultado =
             await sessaoService
                 .registrarSessoes({
+                    contextoQuiz: "contexto-invalido.assinatura-invalida",
                     idempotencyKey:
                         partida
                             .idempotencyKey,
@@ -108,6 +110,7 @@ test(
             resultado.partida.id,
             "partida-1"
         );
+        assert.equal(resultado.partida.categoriaQuiz, "FUNDAMENTAL_2");
     }
 );
 
