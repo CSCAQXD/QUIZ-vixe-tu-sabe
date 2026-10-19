@@ -27,7 +27,7 @@ import "./App.css";
 function App() {
     return (
         <BrowserRouter>
-        <Suspense fallback={<PageStatus message="Carregando tela..." />}>
+        <Suspense fallback={<PageStatus fullScreen message="Carregando tela..." />}>
         <Routes>
             <Route element={<MainLayout />}>
             <Route index element={<TelaInicialPage />} />
