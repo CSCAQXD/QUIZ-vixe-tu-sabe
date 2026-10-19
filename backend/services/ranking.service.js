@@ -2,6 +2,8 @@ const rankingRepository = require(
     "../repositories/ranking.repository"
 );
 
+const CATEGORIAS_QUIZ = ["FUNDAMENTAL_1", "FUNDAMENTAL_2", "MEDIO"];
+
 function compararTexto(
     primeiro,
     segundo
@@ -276,6 +278,24 @@ async function listarRankingDeEscolas(
     };
 }
 
+async function listarRankingPorCategoria(categoria, ano, limite) {
+    if (!CATEGORIAS_QUIZ.includes(categoria)) {
+        const erro = new Error("Escolha Fundamental I, Fundamental II ou Ensino Médio para consultar o ranking.");
+        erro.statusCode = 400;
+        throw erro;
+    }
+
+    const participacoes = await rankingRepository.buscarParticipacoes(ano, null, categoria);
+    const ranking = ordenarRankingDeTurmas(agruparParticipacoes(participacoes));
+
+    return {
+        ano,
+        categoria,
+        total: ranking.length,
+        ranking: aplicarLimite(adicionarPosicoes(ranking), limite),
+    };
+}
+
 async function listarRankingInterno(
     escolaId,
     ano,
@@ -370,4 +390,5 @@ module.exports = {
     listarRankingDeTurmas,
     listarRankingDeEscolas,
     listarRankingInterno,
+    listarRankingPorCategoria,
 };
