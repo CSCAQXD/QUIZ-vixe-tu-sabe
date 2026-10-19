@@ -51,3 +51,36 @@ test("rejeita turmas alteradas ou repetidas além dos participantes originais", 
     ]), invalido);
     assert.throws(() => validarContextoQuiz(contextoQuiz, [turmas[2], turmas[2]]), invalido);
 });
+
+test("rejeita adulteração do conteúdo e da assinatura", () => {
+    const [conteudo, assinatura] = criarContextoQuiz(turmas).contextoQuiz.split(".");
+    const prefixo = assinatura[0] === "A" ? "B" : "A";
+    for (const token of [null, "", "invalido", `${conteudo}.AA`,
+        `x${conteudo}.${assinatura}`, `${conteudo}.${prefixo}${assinatura.slice(1)}`]) {
+        assert.throws(() => validarContextoQuiz(token, turmas), { statusCode: 400 });
+    }
+});
+
+test("o contexto expira após quatro horas", () => {
+    const agora = Date.now();
+    mock.method(Date, "now", () => agora);
+    const { contextoQuiz } = criarContextoQuiz(turmas);
+    mock.method(Date, "now", () => agora + 4 * 60 * 60 * 1000);
+    assert.throws(() => validarContextoQuiz(contextoQuiz, turmas), { statusCode: 400 });
+});
+
+test("rejeita payloads inválidos mesmo quando assinados", () => {
+    const payload = {
+        versao: 1, categoriaQuiz: "FUNDAMENTAL_1", turmas,
+        expiraEm: Date.now() + 10000,
+    };
+    for (const alteracao of [
+        { categoriaQuiz: "TODAS" }, { categoriaQuiz: "MEDIO" },
+        { versao: 2 }, { expiraEm: "amanhã" }, { turmas: [] },
+        { turmas: [{ etapaEnsino: "MEDIO", serie: 4 }] },
+        { turmas: [{ etapaEnsino: "FUNDAMENTAL", serie: "4" }] },
+    ]) {
+        assert.throws(() => validarContextoQuiz(assinarPayload({ ...payload, ...alteracao }), turmas),
+            { statusCode: 400 });
+    }
+});
