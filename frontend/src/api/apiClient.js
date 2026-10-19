@@ -7,16 +7,23 @@ export async function apiRequest(
     path,
     options = {},
 ) {
-    const response = await fetch(
-        `${API_URL}${path}`,
-        {
-        ...options,
-        headers: {
-            "Content-Type": "application/json",
-            ...options.headers,
-        },
-        },
-    );
+    let response;
+    try {
+        response = await fetch(
+            `${API_URL}${path}`,
+            {
+                ...options,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...options.headers,
+                },
+            },
+        );
+    } catch {
+        throw new Error(
+            "Não foi possível conectar ao servidor. Verifique a conexão e tente novamente.",
+        );
+    }
 
     const contentType =
         response.headers.get("content-type");
