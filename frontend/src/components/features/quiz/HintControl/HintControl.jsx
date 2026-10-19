@@ -25,10 +25,12 @@ function HintControl({ availablePoints, nextHintPoints, onUseHint, remainingHint
 
     return (
         <div className="quiz-hint">
-            <button aria-describedby={statusId} aria-haspopup="dialog" aria-label="Ver dica"
-                className="quiz-board__hint-button" disabled={!hasHints}
+            <button aria-describedby={statusId} aria-haspopup="dialog" aria-label="Ver dicas"
+                className="quiz-hint__button" disabled={!hasHints} title={status}
                 onClick={() => setConfirmationOpen(true)} ref={buttonRef} type="button">
-                <HintIcon className="quiz-board__hint-icon" />
+                <HintIcon className="quiz-hint__icon" />
+                <span aria-hidden="true">Dicas</span>
+                <span aria-hidden="true" className="quiz-hint__count">{remainingHints}</span>
             </button>
             <span aria-live="polite" className="quiz-hint__remaining" id={statusId}>{status}</span>
             <HintConfirmation availablePoints={availablePoints} isOpen={confirmationOpen}

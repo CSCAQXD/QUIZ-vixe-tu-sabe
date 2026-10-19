@@ -38,7 +38,7 @@ describe("componentes interativos", () => {
             onCloseHint: vi.fn(), onConfirm: vi.fn(), onNext: vi.fn(), onOpenHint: vi.fn(), onSelectAnswer: vi.fn(), score: 0, schoolName: "Teste", selectedAnswer: null,
         };
         const { rerender } = render(<QuizBoard {...props} />);
-        await userEvent.click(screen.getByRole("button", { name: "Ver dica" }));
+        await userEvent.click(screen.getByRole("button", { name: "Ver dicas" }));
         expect(props.onOpenHint).not.toHaveBeenCalled();
         await userEvent.click(screen.getByRole("button", { name: "Usar dica", exact: true }));
         expect(props.onOpenHint).toHaveBeenCalledOnce();
