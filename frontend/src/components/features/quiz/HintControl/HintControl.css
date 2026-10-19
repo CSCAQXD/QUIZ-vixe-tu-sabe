@@ -38,6 +38,29 @@
     color: var(--color-green-dark);
 }
 
+.quiz-hint__count {
+    display: grid;
+    place-items: center;
+    min-width: 1.6em;
+    height: 1.6em;
+    border-radius: 50%;
+    color: var(--color-cream);
+    background: var(--color-wine-dark);
+    font-size: .9em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.quiz-hint__remaining {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 .quiz-hint__button:focus-visible {
     outline: 3px solid var(--color-wine-dark);
     outline-offset: 4px;
