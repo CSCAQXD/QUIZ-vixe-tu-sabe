@@ -10,6 +10,7 @@ vi.mock("../../src/api/escolaApi", () => ({
 vi.mock("../../src/api/rankingApi", () => ({
     listarRankingTurmas: vi.fn(), listarRankingEscolas: vi.fn(),
     listarRankingInterno: vi.fn(),
+    listarRankingCategoria: vi.fn(),
 }));
 
 it("pesquisa todo o ranking e volta à primeira página após alterar a busca", async () => {
