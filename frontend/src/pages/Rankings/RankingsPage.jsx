@@ -7,11 +7,13 @@ import HomeButton from "../../components/common/HomeButton/HomeButton";
 import Pagination from "../../components/common/Pagination/Pagination";
 import PageStatus from "../../components/common/PageStatus/PageStatus";
 import ScenicBackdrop from "../../components/common/ScenicBackdrop/ScenicBackdrop";
+import SelectField from "../../components/common/SelectField/SelectField";
 import RankingPodium from "../../components/features/rankings/RankingPodium/RankingPodium";
 import RankingTable from "../../components/features/rankings/RankingTable/RankingTable";
 import { listarEscolas } from "../../api/escolaApi";
 import {
     listarRankingEscolas,
+    listarRankingCategoria,
     listarRankingInterno,
     listarRankingTurmas,
 } from "../../api/rankingApi";
@@ -25,6 +27,12 @@ import {
 import "./RankingsPage.css";
 
 const CURRENT_YEAR = new Date().getFullYear();
+
+const CATEGORIES = [
+    { value: "FUNDAMENTAL_1", label: "Fundamental I" },
+    { value: "FUNDAMENTAL_2", label: "Fundamental II" },
+    { value: "MEDIO", label: "Ensino Médio" },
+];
 
 const RANKING_CONFIG = {
     turmas: {
@@ -53,6 +61,16 @@ const RANKING_CONFIG = {
             { key: "cursoNome", label: "Curso" },
             { key: "turma", label: "Turma" },
             { key: "quantidadePartidas", label: "Partidas" },
+            { key: "pontuacaoTotal", label: "Pontuação" },
+        ],
+    },
+    categoria: {
+        label: "Por categoria",
+        columns: [
+            { key: "escola", label: "Escola" },
+            { key: "serieFormatada", label: "Série" },
+            { key: "cursoNome", label: "Curso" },
+            { key: "turma", label: "Turma" },
             { key: "pontuacaoTotal", label: "Pontuação" },
         ],
     },
@@ -99,7 +117,16 @@ function getCurrentClasses(result) {
 
 function RankingsPage() {
     const showRecentResult = useLocation().state?.highlightRecentResult === true;
+    const recentResult = useMemo(
+        () => showRecentResult ? getResult() : null,
+        [showRecentResult],
+    );
+    const recentCategory = recentResult?.partida?.categoriaQuiz;
     const [activeRanking, setActiveRanking] = useState("turmas");
+    const [selectedCategory, setSelectedCategory] = useState(() =>
+        CATEGORIES.some(({ value }) => value === recentCategory)
+            ? recentCategory : "FUNDAMENTAL_1",
+    );
     const [schools, setSchools] = useState([]);
     const [selectedSchoolId, setSelectedSchoolId] = useState("");
     const [records, setRecords] = useState([]);
@@ -109,8 +136,8 @@ function RankingsPage() {
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
     const currentClasses = useMemo(
-        () => showRecentResult ? getCurrentClasses(getResult()) : [],
-        [showRecentResult],
+        () => getCurrentClasses(recentResult),
+        [recentResult],
     );
     const filteredRecords = useMemo(
         () => filterRanking(records, search),
@@ -161,6 +188,8 @@ function RankingsPage() {
             request = listarRankingTurmas({ ano: CURRENT_YEAR });
         } else if (activeRanking === "escolas") {
             request = listarRankingEscolas({ ano: CURRENT_YEAR });
+        } else if (activeRanking === "categoria") {
+            request = listarRankingCategoria(selectedCategory, { ano: CURRENT_YEAR });
         } else if (selectedSchoolId) {
             request = listarRankingInterno(selectedSchoolId, {
                 ano: CURRENT_YEAR,
@@ -183,10 +212,13 @@ function RankingsPage() {
         return () => {
             isActive = false;
         };
-    }, [activeRanking, loadAttempt, selectedSchoolId]);
+    }, [activeRanking, loadAttempt, selectedSchoolId, selectedCategory]);
 
     const config = RANKING_CONFIG[activeRanking];
     const highlightedKeys = useMemo(() => {
+        if (activeRanking === "categoria" && selectedCategory !== recentCategory) {
+            return new Set();
+        }
         if (activeRanking === "escolas") {
             return new Set(
                 currentClasses.map(({ escolaId }) => buildSchoolKey(escolaId)),
@@ -202,7 +234,7 @@ function RankingsPage() {
                 )
                 .map(buildClassKey),
         );
-    }, [activeRanking, currentClasses, selectedSchoolId]);
+    }, [activeRanking, currentClasses, selectedSchoolId, selectedCategory, recentCategory]);
 
     function getRecordKey(record) {
         if (activeRanking === "escolas") {
@@ -219,6 +251,7 @@ function RankingsPage() {
     }
 
     function changeRanking(newRanking) {
+        if (newRanking === activeRanking) return;
         setPage(1);
         setActiveRanking(newRanking);
         setRecords([]);
@@ -227,8 +260,18 @@ function RankingsPage() {
     }
 
     function changeSchool(schoolId) {
+        if (schoolId === selectedSchoolId) return;
         setPage(1);
         setSelectedSchoolId(schoolId);
+        setRecords([]);
+        setError("");
+        setIsLoading(true);
+    }
+
+    function changeCategory(category) {
+        if (category === selectedCategory) return;
+        setPage(1);
+        setSelectedCategory(category);
         setRecords([]);
         setError("");
         setIsLoading(true);
