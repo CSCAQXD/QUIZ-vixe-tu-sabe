@@ -1,19 +1,25 @@
 .quiz-hint {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
     justify-self: start;
-    gap: clamp(8px, 1vw, 16px);
     min-width: 0;
     max-width: 100%;
 }
 
-.quiz-hint__remaining {
-    max-width: 10ch;
+.quiz-hint__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(6px, .6vw, 10px);
+    min-height: clamp(44px, 4.8vh, 51px);
+    max-width: 100%;
+    padding: 8px clamp(10px, 1vw, 16px);
+    border: 1px solid #050505;
+    border-radius: 999px;
     color: var(--color-wine-dark);
-    font-size: clamp(.8125rem, .95vw, 1rem);
-    font-weight: 600;
-    line-height: 1.35;
+    background: var(--color-orange-light);
+    font-size: clamp(.82rem, 1.04vw, 1.25rem);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 140ms ease;
 }
 
 .quiz-hint .quiz-board__hint-button:focus-visible {
