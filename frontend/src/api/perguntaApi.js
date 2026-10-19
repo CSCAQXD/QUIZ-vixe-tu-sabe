@@ -1,6 +1,6 @@
 import { apiRequest } from "./apiClient";
 
-export async function listarPerguntas(turmas = []) {
+export async function carregarQuiz(turmas = []) {
     const parametros = new URLSearchParams();
 
     turmas.forEach(({ etapaEnsino, serie }) => {
@@ -11,5 +11,10 @@ export async function listarPerguntas(turmas = []) {
     const response =
         await apiRequest(`/perguntas${consulta}`);
 
+    return response;
+}
+
+export async function listarPerguntas(turmas = []) {
+    const response = await carregarQuiz(turmas);
     return response.perguntas ?? [];
 }
