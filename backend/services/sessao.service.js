@@ -7,6 +7,7 @@ const escolaRepository = require(
 );
 const cursoRepository = require("../repositories/curso.repository");
 const cursoService = require("./curso.service");
+const { validarContextoQuiz } = require("../utils/contextoQuiz");
 
 const sessaoRepository = require(
     "../repositories/sessao.repository"
@@ -94,6 +95,7 @@ async function montarResultado(
                 partida.idempotencyKey,
             pontuacaoFinal:
                 partida.pontuacaoFinal,
+            categoriaQuiz: partida.categoriaQuiz ?? null,
             ano: partida.ano,
             dataPartida:
                 partida.dataPartida,
@@ -123,6 +125,8 @@ async function registrarSessoes(dados) {
             true
         );
     }
+
+    const categoriaQuiz = validarContextoQuiz(dados.contextoQuiz, dados.turmas);
 
     const nomeEscola =
         limpar(dados.nomeEscola);
@@ -195,6 +199,7 @@ async function registrarSessoes(dados) {
 
                                 pontuacaoFinal:
                                     dados.pontuacaoFinal,
+                                categoriaQuiz,
 
                                 ano: anoAtual,
 
@@ -283,6 +288,7 @@ async function listarPartidasPorEscola(
                 partida.idempotencyKey,
             pontuacaoFinal:
                 partida.pontuacaoFinal,
+            categoriaQuiz: partida.categoriaQuiz ?? null,
             ano: partida.ano,
             dataPartida:
                 partida.dataPartida,
