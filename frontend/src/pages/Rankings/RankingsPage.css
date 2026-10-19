@@ -95,6 +95,8 @@
 }
 
 .rankings-page__tabs {
+    position: relative;
+    z-index: 1;
     width: min(52rem, 100%);
     min-height: 0;
     display: grid;
