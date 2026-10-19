@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { apiRequest } from "../../../src/api/apiClient";
 import { listarEscolas } from "../../../src/api/escolaApi";
-import { listarPerguntas } from "../../../src/api/perguntaApi";
-import { listarRankingEscolas, listarRankingInterno, listarRankingTurmas } from "../../../src/api/rankingApi";
+import { carregarQuiz, listarPerguntas } from "../../../src/api/perguntaApi";
+import { listarRankingCategoria, listarRankingEscolas, listarRankingInterno, listarRankingTurmas } from "../../../src/api/rankingApi";
 import { registrarSessao } from "../../../src/api/sessaoApi";
 
 vi.mock("../../../src/api/apiClient", () => ({ apiRequest: vi.fn() }));
@@ -21,9 +21,11 @@ describe("endpoints do frontend", () => {
         await listarRankingTurmas({ ano: 2026, limit: "" });
         await listarRankingEscolas({ ano: 2026 });
         await listarRankingInterno("id/escola", { limit: 10 });
+        await listarRankingCategoria("FUNDAMENTAL_1", { ano: 2026 });
         expect(apiRequest).toHaveBeenNthCalledWith(1, "/ranking-turmas?ano=2026");
         expect(apiRequest).toHaveBeenNthCalledWith(2, "/ranking-escolas?ano=2026");
         expect(apiRequest).toHaveBeenNthCalledWith(3, "/ranking-interno/id%2Fescola?limit=10");
+        expect(apiRequest).toHaveBeenNthCalledWith(4, "/ranking-categoria/FUNDAMENTAL_1?ano=2026");
     });
 
     it("envia todas as turmas ao consultar perguntas", async () => {
@@ -46,5 +48,13 @@ describe("endpoints do frontend", () => {
             method: "POST",
             body: JSON.stringify({ pontos: 10 }),
         });
+    });
+
+    it("preserva categoria e contexto das perguntas sem limitar a quantidade", async () => {
+        const response = { perguntas: Array.from({ length: 27 }, (_, id) => ({ id })),
+            categoriaQuiz: "FUNDAMENTAL_2", contextoQuiz: "contexto-assinado" };
+        apiRequest.mockResolvedValue(response);
+        await expect(carregarQuiz()).resolves.toEqual(response);
+        await expect(listarPerguntas()).resolves.toHaveLength(27);
     });
 });
