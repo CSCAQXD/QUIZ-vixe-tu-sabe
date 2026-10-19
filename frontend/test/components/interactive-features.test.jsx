@@ -39,6 +39,8 @@ describe("componentes interativos", () => {
         };
         const { rerender } = render(<QuizBoard {...props} />);
         await userEvent.click(screen.getByRole("button", { name: "Ver dica" }));
+        expect(props.onOpenHint).not.toHaveBeenCalled();
+        await userEvent.click(screen.getByRole("button", { name: "Usar dica", exact: true }));
         expect(props.onOpenHint).toHaveBeenCalledOnce();
         expect(screen.getByRole("button", { name: "Confirmar resposta" })).toBeDisabled();
         rerender(<QuizBoard {...props} answerState="correct" isHintOpen selectedAnswer={1} score={75} />);

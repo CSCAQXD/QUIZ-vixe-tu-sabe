@@ -29,6 +29,21 @@ function abrirConfirmacao() {
     return screen.getByRole("dialog", { name: "Usar uma dica?" });
 }
 
+it.each(["cancelar", "Escape", "fechar"])("avisa o custo antes da dica e não cobra ao %s", async (acao) => {
+    await iniciar();
+    expect(screen.getByText("2 dicas restantes")).toBeInTheDocument();
+    const dialogo = abrirConfirmacao();
+    expect(dialogo).toHaveTextContent("100");
+    expect(dialogo).toHaveTextContent("75");
+    expect(screen.queryByText(pergunta.dicas[0])).not.toBeInTheDocument();
+    if (acao === "cancelar") fireEvent.click(within(dialogo).getByRole("button", { name: "Continuar sem dica" }));
+    if (acao === "Escape") fireEvent.keyDown(document, { key: "Escape" });
+    if (acao === "fechar") fireEvent.click(within(dialogo).getByRole("button", { name: "Fechar", exact: true }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByText("2 dicas restantes")).toBeInTheDocument();
+    verificarValor(100);
+});
+
 it("mostra o estado indisponível quando a pergunta não possui dicas", async () => {
     carregarQuiz.mockResolvedValue({ perguntas: [{ ...pergunta, dicas: [] }],
         categoriaQuiz: "MEDIO", contextoQuiz: "contexto-assinado" });

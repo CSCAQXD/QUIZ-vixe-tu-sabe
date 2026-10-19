@@ -20,3 +20,22 @@
     outline: 3px solid var(--color-wine-dark);
     outline-offset: 4px;
 }
+
+.quiz-hint-confirmation > .quiz-hint-confirmation__note {
+    color: #755343;
+    font-size: .9375rem;
+    font-weight: 400;
+}
+
+.quiz-hint-confirmation__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.quiz-hint-confirmation__actions .button {
+    flex: 1 1 170px;
+    min-height: 48px;
+    padding: 12px 16px;
+}
