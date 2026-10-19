@@ -26,12 +26,15 @@ async function buscarRankingDeEscolas(
 
 async function buscarParticipacoes(
     ano,
-    escolaId = null
+    escolaId = null,
+    categoriaQuiz = null,
+    cliente = prisma
 ) {
-    return prisma.participacao.findMany({
+    return cliente.participacao.findMany({
         where: {
             partida: {
                 ano,
+                ...(categoriaQuiz ? { categoriaQuiz } : {}),
                 ...(escolaId
                     ? {
                             escolaId,
