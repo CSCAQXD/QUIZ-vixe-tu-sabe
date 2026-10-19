@@ -1,7 +1,7 @@
 import AnswerOption from "../AnswerOption/AnswerOption";
 import Button from "../../../common/Button/Button";
 import Modal from "../../../common/Modal/Modal";
-import HintIcon from "../HintIcon/HintIcon";
+import HintControl from "../HintControl/HintControl";
 import "./QuizBoard.css";
 
 function QuizBoard({
@@ -9,6 +9,8 @@ function QuizBoard({
     availablePoints,
     currentHint,
     currentQuestion,
+    remainingHints = currentQuestion.dicas.length,
+    nextHintPoints = availablePoints,
     isHintOpen,
     onCloseHint,
     onConfirm,
@@ -84,15 +86,12 @@ function QuizBoard({
             </header>
             ) : (
             <header className="quiz-board__header">
-                <button
-                    aria-label="Ver dica"
-                    className="quiz-board__hint-button"
-                    disabled={currentQuestion.dicas.length === 0}
-                    onClick={onOpenHint}
-                    type="button"
-                >
-                    <HintIcon className="quiz-board__hint-icon" />
-                </button>
+                <HintControl
+                    availablePoints={availablePoints}
+                    nextHintPoints={nextHintPoints}
+                    onUseHint={onOpenHint}
+                    remainingHints={remainingHints}
+                />
 
                 <span className="quiz-board__school">ESCOLA {schoolName}</span>
 

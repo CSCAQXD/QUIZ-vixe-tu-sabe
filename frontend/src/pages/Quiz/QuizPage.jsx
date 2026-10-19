@@ -161,6 +161,11 @@ function QuizPage() {
         Math.max(0, hintsUsed - 1)
         ] ?? "";
 
+    const remainingHints = Math.max(0, (currentQuestion?.dicas.length ?? 0) - hintsUsed);
+    const nextHintPoints = currentQuestion
+        ? calculateAvailablePoints(currentQuestion.pontosIniciais, hintsUsed + 1)
+        : 0;
+
     function retryQuestions() {
         setError("");
         setIsLoading(true);
@@ -172,7 +177,9 @@ function QuizPage() {
     function openHint() {
         if (
         !currentQuestion ||
-        currentQuestion.dicas.length === 0
+        remainingHints === 0 ||
+        answerState !== "answering" ||
+        isHintOpen
         ) {
         return;
         }
@@ -328,6 +335,8 @@ function QuizPage() {
             availablePoints={availablePoints}
             currentHint={currentHint}
             currentQuestion={currentQuestion}
+            remainingHints={remainingHints}
+            nextHintPoints={nextHintPoints}
             isHintOpen={isHintOpen}
             onCloseHint={() =>
             setIsHintOpen(false)
