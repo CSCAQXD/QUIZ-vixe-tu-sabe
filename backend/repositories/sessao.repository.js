@@ -40,6 +40,7 @@ async function criar(
                 dados.idempotencyKey,
             pontuacaoFinal:
                 dados.pontuacaoFinal,
+            categoriaQuiz: dados.categoriaQuiz,
             ano: dados.ano,
             escolaId: dados.escolaId,
             participacoes: {
