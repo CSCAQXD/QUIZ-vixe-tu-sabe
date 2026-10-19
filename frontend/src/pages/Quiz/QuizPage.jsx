@@ -5,7 +5,7 @@ import {
 } from "react";
 
 import { useNavigate } from "react-router-dom";
-import { listarPerguntas } from "../../api/perguntaApi";
+import { carregarQuiz } from "../../api/perguntaApi";
 import { registrarSessao } from "../../api/sessaoApi";
 import Button from "../../components/common/Button/Button";
 import PageStatus from "../../components/common/PageStatus/PageStatus";
@@ -40,6 +40,8 @@ function QuizPage() {
 
     const [questions, setQuestions] =
         useState([]);
+
+    const [quizContext, setQuizContext] = useState(null);
 
     const [questionIndex, setQuestionIndex] =
         useState(0);
@@ -85,13 +87,19 @@ function QuizPage() {
         const turmas = getMediationSchools(mediation)
             .flatMap((school) => school.turmas ?? []);
 
-        listarPerguntas(turmas)
+        carregarQuiz(turmas)
         .then((response) => {
             if (!active) {
             return;
             }
 
-            const normalizedQuestions = response
+            if (!response.contextoQuiz || !response.categoriaQuiz) {
+                throw new Error(
+                    "Não foi possível preparar esta mediação. Tente carregar as perguntas novamente.",
+                );
+            }
+
+            const normalizedQuestions = (response.perguntas ?? [])
             .map(normalizeQuestion)
             .filter(
                 (question) =>
@@ -110,6 +118,10 @@ function QuizPage() {
             setQuestions(
             normalizedQuestions,
             );
+            setQuizContext({
+                contextoQuiz: response.contextoQuiz,
+                categoriaQuiz: response.categoriaQuiz,
+            });
         })
         .catch((requestError) => {
             if (active) {
@@ -206,6 +218,11 @@ function QuizPage() {
         return;
         }
 
+        if (!quizContext?.contextoQuiz || !quizContext?.categoriaQuiz) {
+            setError("Não foi possível confirmar esta mediação. Recarregue as perguntas antes de continuar.");
+            return;
+        }
+
         setIsSaving(true);
         setError("");
 
@@ -219,6 +236,7 @@ function QuizPage() {
                 ...school,
                 idempotencyKey: `${idempotencyKey}-${index}`,
                 pontuacaoFinal: score,
+                contextoQuiz: quizContext.contextoQuiz,
             }),
             ),
         );
@@ -228,6 +246,7 @@ function QuizPage() {
             : {
                 partida: {
                     pontuacaoFinal: score,
+                    categoriaQuiz: quizContext.categoriaQuiz,
                 },
                 resultados: results,
             };
@@ -262,6 +281,7 @@ function QuizPage() {
     if (isLoading) {
         return (
         <PageStatus
+            fullScreen
             message="Carregando perguntas..."
         />
         );
