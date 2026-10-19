@@ -7,6 +7,12 @@
     background: #f7c181;
 }
 
+.quiz-page--with-history {
+    height: auto;
+    min-height: 100svh;
+    overflow-y: auto;
+}
+
 .quiz-page__fence {
     z-index: -2;
     right: 50%;

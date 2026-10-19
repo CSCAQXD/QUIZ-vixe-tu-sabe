@@ -2,6 +2,7 @@ import AnswerOption from "../AnswerOption/AnswerOption";
 import Button from "../../../common/Button/Button";
 import Modal from "../../../common/Modal/Modal";
 import HintControl from "../HintControl/HintControl";
+import HintHistory from "../HintHistory/HintHistory";
 import "./QuizBoard.css";
 
 function QuizBoard({
@@ -10,6 +11,7 @@ function QuizBoard({
     currentHint,
     currentQuestion,
     remainingHints = currentQuestion.dicas.length,
+    usedHints = [],
     nextHintPoints = availablePoints,
     isHintOpen,
     onCloseHint,
@@ -69,7 +71,7 @@ function QuizBoard({
 
     return (
         <>
-        <section className="quiz-board">
+        <section className={`quiz-board${usedHints.length > 0 ? " quiz-board--with-history" : ""}`}>
             {answered ? (
             <header
                 aria-live="polite"
@@ -147,6 +149,7 @@ function QuizBoard({
                 </Button>
             )}
             </div>
+            <HintHistory hints={usedHints} key={currentQuestion.id} />
         </section>
 
         <Modal

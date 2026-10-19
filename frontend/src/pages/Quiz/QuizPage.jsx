@@ -162,6 +162,7 @@ function QuizPage() {
         ] ?? "";
 
     const remainingHints = Math.max(0, (currentQuestion?.dicas.length ?? 0) - hintsUsed);
+    const usedHints = currentQuestion?.dicas.slice(0, hintsUsed) ?? [];
     const nextHintPoints = currentQuestion
         ? calculateAvailablePoints(currentQuestion.pontosIniciais, hintsUsed + 1)
         : 0;
@@ -324,7 +325,7 @@ function QuizPage() {
     }
 
     return (
-        <section className="quiz-page">
+        <section className={`quiz-page${hintsUsed > 0 ? " quiz-page--with-history" : ""}`}>
         <ScenicBackdrop
             fenceClassName="quiz-page__fence"
             groundClassName="quiz-page__ground"
@@ -336,6 +337,7 @@ function QuizPage() {
             currentHint={currentHint}
             currentQuestion={currentQuestion}
             remainingHints={remainingHints}
+            usedHints={usedHints}
             nextHintPoints={nextHintPoints}
             isHintOpen={isHintOpen}
             onCloseHint={() =>
