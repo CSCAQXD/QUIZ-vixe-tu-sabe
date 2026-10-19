@@ -47,3 +47,43 @@ function criarContextoQuiz(turmas) {
         contextoQuiz: `${conteudo}.${assinar(conteudo).toString("base64url")}`,
     };
 }
+
+function validarContextoQuiz(token, turmasLocais) {
+    if (typeof token !== "string" || token.length > LIMITE_CONTEXTO_QUIZ) throw erroContexto();
+    const partes = token.split(".");
+    if (partes.length !== 2 || partes.some((parte) => !/^[\w-]+$/.test(parte))) {
+        throw erroContexto();
+    }
+    const [conteudo, assinatura] = partes;
+    const recebida = Buffer.from(assinatura, "base64url");
+    const esperada = assinar(conteudo);
+    if (recebida.length !== esperada.length || !timingSafeEqual(recebida, esperada)) {
+        throw erroContexto();
+    }
+    let contexto;
+    try {
+        contexto = JSON.parse(Buffer.from(conteudo, "base64url").toString("utf8"));
+    } catch {
+        throw erroContexto();
+    }
+    if (!contexto || contexto.versao !== 1 ||
+        !Number.isInteger(contexto.expiraEm) || contexto.expiraEm <= Date.now() ||
+        !CATEGORIAS.includes(contexto.categoriaQuiz)) throw erroContexto();
+    const participantes = normalizarTurmas(contexto.turmas);
+    if (obterMenorFaixa(participantes) !== contexto.categoriaQuiz) throw erroContexto();
+
+    const disponiveis = new Map();
+    for (const turma of participantes) {
+        const chave = `${turma.etapaEnsino}:${turma.serie}`;
+        disponiveis.set(chave, (disponiveis.get(chave) || 0) + 1);
+    }
+    for (const turma of normalizarTurmas(turmasLocais)) {
+        const chave = `${turma.etapaEnsino}:${turma.serie}`;
+        const quantidade = disponiveis.get(chave) || 0;
+        if (!quantidade) throw erroContexto();
+        disponiveis.set(chave, quantidade - 1);
+    }
+    return contexto.categoriaQuiz;
+}
+
+module.exports = { criarContextoQuiz, validarContextoQuiz, LIMITE_CONTEXTO_QUIZ };
