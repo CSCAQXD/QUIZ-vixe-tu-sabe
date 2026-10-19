@@ -44,6 +44,36 @@ it.each(["cancelar", "Escape", "fechar"])("avisa o custo antes da dica e não co
     verificarValor(100);
 });
 
+it("consome uma dica por confirmação, informa o saldo e bloqueia após a última", async () => {
+    await iniciar();
+    abrirConfirmacao();
+    fireEvent.click(screen.getByRole("button", { name: "Usar dica", exact: true }));
+    let dialogo = screen.getByRole("dialog", { name: "Uma pista para você" });
+    expect(within(dialogo).getByText(pergunta.dicas[0])).toBeInTheDocument();
+    expect(screen.getByText("1 dica restante")).toBeInTheDocument();
+    verificarValor(75);
+    fireEvent.click(within(dialogo).getByRole("button", { name: "Fechar", exact: true }));
+    expect(screen.getByText("1 dica restante")).toBeInTheDocument();
+    dialogo = abrirConfirmacao();
+    expect(dialogo).toHaveTextContent("75");
+    expect(dialogo).toHaveTextContent("50");
+    fireEvent.click(within(dialogo).getByRole("button", { name: "Usar dica", exact: true }));
+    dialogo = screen.getByRole("dialog", { name: "Uma pista para você" });
+    expect(within(dialogo).getByText(pergunta.dicas[1])).toBeInTheDocument();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.getByText("Sem dicas restantes")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Ver dica/i })).toBeDisabled();
+    verificarValor(50);
+    fireEvent.click(screen.getByRole("button", { name: /Um violeiro/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar resposta" }));
+    expect(screen.getByText("PONTUAÇÃO: 50")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Próxima pergunta" }));
+    expect(screen.getByRole("heading", { name: proxima.pergunta })).toBeInTheDocument();
+    expect(screen.getByText("2 dicas restantes")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Ver dica/i })).toBeEnabled();
+    verificarValor(100);
+});
+
 it("mostra o estado indisponível quando a pergunta não possui dicas", async () => {
     carregarQuiz.mockResolvedValue({ perguntas: [{ ...pergunta, dicas: [] }],
         categoriaQuiz: "MEDIO", contextoQuiz: "contexto-assinado" });
