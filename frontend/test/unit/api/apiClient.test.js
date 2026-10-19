@@ -39,4 +39,11 @@ describe("apiRequest", () => {
         }));
         await expect(apiRequest("/vazio")).resolves.toBeNull();
     });
+
+    it("traduz falhas de rede sem expor mensagens técnicas", async () => {
+        vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
+        await expect(apiRequest("/ranking-categoria/MEDIO")).rejects.toThrow(
+            "Não foi possível conectar ao servidor. Verifique a conexão e tente novamente.",
+        );
+    });
 });
