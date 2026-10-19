@@ -51,3 +51,40 @@
 @media (prefers-reduced-motion: reduce) {
     .loading-state__indicator { animation: none; }
 }
+
+.loading-state--full-screen {
+    --loading-ground-height: min(16svh, 13.5514vw);
+    position: relative;
+    isolation: isolate;
+    min-height: 100svh;
+    overflow: clip;
+    background: var(--color-orange-light, #f7c181);
+}
+
+.loading-state--full-screen .loading-state__card {
+    z-index: 1;
+    box-shadow: 0 1rem 3rem rgb(60 20 35 / 10%);
+}
+
+.loading-state__brand {
+    display: block;
+    width: 9rem;
+    height: auto;
+    margin-bottom: 1.5rem;
+}
+
+.loading-state__fence {
+    bottom: var(--loading-ground-height);
+    left: 0;
+    width: 100%;
+    height: auto;
+}
+
+.loading-state__ground {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--loading-ground-height);
+    object-fit: cover;
+    object-position: center top;
+}
