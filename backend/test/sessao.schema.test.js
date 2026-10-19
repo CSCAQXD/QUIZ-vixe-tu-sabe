@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const {
     validarSessao,
 } = require("../schemas/sessao.schema");
+const { criarContextoQuiz, LIMITE_CONTEXTO_QUIZ } = require("../utils/contextoQuiz");
 
 const ID_PARTIDA =
     "550e8400-e29b-41d4-a716-446655440000";
@@ -17,6 +18,7 @@ function criarSessaoValida(
             "EEEP Maria Cavalcante Costa",
         cidade: "Quixadá",
         pontuacaoFinal: 100,
+        contextoQuiz: "contexto-teste.assinatura-teste",
         serie: 9,
         turma: "A",
         ...alteracoes,
@@ -49,6 +51,7 @@ test(
                     "Escola Teste",
                 cidade: "Quixadá",
                 pontuacaoFinal: 100,
+                contextoQuiz: "contexto-teste.assinatura-teste",
                 turmas: [
                     {
                         etapaEnsino:
@@ -388,4 +391,21 @@ test("rejeita nome de curso muito curto", () => {
         () => validarSessao(criarSessaoValida({ cursoNome: "TI" })),
         /curso da turma 1/
     );
+});
+
+test("exige um contexto textual válido e limitado sem decodificar o conteúdo", () => {
+    for (const contextoQuiz of [undefined, "", {}, 123, "sem-separador", "a.b",
+        `${"a".repeat(LIMITE_CONTEXTO_QUIZ)}.b`]) {
+        assert.throws(() => validarSessao(criarSessaoValida({ contextoQuiz })), /contexto do quiz/);
+    }
+    const contextoQuiz = "contexto-teste.assinatura-teste";
+    assert.equal(validarSessao(criarSessaoValida({ contextoQuiz: `  ${contextoQuiz}  ` })).contextoQuiz,
+        contextoQuiz);
+});
+
+test("aceita o contexto com cem turmas globais no registro de uma escola", () => {
+    const participantes = Array.from({ length: 100 }, () => ({ etapaEnsino: "FUNDAMENTAL", serie: 9 }));
+    const { contextoQuiz } = criarContextoQuiz(participantes);
+    assert.ok(contextoQuiz.length <= LIMITE_CONTEXTO_QUIZ);
+    assert.equal(validarSessao(criarSessaoValida({ contextoQuiz })).contextoQuiz, contextoQuiz);
 });
