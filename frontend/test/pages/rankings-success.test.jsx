@@ -12,6 +12,7 @@ vi.mock("../../src/api/rankingApi", () => ({
     listarRankingEscolas: vi.fn(),
     listarRankingInterno: vi.fn(),
     listarRankingTurmas: vi.fn(),
+    listarRankingCategoria: vi.fn(),
 }));
 
 const response = { ranking: [] };
