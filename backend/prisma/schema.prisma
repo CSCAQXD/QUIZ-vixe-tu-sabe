@@ -37,6 +37,7 @@ model Partida {
   id             String         @id @default(uuid())
   idempotencyKey String         @unique
   pontuacaoFinal Int
+  categoriaQuiz String?
   ano            Int
   dataPartida    DateTime       @default(now())
   escolaId       String
@@ -45,6 +46,7 @@ model Partida {
 
   @@index([escolaId])
   @@index([ano])
+  @@index([ano, categoriaQuiz])
   @@index([escolaId, ano])
   @@index([dataPartida])
 }
