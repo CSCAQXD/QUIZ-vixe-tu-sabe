@@ -29,14 +29,17 @@ function normalizarFaixaPergunta(valor) {
         .replace(/[^A-Z0-9]+/g, "_")
         .replace(/^_|_$/g, "");
 
-    if (!normalizada || ["GERAL", "TODAS"].includes(normalizada)) {
+    if (!normalizada || ["GERAL", "TODAS", "COMUM"].includes(normalizada)) {
         return "TODAS";
     }
 
     const aliases = {
         FUNDAMENTAL_I: "FUNDAMENTAL_1",
         FUNDAMENTAL_II: "FUNDAMENTAL_2",
+        FUNDAMENTAL1: "FUNDAMENTAL_1",
+        FUNDAMENTAL2: "FUNDAMENTAL_2",
         ENSINO_MEDIO: "MEDIO",
+        ENSINOMEDIO: "MEDIO",
     };
 
     return aliases[normalizada] ??
