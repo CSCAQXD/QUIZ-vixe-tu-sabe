@@ -24,4 +24,6 @@ router.get(
         .listarRankingInterno
 );
 
+router.get("/ranking-categoria/:categoria", rankingController.listarRankingPorCategoria);
+
 module.exports = router;
