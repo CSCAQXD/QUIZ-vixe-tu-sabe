@@ -18,6 +18,12 @@
     font-family: var(--font-family-base);
 }
 
+.quiz-board--with-history {
+    height: auto;
+    min-height: min(91svh, 983px);
+    grid-template-rows: auto auto minmax(110px, 1fr) minmax(148px, auto) auto auto;
+}
+
 .quiz-board__header,
 .quiz-board__meta,
 .quiz-board__feedback {

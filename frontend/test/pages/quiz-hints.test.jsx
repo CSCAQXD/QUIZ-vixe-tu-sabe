@@ -54,6 +54,12 @@ it("consome uma dica por confirmação, informa o saldo e bloqueia após a últi
     verificarValor(75);
     fireEvent.click(within(dialogo).getByRole("button", { name: "Fechar", exact: true }));
     expect(screen.getByText("1 dica restante")).toBeInTheDocument();
+    const historico = screen.getByText("Dicas usadas").closest("details");
+    expect(historico).not.toHaveAttribute("open");
+    fireEvent.click(screen.getByText("Dicas usadas"));
+    expect(historico).toHaveAttribute("open");
+    expect(within(historico).getByText(pergunta.dicas[0])).toBeVisible();
+    expect(within(historico).queryByText(pergunta.dicas[1])).not.toBeInTheDocument();
     dialogo = abrirConfirmacao();
     expect(dialogo).toHaveTextContent("75");
     expect(dialogo).toHaveTextContent("50");
@@ -61,6 +67,7 @@ it("consome uma dica por confirmação, informa o saldo e bloqueia após a últi
     dialogo = screen.getByRole("dialog", { name: "Uma pista para você" });
     expect(within(dialogo).getByText(pergunta.dicas[1])).toBeInTheDocument();
     fireEvent.keyDown(document, { key: "Escape" });
+    pergunta.dicas.forEach((dica) => expect(within(historico).getByText(dica)).toBeVisible());
     expect(screen.getByText("Sem dicas restantes")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Ver dica/i })).toBeDisabled();
     verificarValor(50);
@@ -69,6 +76,8 @@ it("consome uma dica por confirmação, informa o saldo e bloqueia após a últi
     expect(screen.getByText("PONTUAÇÃO: 50")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Próxima pergunta" }));
     expect(screen.getByRole("heading", { name: proxima.pergunta })).toBeInTheDocument();
+    expect(screen.queryByText("Dicas usadas")).not.toBeInTheDocument();
+    pergunta.dicas.forEach((dica) => expect(screen.queryByText(dica)).not.toBeInTheDocument());
     expect(screen.getByText("2 dicas restantes")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Ver dica/i })).toBeEnabled();
     verificarValor(100);
