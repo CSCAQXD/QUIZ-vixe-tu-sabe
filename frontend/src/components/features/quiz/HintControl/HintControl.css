@@ -1,0 +1,22 @@
+.quiz-hint {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    justify-self: start;
+    gap: clamp(8px, 1vw, 16px);
+    min-width: 0;
+    max-width: 100%;
+}
+
+.quiz-hint__remaining {
+    max-width: 10ch;
+    color: var(--color-wine-dark);
+    font-size: clamp(.8125rem, .95vw, 1rem);
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.quiz-hint .quiz-board__hint-button:focus-visible {
+    outline: 3px solid var(--color-wine-dark);
+    outline-offset: 4px;
+}
