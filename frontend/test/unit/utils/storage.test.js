@@ -5,11 +5,24 @@ describe("quiz storage", () => {
     it("salva, recupera e limpa a sessão", () => {
         saveMediation({ escola: "A" });
         saveResult({ pontos: 100 });
-        expect(getMediation()).toEqual({ escola: "A" });
+        expect(getMediation()).toEqual({
+            escola: "A",
+            idempotencyKey: expect.any(String),
+        });
         expect(getResult()).toEqual({ pontos: 100 });
         clearQuizStorage();
         expect(getMediation()).toBeNull();
         expect(getResult()).toBeNull();
+    });
+
+    it("mantém a chave da mediação estável entre leituras e tentativas", () => {
+        saveMediation({ escola: "A" });
+
+        const primeiraLeitura = getMediation();
+        const segundaLeitura = getMediation();
+
+        expect(segundaLeitura.idempotencyKey)
+            .toBe(primeiraLeitura.idempotencyKey);
     });
 
     it("retorna nulo para JSON inválido ou falha do storage", () => {

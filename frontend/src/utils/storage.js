@@ -4,10 +4,28 @@ const MEDIATION_KEY =
 const RESULT_KEY =
     "vixe-tu-sabe:resultado";
 
+function withStableIdempotencyKey(data) {
+    if (
+        !data ||
+        typeof data !== "object" ||
+        Array.isArray(data) ||
+        data.idempotencyKey
+    ) {
+        return data;
+    }
+
+    return {
+        ...data,
+        idempotencyKey: crypto.randomUUID(),
+    };
+}
+
 export function saveMediation(data) {
     sessionStorage.setItem(
         MEDIATION_KEY,
-        JSON.stringify(data),
+        JSON.stringify(
+            withStableIdempotencyKey(data),
+        ),
     );
 }
 
@@ -18,9 +36,26 @@ export function getMediation() {
             MEDIATION_KEY,
         );
 
-        return value
-        ? JSON.parse(value)
-        : null;
+        if (!value) {
+            return null;
+        }
+
+        const storedMediation =
+            JSON.parse(value);
+
+        const mediation =
+            withStableIdempotencyKey(
+                storedMediation,
+            );
+
+        if (mediation !== storedMediation) {
+            sessionStorage.setItem(
+                MEDIATION_KEY,
+                JSON.stringify(mediation),
+            );
+        }
+
+        return mediation;
     } catch {
         return null;
     }
