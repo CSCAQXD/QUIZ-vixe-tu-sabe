@@ -82,14 +82,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [backend, frontend]
+        include:
+          - name: root
+            directory: .
+          - name: backend
+            directory: backend
+          - name: frontend
+            directory: frontend
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Audit ${{ matrix.project }}
-        working-directory: ${{ matrix.project }}
+      - name: Audit ${{ matrix.name }}
+        working-directory: ${{ matrix.directory }}
         run: npm audit --audit-level=high
 
   container-build:
