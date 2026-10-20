@@ -6,10 +6,7 @@ const { promisify } = require("node:util");
 const { chaveEntidade } = require("../utils/sanitize");
 
 const gunzip = promisify(zlib.gunzip);
-const CATALOGO_PATH = path.resolve(
-    __dirname,
-    "../../shared/escolasCatalogo.json.gz"
-);
+const CATALOGO_PATH = path.resolve(__dirname, "../../shared/escolasCatalogo.json.gz");
 
 let catalogoPromise;
 
@@ -20,14 +17,7 @@ function criarErroValidacao(mensagem) {
 }
 
 function normalizarRegistro(registro) {
-    const [
-        codigoInep,
-        nome,
-        municipioIbgeId,
-        cidade,
-        uf,
-        dependencia,
-    ] = registro;
+    const [codigoInep, nome, municipioIbgeId, cidade, uf, dependencia] = registro;
 
     return {
         codigoInep: String(codigoInep),
@@ -43,7 +33,8 @@ function normalizarRegistro(registro) {
 
 async function carregarCatalogo() {
     if (!catalogoPromise) {
-        catalogoPromise = fs.readFile(CATALOGO_PATH)
+        catalogoPromise = fs
+            .readFile(CATALOGO_PATH)
             .then(gunzip)
             .then((conteudo) => JSON.parse(conteudo.toString("utf8")))
             .then((catalogo) => {
@@ -66,7 +57,7 @@ async function carregarCatalogo() {
                 catalogoPromise = undefined;
                 if (error.code === "ENOENT") {
                     const catalogoError = new Error(
-                        "O catálogo local de escolas ainda não foi instalado."
+                        "O catálogo local de escolas ainda não foi instalado.",
                     );
                     catalogoError.statusCode = 503;
                     throw catalogoError;
@@ -101,14 +92,13 @@ function buscarNoCatalogo(escolas, termo, limite) {
             pontuacao: pontuarCorrespondencia(escola, termoBusca),
         }))
         .filter(({ pontuacao }) => pontuacao !== null)
-        .sort((primeira, segunda) =>
-            primeira.pontuacao - segunda.pontuacao ||
-            primeira.escola.nome.localeCompare(
-                segunda.escola.nome,
-                "pt-BR",
-                { sensitivity: "base" }
-            ) ||
-            primeira.escola.codigoInep.localeCompare(segunda.escola.codigoInep)
+        .sort(
+            (primeira, segunda) =>
+                primeira.pontuacao - segunda.pontuacao ||
+                primeira.escola.nome.localeCompare(segunda.escola.nome, "pt-BR", {
+                    sensitivity: "base",
+                }) ||
+                primeira.escola.codigoInep.localeCompare(segunda.escola.codigoInep),
         )
         .slice(0, limite)
         .map(({ escola }) => ({
@@ -153,12 +143,11 @@ async function buscarCorrespondenciaExata({ municipioIbgeId, nome }) {
     if (!/^\d{7}$/.test(municipio) || identidade.length < 3) return null;
 
     const catalogo = await carregarCatalogo();
-    const correspondencias = (catalogo.porMunicipio.get(municipio) ?? [])
-        .filter((escola) => escola.identidadeBusca === identidade);
+    const correspondencias = (catalogo.porMunicipio.get(municipio) ?? []).filter(
+        (escola) => escola.identidadeBusca === identidade,
+    );
 
-    return correspondencias.length === 1
-        ? correspondencias[0]
-        : null;
+    return correspondencias.length === 1 ? correspondencias[0] : null;
 }
 
 module.exports = {

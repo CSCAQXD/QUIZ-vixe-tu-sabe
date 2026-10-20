@@ -1,10 +1,7 @@
-const escolaRepository = require(
-    "../repositories/escola.repository"
-);
+const escolaRepository = require("../repositories/escola.repository");
 
 async function listarEscolas() {
-    return escolaRepository
-        .buscarTodas();
+    return escolaRepository.buscarTodas();
 }
 
 module.exports = {

@@ -1,6 +1,4 @@
-const prisma = require(
-    "../config/prisma"
-);
+const prisma = require("../config/prisma");
 const { chaveEntidade } = require("../utils/sanitize");
 
 async function buscarTodas() {
@@ -24,11 +22,7 @@ async function buscarPorId(id) {
     });
 }
 
-async function buscarPorNomeECidade(
-    nome,
-    cidade,
-    cliente = prisma
-) {
+async function buscarPorNomeECidade(nome, cidade, cliente = prisma) {
     return cliente.escola.findUnique({
         where: {
             nome_cidade: {
@@ -47,7 +41,7 @@ async function buscarOuCriar(
     cidadeUf,
     municipioIbgeId,
     codigoInep,
-    cliente = prisma
+    cliente = prisma,
 ) {
     let assinaturaLegada = false;
     if (cidadeUf && typeof cidadeUf === "object" && cidadeUf.escola) {
@@ -59,12 +53,11 @@ async function buscarOuCriar(
     }
 
     codigoInep = String(codigoInep ?? "").trim();
-    const officialIdentity = municipioIbgeId
-        ? { nomeBusca, municipioIbgeId }
-        : null;
-    let existente = codigoInep && typeof cliente.escola.findUnique === "function"
-        ? await cliente.escola.findUnique({ where: { codigoInep } })
-        : null;
+    const officialIdentity = municipioIbgeId ? { nomeBusca, municipioIbgeId } : null;
+    let existente =
+        codigoInep && typeof cliente.escola.findUnique === "function"
+            ? await cliente.escola.findUnique({ where: { codigoInep } })
+            : null;
 
     if (!existente) {
         existente = await cliente.escola.findFirst({
@@ -81,8 +74,7 @@ async function buscarOuCriar(
 
     if (existente) {
         const possuiChaves =
-            Object.hasOwn(existente, "nomeBusca") &&
-            Object.hasOwn(existente, "cidadeBusca");
+            Object.hasOwn(existente, "nomeBusca") && Object.hasOwn(existente, "cidadeBusca");
 
         const dadosMunicipio = {
             cidade,
@@ -95,13 +87,11 @@ async function buscarOuCriar(
 
         if (
             (!possuiChaves && assinaturaLegada) ||
-            (
-                possuiChaves &&
+            (possuiChaves &&
                 existente.nomeBusca === nomeBusca &&
                 existente.cidadeBusca === cidadeBusca &&
                 (!municipioIbgeId || existente.municipioIbgeId === municipioIbgeId) &&
-                (!codigoInep || existente.codigoInep === codigoInep)
-            )
+                (!codigoInep || existente.codigoInep === codigoInep))
         ) {
             return existente;
         }
@@ -123,9 +113,10 @@ async function buscarOuCriar(
     const legadas = await cliente.escola.findMany({
         where: { nomeBusca: null },
     });
-    const legada = legadas.find((escola) =>
-        chaveEntidade(escola.nome, true) === nomeBusca &&
-        chaveEntidade(escola.cidade) === cidadeBusca
+    const legada = legadas.find(
+        (escola) =>
+            chaveEntidade(escola.nome, true) === nomeBusca &&
+            chaveEntidade(escola.cidade) === cidadeBusca,
     );
 
     if (legada) {
@@ -135,13 +126,13 @@ async function buscarOuCriar(
                 data: assinaturaLegada
                     ? { nomeBusca, cidadeBusca }
                     : {
-                        cidade,
-                        cidadeBusca,
-                        cidadeUf: cidadeUf || null,
-                        codigoInep: codigoInep || null,
-                        municipioIbgeId: municipioIbgeId || null,
-                        nomeBusca,
-                    },
+                          cidade,
+                          cidadeBusca,
+                          cidadeUf: cidadeUf || null,
+                          codigoInep: codigoInep || null,
+                          municipioIbgeId: municipioIbgeId || null,
+                          nomeBusca,
+                      },
             });
         } catch (error) {
             if (error.code !== "P2002") throw error;
@@ -169,18 +160,18 @@ async function buscarOuCriar(
     const uniqueWhere = codigoInep
         ? { codigoInep }
         : municipioIbgeId
-        ? {
-            nomeBusca_municipioIbgeId: {
-                nomeBusca,
-                municipioIbgeId,
-            },
-        }
-        : {
-            nomeBusca_cidadeBusca: {
-                nomeBusca,
-                cidadeBusca,
-            },
-        };
+          ? {
+                nomeBusca_municipioIbgeId: {
+                    nomeBusca,
+                    municipioIbgeId,
+                },
+            }
+          : {
+                nomeBusca_cidadeBusca: {
+                    nomeBusca,
+                    cidadeBusca,
+                },
+            };
 
     return cliente.escola.upsert({
         where: {
