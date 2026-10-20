@@ -35,7 +35,7 @@ test("reconhece siglas e abreviações gerais de cursos", () => {
         assert.equal(
             cursosSaoEquivalentes(primeiro, segundo),
             true,
-            `${primeiro} deveria equivaler a ${segundo}`
+            `${primeiro} deveria equivaler a ${segundo}`,
         );
     }
 });
@@ -49,29 +49,28 @@ test("não confunde cursos que possuem especializações diferentes", () => {
 test("resolve aliases na identidade sem substituir o nome de exibição", () => {
     assert.equal(
         obterIdentidadeCurso("Segurança da Informação"),
-        obterIdentidadeCurso("Cibersegurança")
+        obterIdentidadeCurso("Cibersegurança"),
     );
     assert.equal(obterIdentidadeCurso("IoT"), obterIdentidadeCurso("Internet das Coisas"));
     assert.equal(
         obterIdentidadeCurso("Computação em Nuvem"),
-        obterIdentidadeCurso("Cloud Computing")
+        obterIdentidadeCurso("Cloud Computing"),
     );
     assert.equal(
         obterIdentidadeCurso("Manutenção de Sistemas Metroferroviários"),
-        obterIdentidadeCurso("Manutenção Metroferroviária")
+        obterIdentidadeCurso("Manutenção Metroferroviária"),
     );
-    assert.equal(
-        obterIdentidadeCurso("Artes Circenses"),
-        obterIdentidadeCurso("Artista de Circo")
-    );
+    assert.equal(obterIdentidadeCurso("Artes Circenses"), obterIdentidadeCurso("Artista de Circo"));
     assert.equal(
         obterIdentidadeCurso("Agenciamento de Viagem"),
-        obterIdentidadeCurso("Agenciamento de Viagens")
+        obterIdentidadeCurso("Agenciamento de Viagens"),
     );
     assert.equal(obterIdentidadeCurso("Tecnologia Subaquática"), "tecnologia subaquatica");
     assert.deepEqual(
-        buscarCursosCatalogoEquivalentes("MEC").map((curso) => curso.nome).sort(),
-        ["Manobras e Equipamentos de Convés", "Mecatrônica", "Mecânica"].sort()
+        buscarCursosCatalogoEquivalentes("MEC")
+            .map((curso) => curso.nome)
+            .sort(),
+        ["Manobras e Equipamentos de Convés", "Mecatrônica", "Mecânica"].sort(),
     );
 });
 
@@ -96,13 +95,13 @@ test("detecta duplicidade pela identidade completa e preserva cursos distintos",
             primeiroIndice: 0,
             segundoIndice: 1,
             identidade: "MEDIO|||1|||recurso humano|||A",
-        }
+        },
     );
     assert.equal(
         encontrarTurmaDuplicada([
             { ...base, cursoNome: "Administração" },
             { ...base, cursoNome: "Administração Pública" },
         ]),
-        null
+        null,
     );
 });

@@ -1,10 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const {
-    normalizarMunicipio,
-    resolverMunicipio,
-} = require("../utils/municipios");
+const { normalizarMunicipio, resolverMunicipio } = require("../utils/municipios");
 
 test("resolve um município pela identidade oficial do IBGE", () => {
     const resultado = resolverMunicipio({
