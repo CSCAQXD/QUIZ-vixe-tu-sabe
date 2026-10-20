@@ -35,7 +35,7 @@ function QuizPage() {
     );
 
     const [idempotencyKey] = useState(
-        () => crypto.randomUUID(),
+        () => mediation?.idempotencyKey ?? crypto.randomUUID(),
     );
 
     const [questions, setQuestions] =
