@@ -66,3 +66,39 @@ test("reconhece escola antiga mesmo com acento e prefixo diferentes", async () =
         data: { nomeBusca: "JULIO FRANCA", cidadeBusca: "QUIXADA" },
     });
 });
+
+test("associa a escola já cadastrada pela identidade e pelo município", async () => {
+    const escola = {
+        id: "e1",
+        nome: "JÚLIO FRANÇA",
+        nomeBusca: "JULIO FRANCA",
+        cidade: "Quixadá",
+        cidadeBusca: "QUIXADA",
+        municipioIbgeId: "2311306",
+        codigoInep: null,
+    };
+    const cliente = {
+        escola: {
+            findFirst: async ({ where }) => {
+                assert.deepEqual(where.OR[0], {
+                    nomeBusca: "JULIO FRANCA",
+                    municipioIbgeId: "2311306",
+                });
+                return escola;
+            },
+        },
+    };
+
+    const resultado = await escolaRepository.buscarOuCriar(
+        "EEEP JULIO FRANCA",
+        "QUIXADÁ",
+        "JULIO FRANCA",
+        "QUIXADA",
+        "CE",
+        "2311306",
+        "",
+        cliente,
+    );
+
+    assert.equal(resultado.id, escola.id);
+});
