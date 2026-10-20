@@ -28,23 +28,22 @@ const ESCOLAS = [
 ];
 
 test("busca escola sem diferenciar acentos e prioriza o início do nome", () => {
-    assert.deepEqual(
-        buscarNoCatalogo(ESCOLAS, "colegio jose", 8),
-        [{
+    assert.deepEqual(buscarNoCatalogo(ESCOLAS, "colegio jose", 8), [
+        {
             codigoInep: "23000002",
             nome: "COLÉGIO JOSÉ DE ALENCAR",
             municipioIbgeId: "2311306",
             cidade: "Quixadá",
             uf: "CE",
             dependencia: "Privada",
-        }]
-    );
+        },
+    ]);
 });
 
 test("encontra por palavras parciais e respeita o limite", () => {
     assert.deepEqual(
         buscarNoCatalogo(ESCOLAS, "maria mod", 1).map((escola) => escola.codigoInep),
-        ["23000001"]
+        ["23000001"],
     );
 });
 
