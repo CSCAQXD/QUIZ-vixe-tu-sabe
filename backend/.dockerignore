@@ -1,0 +1,7 @@
+node_modules
+coverage
+.env*
+*.db
+*.db-journal
+npm-debug.log*
+test
