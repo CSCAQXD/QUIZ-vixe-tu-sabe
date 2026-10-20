@@ -104,6 +104,7 @@ jobs:
     timeout-minutes: 15
 
     strategy:
+      fail-fast: false
       matrix:
         app: [backend, frontend]
 
