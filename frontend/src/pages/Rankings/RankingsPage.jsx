@@ -121,6 +121,8 @@ function RankingsPage() {
   )
   const [schools, setSchools] = useState([])
   const [selectedSchoolId, setSelectedSchoolId] = useState('')
+  const [isSchoolsLoading, setIsSchoolsLoading] = useState(false)
+  const [schoolError, setSchoolError] = useState('')
   const [records, setRecords] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -133,6 +135,8 @@ function RankingsPage() {
   const visibleRecords = paginateRanking(filteredRecords, page)
 
   useEffect(() => {
+    if (activeRanking !== 'interno') return undefined
+
     let isActive = true
 
     listarEscolas()
@@ -149,14 +153,21 @@ function RankingsPage() {
           )
         })
       })
-      .catch(() => {
-        if (isActive) setSchools([])
+      .catch((requestError) => {
+        if (!isActive) return
+
+        setSchools([])
+        setSelectedSchoolId('')
+        setSchoolError(requestError.message)
+      })
+      .finally(() => {
+        if (isActive) setIsSchoolsLoading(false)
       })
 
     return () => {
       isActive = false
     }
-  }, [currentClasses])
+  }, [activeRanking, currentClasses, loadAttempt])
 
   useEffect(() => {
     let isActive = true
@@ -226,6 +237,8 @@ function RankingsPage() {
     setRecords([])
     setError('')
     setIsLoading(true)
+    setSchoolError('')
+    setIsSchoolsLoading(newRanking === 'interno')
   }
 
   function changeSchool(schoolId) {
@@ -248,7 +261,9 @@ function RankingsPage() {
 
   function retryRanking() {
     setError('')
+    setSchoolError('')
     setIsLoading(true)
+    if (activeRanking === 'interno') setIsSchoolsLoading(true)
     setLoadAttempt((value) => value + 1)
   }
 
@@ -299,11 +314,15 @@ function RankingsPage() {
             <label className="rankings-page__school">
               <span>Selecione a escola</span>
               <select
-                disabled={schools.length === 0}
+                disabled={isSchoolsLoading || schools.length === 0}
                 onChange={(event) => changeSchool(event.target.value)}
                 value={selectedSchoolId}
               >
-                {schools.length === 0 && <option value="">Nenhuma escola cadastrada</option>}
+                {isSchoolsLoading ? (
+                  <option value="">Carregando escolas...</option>
+                ) : (
+                  schools.length === 0 && <option value="">Nenhuma escola cadastrada</option>
+                )}
 
                 {schools.map((school) => (
                   <option key={school.id} value={school.id}>
@@ -327,12 +346,12 @@ function RankingsPage() {
           )}
         </div>
 
-        {isLoading ? (
+        {isLoading || (activeRanking === 'interno' && isSchoolsLoading) ? (
           <PageStatus message="Carregando ranking..." />
-        ) : error ? (
+        ) : error || (activeRanking === 'interno' && schoolError) ? (
           <PageStatus
             action={<Button onClick={retryRanking}>Tentar novamente</Button>}
-            message={error}
+            message={schoolError || error}
             type="error"
           />
         ) : (

@@ -46,6 +46,28 @@ describe('RankingsPage', () => {
     expect(screen.getByText(/Escola Modelo/)).toBeInTheDocument()
   })
 
+  it('permite tentar novamente quando a listagem de escolas falha', async () => {
+    listarEscolas
+      .mockRejectedValueOnce(new Error('Falha ao carregar escolas'))
+      .mockResolvedValue([{ id: 'e1', nome: 'Escola Modelo', cidade: 'Quixadá' }])
+    render(
+      <MemoryRouter>
+        <RankingsPage />
+      </MemoryRouter>,
+    )
+    await screen.findByText('Ainda não há pontuações neste ranking.')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Interno por escola' }))
+    expect(await screen.findByText('Falha ao carregar escolas')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Tentar novamente' }))
+
+    expect(await screen.findByText(/Escola Modelo/)).toBeInTheDocument()
+    await waitFor(() =>
+      expect(rankingApi.listarRankingInterno).toHaveBeenCalledWith('e1', expect.any(Object)),
+    )
+    expect(listarEscolas).toHaveBeenCalledTimes(2)
+  })
+
   it.each([
     ['acesso direto', undefined, 0],
     ['entrada pela tela inicial', { highlightRecentResult: false }, 0],
