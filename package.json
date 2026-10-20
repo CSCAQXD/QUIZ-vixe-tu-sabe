@@ -1,0 +1,39 @@
+{
+  "name": "quiz-vixe-tu-sabe",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Atalhos para desenvolvimento e testes do Quiz Vixe, Tu Sabe?",
+  "scripts": {
+    "dev": "node scripts/workspace-runner.cjs dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:all": "node scripts/workspace-runner.cjs dev all",
+    "start": "node scripts/workspace-runner.cjs start",
+    "start:backend": "npm --prefix backend run start",
+    "preview:frontend": "npm --prefix frontend run preview",
+    "test": "node scripts/workspace-runner.cjs test",
+    "test:backend": "npm --prefix backend test",
+    "test:frontend": "npm --prefix frontend test",
+    "test:all": "node scripts/workspace-runner.cjs test all",
+    "test:coverage": "node scripts/workspace-runner.cjs test:coverage",
+    "coverage:backend": "npm --prefix backend run test:coverage",
+    "coverage:frontend": "npm --prefix frontend run test:coverage",
+    "coverage:all": "node scripts/workspace-runner.cjs test:coverage all",
+    "build": "node scripts/workspace-runner.cjs build",
+    "build:frontend": "npm --prefix frontend run build",
+    "lint": "node scripts/workspace-runner.cjs lint",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "check:backend": "npm --prefix backend run check",
+    "prisma:generate": "npm --prefix backend run prisma:generate",
+    "prisma:migrate": "npm --prefix backend run prisma:migrate",
+    "prisma:deploy": "npm --prefix backend run prisma:deploy",
+    "prisma:studio": "npm --prefix backend run studio",
+    "catalogo:cidades": "node scripts/atualizar-municipios-ibge.mjs",
+    "catalogo:escolas": "node scripts/atualizar-escolas-inep.mjs",
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "shortcuts": "node scripts/workspace-runner.cjs help"
+  },
+  "engines": {
+    "node": ">=18.18"
+  }
+}
