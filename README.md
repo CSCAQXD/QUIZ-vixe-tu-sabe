@@ -40,7 +40,9 @@ npm run quality
 
 O GitHub Actions valida formatação, lint, schema Prisma, testes com cobertura,
 build, dependências e imagens Docker. CodeQL analisa vulnerabilidades toda semana.
-O Dependabot mantém pacotes e Actions atualizados.
+O Dependabot verifica pacotes npm, imagens Docker e Actions toda segunda-feira.
+Atualizações compatíveis são agrupadas e versões principais permanecem em PRs
+separados; correções de segurança continuam sendo abertas sem o período de espera.
 
 Pushes na branch principal e tags no formato `v1.2.3` publicam duas imagens no
 GitHub Container Registry: `quiz-vixe-tu-sabe-backend` e
