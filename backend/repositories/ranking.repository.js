@@ -46,10 +46,13 @@ async function buscarParticipacoes(
             etapaEnsino: true,
             serie: true,
             turma: true,
+            turmaBusca: true,
+            cursoBusca: true,
             curso: {
                 select: {
                     id: true,
                     nome: true,
+                    nomeBusca: true,
                 },
             },
             partida: {
@@ -61,6 +64,8 @@ async function buscarParticipacoes(
                             id: true,
                             nome: true,
                             cidade: true,
+                            cidadeUf: true,
+                            municipioIbgeId: true,
                         },
                     },
                 },
@@ -86,6 +91,8 @@ async function buscarEscolasPorIds(
             id: true,
             nome: true,
             cidade: true,
+            cidadeUf: true,
+            municipioIbgeId: true,
         },
     });
 }
@@ -101,6 +108,8 @@ async function buscarEscolaPorId(
             id: true,
             nome: true,
             cidade: true,
+            cidadeUf: true,
+            municipioIbgeId: true,
         },
     });
 }

@@ -1,6 +1,10 @@
 const rankingRepository = require(
     "../repositories/ranking.repository"
 );
+const {
+    normalizarTurma,
+    obterIdentidadeCurso,
+} = require("../utils/identidadeCadastro");
 
 const CATEGORIAS_QUIZ = ["FUNDAMENTAL_1", "FUNDAMENTAL_2", "MEDIO"];
 
@@ -72,12 +76,18 @@ function agruparParticipacoes(
         const escola =
             participacao.partida.escola;
 
+        const cursoBusca = participacao.cursoBusca ||
+            obterIdentidadeCurso(participacao.curso?.nomeBusca || participacao.curso?.nome);
+
+        const turmaBusca = participacao.turmaBusca ||
+            normalizarTurma(participacao.turma);
+
         const chave = [
             escola.id,
             etapaEnsino,
             participacao.serie,
-            participacao.curso?.id || "SEM_CURSO",
-            participacao.turma,
+            cursoBusca,
+            turmaBusca,
         ].join("|||");
 
         const grupoExistente =
@@ -98,6 +108,8 @@ function agruparParticipacoes(
             escolaId: escola.id,
             escola: escola.nome,
             cidade: escola.cidade,
+            cidadeUf: escola.cidadeUf || null,
+            municipioIbgeId: escola.municipioIbgeId || null,
             etapaEnsino,
             serie:
                 participacao.serie,
@@ -105,10 +117,12 @@ function agruparParticipacoes(
                 `${participacao.serie}º ano — Ensino ${etapaEnsino === "MEDIO" ? "Médio" : "Fundamental"}`,
             turma:
                 participacao.turma,
+            turmaBusca,
             cursoId:
                 participacao.curso?.id || null,
             cursoNome:
                 participacao.curso?.nome || null,
+            cursoBusca,
             pontuacaoTotal:
                 participacao.partida
                     .pontuacaoFinal,
@@ -243,6 +257,8 @@ async function listarRankingDeEscolas(
                 cidade:
                     escola?.cidade ||
                     "Cidade não encontrada",
+                cidadeUf: escola?.cidadeUf || null,
+                municipioIbgeId: escola?.municipioIbgeId || null,
                 pontuacaoTotal:
                     item._sum
                         .pontuacaoFinal || 0,

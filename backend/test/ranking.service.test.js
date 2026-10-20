@@ -194,6 +194,125 @@ test(
 );
 
 test(
+    "agrega aliases do mesmo curso pela identidade canônica",
+    async () => {
+        const escola = {
+            id: "escola-1",
+            nome: "ESCOLA TESTE",
+            cidade: "QUIXADÁ",
+        };
+
+        mock.method(
+            rankingRepository,
+            "buscarParticipacoes",
+            async () => [
+                {
+                    etapaEnsino: "MEDIO",
+                    serie: 1,
+                    turma: "A-1",
+                    turmaBusca: "A1",
+                    cursoBusca: "analise desenvolvimento sistema",
+                    curso: {
+                        id: "curso-extenso",
+                        nome: "Análise e Desenvolvimento de Sistemas",
+                    },
+                    partida: {
+                        id: "partida-1",
+                        pontuacaoFinal: 100,
+                        escola,
+                    },
+                },
+                {
+                    etapaEnsino: "MEDIO",
+                    serie: 1,
+                    turma: "A 1",
+                    turmaBusca: "A1",
+                    cursoBusca: "analise desenvolvimento sistema",
+                    curso: {
+                        id: "curso-sigla-legado",
+                        nome: "ADS",
+                    },
+                    partida: {
+                        id: "partida-2",
+                        pontuacaoFinal: 80,
+                        escola,
+                    },
+                },
+            ]
+        );
+
+        const resultado = await rankingService.listarRankingDeTurmas(2026, null);
+
+        assert.equal(resultado.ranking.length, 1);
+        assert.equal(resultado.ranking[0].pontuacaoTotal, 180);
+        assert.equal(resultado.ranking[0].quantidadePartidas, 2);
+    }
+);
+
+test(
+    "preserva no ranking o nome de curso adotado por cada escola",
+    async () => {
+        mock.method(
+            rankingRepository,
+            "buscarParticipacoes",
+            async () => [
+                {
+                    etapaEnsino: "MEDIO",
+                    serie: 1,
+                    turma: "UNICA",
+                    turmaBusca: "UNICA",
+                    cursoBusca: "ciberseguranca",
+                    curso: {
+                        id: "curso-alfa",
+                        nome: "Cibersegurança",
+                    },
+                    partida: {
+                        id: "partida-alfa",
+                        pontuacaoFinal: 100,
+                        escola: {
+                            id: "escola-alfa",
+                            nome: "Escola Alfa",
+                            cidade: "Fortaleza",
+                        },
+                    },
+                },
+                {
+                    etapaEnsino: "MEDIO",
+                    serie: 1,
+                    turma: "UNICA",
+                    turmaBusca: "UNICA",
+                    cursoBusca: "ciberseguranca",
+                    curso: {
+                        id: "curso-beta",
+                        nome: "Segurança da Informação",
+                    },
+                    partida: {
+                        id: "partida-beta",
+                        pontuacaoFinal: 90,
+                        escola: {
+                            id: "escola-beta",
+                            nome: "Escola Beta",
+                            cidade: "Sobral",
+                        },
+                    },
+                },
+            ]
+        );
+
+        const resultado = await rankingService.listarRankingDeTurmas(2026, null);
+
+        assert.equal(resultado.ranking.length, 2);
+        assert.deepEqual(
+            resultado.ranking.map((item) => [item.escola, item.cursoNome]),
+            [
+                ["Escola Alfa", "Cibersegurança"],
+                ["Escola Beta", "Segurança da Informação"],
+            ]
+        );
+    }
+);
+
+test(
     "atribui posições densas para pontuações empatadas",
     async () => {
         const escola = {
