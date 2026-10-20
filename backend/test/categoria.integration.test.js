@@ -21,6 +21,7 @@ test("HTTP integra perguntas, contexto misto e quatro rankings em SQLite isolado
     assert.equal(perguntas.dados.categoriaQuiz, "FUNDAMENTAL_1");
     assert.equal(perguntas.dados.total, 4, "não impõe quantidade fixa de específicas/comuns");
     assert.deepEqual(perguntas.dados.perguntas.map((item) => item.id), ["f1-a", "f1-b", "comum-a", "comum-b"]);
+    assert.ok(perguntas.dados.perguntas.every((item) => item.tema === "História & Vida"));
     const dados = (chave, nomeEscola, turma, contextoQuiz = perguntas.dados.contextoQuiz) => ({
         idempotencyKey: chave, nomeEscola, cidade: "Quixadá", pontuacaoFinal: 275,
         contextoQuiz, turmas: [turma],

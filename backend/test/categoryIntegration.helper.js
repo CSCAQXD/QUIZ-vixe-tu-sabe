@@ -49,7 +49,7 @@ async function iniciarCenario() {
 }
 
 function pergunta(id, faixa) {
-    return { id, faixa, pergunta: `Pergunta ${id}?`, altA: "A", altB: "B", altC: "C", altD: "D", correta: "A", pontosIniciais: 100 };
+    return { id, tema: "História & Vida", faixa, pergunta: `Pergunta ${id}?`, altA: "A", altB: "B", altC: "C", altD: "D", correta: "A", pontosIniciais: 100 };
 }
 
 module.exports = { iniciarCenario, pergunta };
