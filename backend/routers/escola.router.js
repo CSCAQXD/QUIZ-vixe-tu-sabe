@@ -7,6 +7,11 @@ const escolaController = require(
 const router = express.Router();
 
 router.get(
+    "/catalogo",
+    escolaController.buscarCatalogo
+);
+
+router.get(
     "/",
     escolaController.listarEscolas
 );
