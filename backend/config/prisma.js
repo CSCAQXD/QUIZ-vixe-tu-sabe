@@ -1,8 +1,9 @@
 const { PrismaClient } = require("@prisma/client");
 const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
+const { resolverDatabaseUrl } = require("./databaseUrl");
 
 const adapter = new PrismaBetterSqlite3({
-    url: process.env.DATABASE_URL || "file:./prisma/dev.db",
+    url: resolverDatabaseUrl(process.env.DATABASE_URL),
 });
 
 const prisma = new PrismaClient({
