@@ -1,0 +1,73 @@
+.course-autocomplete {
+    position: relative;
+}
+
+.course-autocomplete__control {
+    position: relative;
+}
+
+.course-autocomplete__popover {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 4px);
+    right: 0;
+    left: 0;
+    overflow: hidden;
+    border: 1px solid #000;
+    border-radius: 10px;
+    background: #fffdf7;
+    box-shadow: 0 12px 30px rgb(0 0 0 / 18%);
+}
+
+.course-autocomplete__list {
+    max-height: 320px;
+    padding: 6px;
+    overflow-y: auto;
+    list-style: none;
+}
+
+.course-autocomplete__option {
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-radius: 7px;
+    color: #000;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.course-autocomplete__option span {
+    display: block;
+}
+
+.course-autocomplete__option:hover,
+.course-autocomplete__option[aria-selected="true"] {
+    background: #f1e6c9;
+}
+
+.course-autocomplete__empty,
+.course-autocomplete__refine {
+    margin: 0;
+    padding: 12px;
+    line-height: 1.35;
+}
+
+.course-autocomplete__refine {
+    border-top: 1px solid rgb(0 0 0 / 12%);
+    color: rgb(0 0 0 / 65%);
+    font-size: 0.875rem;
+}
+
+.course-autocomplete__help {
+    color: rgb(0 0 0 / 65%);
+    font-size: 0.875rem;
+    line-height: 1.35;
+}
+
+@media (max-width: 700px) {
+    .course-autocomplete__list {
+        max-height: 240px;
+    }
+}
