@@ -1,6 +1,9 @@
 import Button from "../../../common/Button/Button";
 import FormField from "../../../common/FormField/FormField";
 import SelectField from "../../../common/SelectField/SelectField";
+import CidadeAutocomplete from "../CidadeAutocomplete/CidadeAutocomplete";
+import CursoAutocomplete from "../CursoAutocomplete/CursoAutocomplete";
+import EscolaAutocomplete from "../EscolaAutocomplete/EscolaAutocomplete";
 import "./TurmaForm.css";
 
 const GRADE_OPTIONS = [
@@ -36,6 +39,7 @@ function TurmaForm({
     turma,
 }) {
     const headingId = `turma-${turma.id}-titulo`;
+    const formErrorId = `turma-${turma.id}-error`;
 
     function update(field, value) {
         onChange({
@@ -59,7 +63,11 @@ function TurmaForm({
         : "";
 
     return (
-        <section aria-labelledby={headingId} className="turma-form">
+        <section
+            aria-describedby={errors.form ? formErrorId : undefined}
+            aria-labelledby={headingId}
+            className={`turma-form${errors.form ? " turma-form--invalid" : ""}`}
+        >
         <div className="turma-form__header">
             <h2 id={headingId}>
                 TURMA {index + 1}
@@ -76,17 +84,43 @@ function TurmaForm({
             )}
         </div>
 
-        <FormField
-            id={`escola-${turma.id}`}
-            label="Nome da escola"
+        {errors.form && (
+            <p
+                className="turma-form__error"
+                id={formErrorId}
+                role="alert"
+            >
+                {errors.form}
+            </p>
+        )}
+
+        <CidadeAutocomplete
+            cidade={turma.cidade}
+            cidadeUf={turma.cidadeUf}
+            id={`cidade-${turma.id}`}
+            error={errors.cidade}
+            onBlur={() => onFieldBlur("cidade")}
+            onChange={(municipality) => {
+                const changedMunicipality = municipality.municipioIbgeId !== turma.municipioIbgeId;
+                onChange({
+                    ...turma,
+                    ...municipality,
+                    ...(changedMunicipality ? { codigoInep: "", nomeEscola: "" } : {}),
+                });
+            }}
+        />
+
+        <EscolaAutocomplete
+            codigoInep={turma.codigoInep}
             error={errors.nomeEscola}
-            maxLength={200}
-            minLength={3}
+            id={`escola-${turma.id}`}
+            municipioIbgeId={turma.municipioIbgeId}
+            nomeEscola={turma.nomeEscola}
             onBlur={() => onFieldBlur("nomeEscola")}
-            onChange={(value) => update("nomeEscola", value)}
-            placeholder="Ex.: EEEP Maria Cavalcante Costa"
-            required
-            value={turma.nomeEscola}
+            onChange={(school) => onChange({
+                ...turma,
+                ...school,
+            })}
         />
 
         {index > 0 && (
@@ -125,15 +159,11 @@ function TurmaForm({
             value={turma.organizacaoTurma}
         />
         {turma.tipoOrganizacao === "TECNICA" && (
-            <FormField
+            <CursoAutocomplete
                 id={`curso-${turma.id}`}
-                label="Curso"
                 error={errors.cursoNome}
-                maxLength={120}
                 onBlur={() => onFieldBlur("cursoNome")}
                 onChange={(value) => update("cursoNome", value)}
-                placeholder="Ex.: Redes de Computadores"
-                required
                 value={turma.cursoNome}
             />
         )}
@@ -162,7 +192,7 @@ function TurmaForm({
             onChange={(value) =>
                 update("turma", value)
             }
-            placeholder="Ex.: A ou Única"
+            placeholder="Ex.: A, B ou Noite"
             required
             value={turma.turma}
             />}
