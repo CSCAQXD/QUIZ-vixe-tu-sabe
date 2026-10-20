@@ -19,7 +19,9 @@ const byId = new Map(catalog.map((municipality) => [municipality.id, municipalit
 
 function resolverMunicipio({ cidade, cidadeUf, municipioIbgeId }) {
     const cityName = normalizarMunicipio(cidade);
-    const state = String(cidadeUf ?? "").trim().toUpperCase();
+    const state = String(cidadeUf ?? "")
+        .trim()
+        .toUpperCase();
     const municipalityId = String(municipioIbgeId ?? "").trim();
 
     if (municipalityId) {
@@ -35,9 +37,9 @@ function resolverMunicipio({ cidade, cidadeUf, municipioIbgeId }) {
         return { municipio: municipality };
     }
 
-    const matches = catalog.filter((municipality) =>
-        municipality.nomeBusca === cityName &&
-        (!state || municipality.uf === state)
+    const matches = catalog.filter(
+        (municipality) =>
+            municipality.nomeBusca === cityName && (!state || municipality.uf === state),
     );
 
     if (matches.length === 1) return { municipio: matches[0] };

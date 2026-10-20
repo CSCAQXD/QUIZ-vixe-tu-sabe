@@ -60,9 +60,9 @@ const CATALOGO_CURSOS_TECNICOS = cursosTecnicos.map((item) =>
     typeof item === "string"
         ? { nome: item, aliases: [] }
         : {
-            nome: item.nome,
-            aliases: Array.isArray(item.aliases) ? item.aliases : [],
-        }
+              nome: item.nome,
+              aliases: Array.isArray(item.aliases) ? item.aliases : [],
+          },
 );
 
 const cacheCorrespondenciasCatalogo = new Map();
@@ -73,7 +73,7 @@ function compactarIniciais(valor) {
         .filter(Boolean);
     const compactados = [];
 
-    for (let indice = 0; indice < termos.length;) {
+    for (let indice = 0; indice < termos.length; ) {
         if (!/^[A-Z]$/.test(termos[indice])) {
             compactados.push(termos[indice]);
             indice += 1;
@@ -85,11 +85,7 @@ function compactarIniciais(valor) {
             fim += 1;
         }
 
-        compactados.push(
-            fim - indice > 1
-                ? termos.slice(indice, fim).join("")
-                : termos[indice]
-        );
+        compactados.push(fim - indice > 1 ? termos.slice(indice, fim).join("") : termos[indice]);
         indice = fim;
     }
 
@@ -97,19 +93,13 @@ function compactarIniciais(valor) {
 }
 
 function comecaCom(lista, prefixo) {
-    return prefixo.every(
-        (termo, indice) => lista[indice] === termo
-    );
+    return prefixo.every((termo, indice) => lista[indice] === termo);
 }
 
 function removerPrefixoCurso(termos) {
-    const prefixo = PREFIXOS_CURSO.find(
-        (candidato) => comecaCom(termos, candidato)
-    );
+    const prefixo = PREFIXOS_CURSO.find((candidato) => comecaCom(termos, candidato));
 
-    return prefixo
-        ? termos.slice(prefixo.length)
-        : termos;
+    return prefixo ? termos.slice(prefixo.length) : termos;
 }
 
 function singularizarTermo(termo) {
@@ -127,10 +117,7 @@ function singularizarTermo(termo) {
         return `${termo.slice(0, -3)}EL`;
     }
 
-    if (termo.length > 5 && (
-        termo.endsWith("RES") ||
-        termo.endsWith("ZES")
-    )) {
+    if (termo.length > 5 && (termo.endsWith("RES") || termo.endsWith("ZES"))) {
         return termo.slice(0, -2);
     }
 
@@ -142,16 +129,8 @@ function singularizarTermo(termo) {
 }
 
 function obterTermosCurso(valor) {
-    return removerPrefixoCurso(
-        compactarIniciais(chaveEntidade(valor))
-            .split(" ")
-            .filter(Boolean)
-    )
-        .filter(
-            (termo) =>
-                !CONECTORES_CURSO.has(termo) &&
-                !TERMOS_GENERICOS_CURSO.has(termo)
-        )
+    return removerPrefixoCurso(compactarIniciais(chaveEntidade(valor)).split(" ").filter(Boolean))
+        .filter((termo) => !CONECTORES_CURSO.has(termo) && !TERMOS_GENERICOS_CURSO.has(termo))
         .map(singularizarTermo);
 }
 
@@ -178,20 +157,18 @@ function ehAbreviacaoDe(abreviacao, nomeCompleto) {
 
     const termoCurto = termosAbreviacao[0];
     if (termosNomeCompleto.length >= 2) {
-        const sigla = termosNomeCompleto
-            .map((termo) => termo[0])
-            .join("");
+        const sigla = termosNomeCompleto.map((termo) => termo[0]).join("");
 
-        return termoCurto.length >= 2 &&
-            termoCurto.length <= 8 &&
-            termoCurto === sigla;
+        return termoCurto.length >= 2 && termoCurto.length <= 8 && termoCurto === sigla;
     }
 
     const termoCompleto = termosNomeCompleto[0] || "";
-    return termoCurto.length >= 3 &&
+    return (
+        termoCurto.length >= 3 &&
         termoCurto.length <= 5 &&
         termoCompleto.length >= termoCurto.length + 3 &&
-        termoCompleto.startsWith(termoCurto);
+        termoCompleto.startsWith(termoCurto)
+    );
 }
 
 function cursosSaoEquivalentes(primeiro, segundo) {
@@ -205,18 +182,19 @@ function cursosSaoEquivalentes(primeiro, segundo) {
     const correspondenciasPrimeiro = buscarCursosCatalogoEquivalentes(primeiro);
     const correspondenciasSegundo = buscarCursosCatalogoEquivalentes(segundo);
 
-    if (
-        correspondenciasPrimeiro.length > 0 ||
-        correspondenciasSegundo.length > 0
-    ) {
-        return correspondenciasPrimeiro.length === 1 &&
+    if (correspondenciasPrimeiro.length > 0 || correspondenciasSegundo.length > 0) {
+        return (
+            correspondenciasPrimeiro.length === 1 &&
             correspondenciasSegundo.length === 1 &&
-            correspondenciasPrimeiro[0].nome === correspondenciasSegundo[0].nome;
+            correspondenciasPrimeiro[0].nome === correspondenciasSegundo[0].nome
+        );
     }
 
-    return primeiraIdentidade === segundaIdentidade ||
+    return (
+        primeiraIdentidade === segundaIdentidade ||
         ehAbreviacaoDe(primeiraIdentidade.toUpperCase(), segundaIdentidade.toUpperCase()) ||
-        ehAbreviacaoDe(segundaIdentidade.toUpperCase(), primeiraIdentidade.toUpperCase());
+        ehAbreviacaoDe(segundaIdentidade.toUpperCase(), primeiraIdentidade.toUpperCase())
+    );
 }
 
 function identidadesBasicasSaoEquivalentes(primeiro, segundo) {
@@ -227,9 +205,11 @@ function identidadesBasicasSaoEquivalentes(primeiro, segundo) {
         return primeiraIdentidade === segundaIdentidade;
     }
 
-    return primeiraIdentidade === segundaIdentidade ||
+    return (
+        primeiraIdentidade === segundaIdentidade ||
         ehAbreviacaoDe(primeiraIdentidade.toUpperCase(), segundaIdentidade.toUpperCase()) ||
-        ehAbreviacaoDe(segundaIdentidade.toUpperCase(), primeiraIdentidade.toUpperCase());
+        ehAbreviacaoDe(segundaIdentidade.toUpperCase(), primeiraIdentidade.toUpperCase())
+    );
 }
 
 function buscarCursosCatalogoEquivalentes(valor) {
@@ -240,22 +220,21 @@ function buscarCursosCatalogoEquivalentes(valor) {
     if (armazenada) return armazenada;
 
     const exatas = CATALOGO_CURSOS_TECNICOS.filter((curso) =>
-        [curso.nome, ...curso.aliases].some(
-            (nome) => normalizarCurso(nome) === identidade
-        )
+        [curso.nome, ...curso.aliases].some((nome) => normalizarCurso(nome) === identidade),
     );
     const permiteSiglaInferida = !/^\p{L}{1,2}$/u.test(
-        String(valor ?? "").replace(/[^\p{L}]/gu, "")
+        String(valor ?? "").replace(/[^\p{L}]/gu, ""),
     );
-    const correspondencias = exatas.length > 0
-        ? exatas
-        : !permiteSiglaInferida
-            ? []
-        : CATALOGO_CURSOS_TECNICOS.filter((curso) =>
-            [curso.nome, ...curso.aliases].some(
-                (nome) => identidadesBasicasSaoEquivalentes(valor, nome)
-            )
-        );
+    const correspondencias =
+        exatas.length > 0
+            ? exatas
+            : !permiteSiglaInferida
+              ? []
+              : CATALOGO_CURSOS_TECNICOS.filter((curso) =>
+                    [curso.nome, ...curso.aliases].some((nome) =>
+                        identidadesBasicasSaoEquivalentes(valor, nome),
+                    ),
+                );
 
     cacheCorrespondenciasCatalogo.set(identidade, correspondencias);
     return correspondencias;
@@ -272,15 +251,11 @@ function obterIdentidadeCurso(cursoNome) {
     return identidade || CURSO_REGULAR;
 }
 
-function obterIdentidadeTurma({
-    etapaEnsino,
-    serie,
-    turma,
-    cursoNome,
-    cursoBusca,
-} = {}) {
+function obterIdentidadeTurma({ etapaEnsino, serie, turma, cursoNome, cursoBusca } = {}) {
     return [
-        String(etapaEnsino ?? "FUNDAMENTAL").trim().toUpperCase(),
+        String(etapaEnsino ?? "FUNDAMENTAL")
+            .trim()
+            .toUpperCase(),
         Number(serie),
         cursoBusca || obterIdentidadeCurso(cursoNome),
         normalizarTurma(turma),
@@ -293,18 +268,22 @@ function encontrarTurmaDuplicada(turmas = []) {
 
         for (let primeiroIndice = 0; primeiroIndice < segundoIndice; primeiroIndice += 1) {
             const primeiraTurma = turmas[primeiroIndice];
-            const primeiroCurso = primeiraTurma.cursoBusca ||
-                obterIdentidadeCurso(primeiraTurma.cursoNome);
-            const segundoCurso = segundaTurma.cursoBusca ||
-                obterIdentidadeCurso(segundaTurma.cursoNome);
-            const cursosEquivalentes = primeiroCurso === CURSO_REGULAR ||
-                segundoCurso === CURSO_REGULAR
-                ? primeiroCurso === segundoCurso
-                : cursosSaoEquivalentes(primeiroCurso, segundoCurso);
+            const primeiroCurso =
+                primeiraTurma.cursoBusca || obterIdentidadeCurso(primeiraTurma.cursoNome);
+            const segundoCurso =
+                segundaTurma.cursoBusca || obterIdentidadeCurso(segundaTurma.cursoNome);
+            const cursosEquivalentes =
+                primeiroCurso === CURSO_REGULAR || segundoCurso === CURSO_REGULAR
+                    ? primeiroCurso === segundoCurso
+                    : cursosSaoEquivalentes(primeiroCurso, segundoCurso);
 
             if (
-                String(primeiraTurma.etapaEnsino ?? "FUNDAMENTAL").trim().toUpperCase() ===
-                    String(segundaTurma.etapaEnsino ?? "FUNDAMENTAL").trim().toUpperCase() &&
+                String(primeiraTurma.etapaEnsino ?? "FUNDAMENTAL")
+                    .trim()
+                    .toUpperCase() ===
+                    String(segundaTurma.etapaEnsino ?? "FUNDAMENTAL")
+                        .trim()
+                        .toUpperCase() &&
                 Number(primeiraTurma.serie) === Number(segundaTurma.serie) &&
                 normalizarTurma(primeiraTurma.turma) === normalizarTurma(segundaTurma.turma) &&
                 cursosEquivalentes

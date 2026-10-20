@@ -1,16 +1,9 @@
 function limpar(valor) {
-    if (
-        typeof valor !== "string"
-    ) {
+    if (typeof valor !== "string") {
         return valor;
     }
 
-    return valor
-        .trim()
-        .replace(/\s+/g, " ")
-        .toLocaleUpperCase(
-            "pt-BR"
-        );
+    return valor.trim().replace(/\s+/g, " ").toLocaleUpperCase("pt-BR");
 }
 
 function chaveEntidade(valor, removerPrefixoEscolar = false) {
@@ -24,14 +17,8 @@ function chaveEntidade(valor, removerPrefixoEscolar = false) {
 
     if (removerPrefixoEscolar) {
         chave = chave
-            .replace(
-                /\b(?:[A-Z]\s+){1,}[A-Z]\b/g,
-                (iniciais) => iniciais.replace(/\s+/g, "")
-            )
-            .replace(
-            /^(EEEP|ESCOLA\s+ESTADUAL\s+DE\s+EDUCACAO\s+PROFISSIONAL)\s+/,
-            ""
-        );
+            .replace(/\b(?:[A-Z]\s+){1,}[A-Z]\b/g, (iniciais) => iniciais.replace(/\s+/g, ""))
+            .replace(/^(EEEP|ESCOLA\s+ESTADUAL\s+DE\s+EDUCACAO\s+PROFISSIONAL)\s+/, "");
     }
 
     return chave;
