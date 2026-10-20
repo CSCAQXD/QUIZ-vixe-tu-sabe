@@ -13,16 +13,13 @@ test.afterEach(() => {
 test("preserva o nome usado pela escola e salva apenas a identidade canônica", async () => {
     mock.method(escolaRepository, "buscarPorId", async () => ({ id: "escola-1" }));
     mock.method(cursoRepository, "listarPorEscola", async () => []);
-    const criar = mock.method(
-        cursoRepository,
-        "criar",
-        async (escolaId, nome, nomeBusca) => ({ escolaId, nome, nomeBusca })
-    );
+    const criar = mock.method(cursoRepository, "criar", async (escolaId, nome, nomeBusca) => ({
+        escolaId,
+        nome,
+        nomeBusca,
+    }));
 
-    const curso = await cursoService.cadastrar(
-        "escola-1",
-        "Segurança da Informação"
-    );
+    const curso = await cursoService.cadastrar("escola-1", "Segurança da Informação");
 
     assert.deepEqual(curso, {
         escolaId: "escola-1",
@@ -40,10 +37,8 @@ test("reutiliza curso existente em vez de criar o alias novamente", async () => 
     };
     mock.method(escolaRepository, "buscarPorId", async () => ({ id: "escola-1" }));
     mock.method(cursoRepository, "listarPorEscola", async () => [existente]);
-    const criar = mock.method(
-        cursoRepository,
-        "criar",
-        async () => assert.fail("não deve criar outro curso")
+    const criar = mock.method(cursoRepository, "criar", async () =>
+        assert.fail("não deve criar outro curso"),
     );
 
     assert.equal(await cursoService.cadastrar("escola-1", "IoT"), existente);
@@ -58,25 +53,22 @@ test("recusa abreviação ambígua e informa as sugestões", async () => {
             assert.match(error.message, /mais de um curso/);
             assert.ok(error.sugestoes.length > 1);
             return true;
-        }
+        },
     );
 });
 
 test("mantém e cadastra um curso realmente novo", async () => {
     mock.method(escolaRepository, "buscarPorId", async () => ({ id: "escola-1" }));
     mock.method(cursoRepository, "listarPorEscola", async () => []);
-    mock.method(
-        cursoRepository,
-        "criar",
-        async (escolaId, nome, nomeBusca) => ({ escolaId, nome, nomeBusca })
-    );
+    mock.method(cursoRepository, "criar", async (escolaId, nome, nomeBusca) => ({
+        escolaId,
+        nome,
+        nomeBusca,
+    }));
 
-    assert.deepEqual(
-        await cursoService.cadastrar("escola-1", "Tecnologia Subaquática"),
-        {
-            escolaId: "escola-1",
-            nome: "Tecnologia Subaquática",
-            nomeBusca: "tecnologia subaquatica",
-        }
-    );
+    assert.deepEqual(await cursoService.cadastrar("escola-1", "Tecnologia Subaquática"), {
+        escolaId: "escola-1",
+        nome: "Tecnologia Subaquática",
+        nomeBusca: "tecnologia subaquatica",
+    });
 });
