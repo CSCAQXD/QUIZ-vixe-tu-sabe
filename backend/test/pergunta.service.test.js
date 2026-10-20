@@ -15,6 +15,7 @@ function criarPergunta(
 ) {
     return {
         id: "1",
+        tema: "História & Vida",
         pergunta:
             "Quem foi Cego Aderaldo?",
         altA: "Um poeta",
@@ -60,6 +61,7 @@ test(
             [
                 {
                     id: "1",
+                    tema: "História & Vida",
                     pergunta:
                         "Quem foi Cego Aderaldo?",
                     opcoes: [

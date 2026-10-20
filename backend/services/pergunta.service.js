@@ -49,6 +49,11 @@ function normalizarPergunta(
             pergunta.pergunta
         );
 
+    const tema =
+        normalizarTexto(
+            pergunta.tema
+        );
+
     const opcoes = [
         pergunta.altA,
         pergunta.altB,
@@ -110,6 +115,7 @@ function normalizarPergunta(
     return {
         id,
         faixa,
+        tema,
         pergunta: enunciado,
         opcoes,
         correta,
