@@ -29,6 +29,7 @@ describe("quiz utils", () => {
         expect(
             normalizeQuestion({
                 id: 1,
+                tema: "  História & Vida  ",
                 pergunta: 42,
                 opcoes: [1, 2],
                 dicas: ["dica", ""],
@@ -37,6 +38,7 @@ describe("quiz utils", () => {
             }),
         ).toMatchObject({
             id: "1",
+            tema: "História & Vida",
             pergunta: "42",
             opcoes: ["1", "2"],
             dicas: ["dica"],
@@ -50,6 +52,7 @@ describe("quiz utils", () => {
         expect(question.opcoes).toEqual([]);
         expect(question.dicas).toEqual([]);
         expect(question.pontosIniciais).toBe(0);
+        expect(question.tema).toBe("Tema geral");
     });
 
 });

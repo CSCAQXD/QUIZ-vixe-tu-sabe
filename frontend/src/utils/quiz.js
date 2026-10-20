@@ -49,6 +49,7 @@ export function normalizeQuestion(question) {
     const normalized = {
         ...question,
         id: String(question.id),
+        tema: String(question.tema ?? "").trim() || "Tema geral",
         pergunta: String(question.pergunta),
         opcoes: Array.isArray(question.opcoes)
         ? question.opcoes.map(String)
