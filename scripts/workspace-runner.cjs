@@ -80,17 +80,22 @@ if (target !== "all" && !supportedTargets.includes(target)) {
 }
 
 const targets = target === "all" ? supportedTargets : [target];
-const children = targets.map(run);
 let exitCode = 0;
+let children = [];
 
-for (const child of children) {
-  child.on("exit", (code, signal) => {
-    if (signal || code !== 0) exitCode = code || 1;
-    if (children.every((process) => process.exitCode !== null || process.signalCode !== null)) {
-      process.exitCode = exitCode;
-    }
-  });
+async function runTargets() {
+  for (const targetName of targets) {
+    const child = run(targetName);
+    children = [child];
+    const code = await new Promise((resolve) => {
+      child.on("exit", (childCode, signal) => resolve(signal ? 1 : childCode || 0));
+    });
+    if (code !== 0) exitCode = code;
+  }
+  process.exitCode = exitCode;
 }
+
+runTargets();
 
 function stopChildren(signal) {
   for (const child of children) {
