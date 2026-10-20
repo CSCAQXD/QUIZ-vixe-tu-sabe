@@ -5,8 +5,8 @@
 const escolaRepository = require(
     "../repositories/escola.repository"
 );
-const cursoRepository = require("../repositories/curso.repository");
 const cursoService = require("./curso.service");
+const escolaCatalogoService = require("./escolaCatalogo.service");
 const { validarContextoQuiz } = require("../utils/contextoQuiz");
 
 const sessaoRepository = require(
@@ -21,6 +21,21 @@ const {
     chaveEntidade,
     limpar,
 } = require("../utils/sanitize");
+const {
+    CURSO_REGULAR,
+    encontrarTurmaDuplicada,
+    normalizarTurma,
+    obterIdentidadeCurso,
+} = require("../utils/identidadeCadastro");
+
+function chaveRankingTurma(item) {
+    return [
+        item.etapaEnsino || "FUNDAMENTAL",
+        item.serie,
+        item.cursoBusca || obterIdentidadeCurso(item.cursoNome),
+        item.turmaBusca || normalizarTurma(item.turma),
+    ].join("|||");
+}
 
 async function montarResultado(
     partida,
@@ -35,12 +50,7 @@ async function montarResultado(
 
     const rankingPorTurma = new Map(
         rankingInterno.ranking.map((item) => [
-            [
-                item.etapaEnsino || "FUNDAMENTAL",
-                item.serie,
-                item.cursoId || "SEM_CURSO",
-                item.turma,
-            ].join("|||"),
+            chaveRankingTurma(item),
             item,
         ])
     );
@@ -50,12 +60,10 @@ async function montarResultado(
             (participacao) => {
                 const itemRanking =
                     rankingPorTurma.get(
-                        [
-                            participacao.etapaEnsino || "FUNDAMENTAL",
-                            participacao.serie,
-                            participacao.cursoId || "SEM_CURSO",
-                            participacao.turma,
-                        ].join("|||")
+                        chaveRankingTurma({
+                            ...participacao,
+                            cursoNome: participacao.curso?.nome,
+                        })
                     );
 
                 return {
@@ -106,6 +114,9 @@ async function montarResultado(
             nome: partida.escola.nome,
             cidade:
                 partida.escola.cidade,
+            cidadeUf: partida.escola.cidadeUf || null,
+            municipioIbgeId: partida.escola.municipioIbgeId || null,
+            codigoInep: partida.escola.codigoInep || null,
         },
 
         turmas,
@@ -128,17 +139,42 @@ async function registrarSessoes(dados) {
 
     const categoriaQuiz = validarContextoQuiz(dados.contextoQuiz, dados.turmas);
 
-    const nomeEscola =
+    const turmaDuplicada = encontrarTurmaDuplicada(dados.turmas);
+    if (turmaDuplicada) {
+        const erro = new Error(
+            "Não é permitido repetir a mesma etapa, série, curso e turma na partida."
+        );
+        erro.statusCode = 400;
+        throw erro;
+    }
+
+    let nomeEscola =
         limpar(dados.nomeEscola);
 
     const cidade =
         limpar(dados.cidade);
 
-    const nomeBusca =
-        chaveEntidade(nomeEscola, true);
-
     const cidadeBusca =
         chaveEntidade(cidade);
+
+    const cidadeUf = String(dados.cidadeUf ?? "").trim().toUpperCase();
+    const municipioIbgeId = String(dados.municipioIbgeId ?? "").trim();
+    let codigoInep = String(dados.codigoInep ?? "").trim();
+
+    if (!codigoInep && municipioIbgeId) {
+        const escolaOficial = await escolaCatalogoService.buscarCorrespondenciaExata({
+            municipioIbgeId,
+            nome: nomeEscola,
+        });
+
+        if (escolaOficial) {
+            codigoInep = escolaOficial.codigoInep;
+            nomeEscola = limpar(escolaOficial.nome);
+        }
+    }
+
+    const nomeBusca =
+        chaveEntidade(nomeEscola, true);
 
     const turmas =
         dados.turmas.map(
@@ -149,7 +185,11 @@ async function registrarSessoes(dados) {
                 turma: limpar(
                     turma.turma
                 ),
-                cursoNome: turma.cursoNome,
+                turmaBusca: normalizarTurma(turma.turma),
+                cursoNome: turma.cursoNome
+                    ? String(turma.cursoNome).trim().replace(/\s+/g, " ")
+                    : undefined,
+                cursoBusca: obterIdentidadeCurso(turma.cursoNome),
             })
         );
 
@@ -167,29 +207,37 @@ async function registrarSessoes(dados) {
                                 cidade,
                                 nomeBusca,
                                 cidadeBusca,
+                                cidadeUf,
+                                municipioIbgeId,
+                                codigoInep,
                                 transaction
                             );
 
-                    const turmasComCurso = await Promise.all(
-                        turmas.map(async (turma) => {
-                            if (!turma.cursoNome) return turma;
+                    const cursosPorIdentidade = new Map();
+                    const turmasComCurso = [];
 
-                            const nomeBusca = cursoService.normalizar(turma.cursoNome);
-                            const existente = await cursoRepository.buscarPorNome(
-                                escola.id,
-                                nomeBusca,
-                                transaction
-                            );
-                            const curso = existente || await cursoRepository.criar(
+                    for (const turma of turmas) {
+                        if (turma.cursoBusca === CURSO_REGULAR) {
+                            turmasComCurso.push({ ...turma, cursoId: null });
+                            continue;
+                        }
+
+                        let curso = cursosPorIdentidade.get(turma.cursoBusca);
+                        if (!curso) {
+                            curso = await cursoService.resolver(
                                 escola.id,
                                 turma.cursoNome,
-                                nomeBusca,
                                 transaction
                             );
+                            cursosPorIdentidade.set(turma.cursoBusca, curso);
+                        }
 
-                            return { ...turma, cursoId: curso.id };
-                        })
-                    );
+                        turmasComCurso.push({
+                            ...turma,
+                            cursoBusca: curso.nomeBusca,
+                            cursoId: curso.id,
+                        });
+                    }
 
                     return sessaoRepository
                         .criar(

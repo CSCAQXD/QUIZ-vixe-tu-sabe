@@ -50,7 +50,9 @@ async function criar(
                             turma.etapaEnsino,
                         serie: turma.serie,
                         turma: turma.turma,
+                        turmaBusca: turma.turmaBusca,
                         cursoId: turma.cursoId,
+                        cursoBusca: turma.cursoBusca,
                     })
                 ),
             },
