@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { apiRequest } from "../../../src/api/apiClient";
-import { listarEscolas } from "../../../src/api/escolaApi";
+import { buscarEscolasCatalogo, listarEscolas } from "../../../src/api/escolaApi";
 import { carregarQuiz, listarPerguntas } from "../../../src/api/perguntaApi";
 import { listarRankingCategoria, listarRankingEscolas, listarRankingInterno, listarRankingTurmas } from "../../../src/api/rankingApi";
 import { registrarSessao } from "../../../src/api/sessaoApi";
@@ -26,6 +26,19 @@ describe("endpoints do frontend", () => {
         expect(apiRequest).toHaveBeenNthCalledWith(2, "/ranking-escolas?ano=2026");
         expect(apiRequest).toHaveBeenNthCalledWith(3, "/ranking-interno/id%2Fescola?limit=10");
         expect(apiRequest).toHaveBeenNthCalledWith(4, "/ranking-categoria/FUNDAMENTAL_1?ano=2026");
+    });
+
+    it("busca o catálogo de escolas por município", async () => {
+        apiRequest.mockResolvedValue({ escolas: [{ codigoInep: "23000001" }] });
+
+        await expect(buscarEscolasCatalogo({
+            municipioIbgeId: "2311306",
+            termo: "Maria Modelo",
+        })).resolves.toEqual([{ codigoInep: "23000001" }]);
+        expect(apiRequest).toHaveBeenCalledWith(
+            "/escolas/catalogo?municipioIbgeId=2311306&q=Maria+Modelo&limit=8",
+            { signal: undefined },
+        );
     });
 
     it("envia todas as turmas ao consultar perguntas", async () => {
