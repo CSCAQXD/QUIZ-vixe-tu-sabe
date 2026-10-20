@@ -1,19 +1,11 @@
 const express = require("express");
 
-const escolaController = require(
-    "../controllers/escola.controller"
-);
+const escolaController = require("../controllers/escola.controller");
 
 const router = express.Router();
 
-router.get(
-    "/catalogo",
-    escolaController.buscarCatalogo
-);
+router.get("/catalogo", escolaController.buscarCatalogo);
 
-router.get(
-    "/",
-    escolaController.listarEscolas
-);
+router.get("/", escolaController.listarEscolas);
 
 module.exports = router;
