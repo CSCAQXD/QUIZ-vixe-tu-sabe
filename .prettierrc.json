@@ -1,0 +1,15 @@
+{
+  "printWidth": 100,
+  "singleQuote": true,
+  "semi": false,
+  "overrides": [
+    {
+      "files": ["backend/**/*.js"],
+      "options": {
+        "tabWidth": 4,
+        "singleQuote": false,
+        "semi": true
+      }
+    }
+  ]
+}
