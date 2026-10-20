@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop, 'feat/**', 'fix/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Use Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install backend dependencies
+        run: npm ci --prefix backend
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix frontend
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint source code and styles
+        run: npm run lint:all
+
+      - name: Validate backend and Prisma schema
+        run: npm run check:backend
+        env:
+          DATABASE_URL: file:./ci.db
+
+      - name: Run tests with coverage thresholds
+        run: npm run coverage:all
+        env:
+          DATABASE_URL: file:./ci.db
+          NODE_ENV: test
+          QUIZ_CONTEXT_SECRET: ci-only-not-a-production-secret
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ github.sha }}
+          path: |
+            backend/coverage/
+            frontend/coverage/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  dependency-audit:
+    name: Production dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [backend, frontend]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Audit ${{ matrix.project }}
+        working-directory: ${{ matrix.project }}
+        run: npm audit --audit-level=high
+
+  container-build:
+    name: Build production containers
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      matrix:
+        app: [backend, frontend]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Build ${{ matrix.app }} container
+        uses: docker/build-push-action@v6
+        with:
+          context: ./${{ matrix.app }}
+          push: false
+          tags: quiz-vixe-tu-sabe-${{ matrix.app }}:ci
