@@ -22,8 +22,12 @@ function normalizarTurmas(turmas) {
         const etapaEnsino = turma?.etapaEnsino;
         const serie = turma?.serie;
         const limite = etapaEnsino === "MEDIO" ? 3 : 9;
-        if (!["FUNDAMENTAL", "MEDIO"].includes(etapaEnsino) ||
-            !Number.isInteger(serie) || serie < 1 || serie > limite) {
+        if (
+            !["FUNDAMENTAL", "MEDIO"].includes(etapaEnsino) ||
+            !Number.isInteger(serie) ||
+            serie < 1 ||
+            serie > limite
+        ) {
             throw erroContexto();
         }
         return { etapaEnsino, serie };
@@ -38,10 +42,14 @@ function assinar(conteudo) {
 function criarContextoQuiz(turmas) {
     const participantes = normalizarTurmas(turmas);
     const categoriaQuiz = obterMenorFaixa(participantes);
-    const conteudo = Buffer.from(JSON.stringify({
-        versao: 1, categoriaQuiz, turmas: participantes,
-        expiraEm: Date.now() + DURACAO_MS,
-    })).toString("base64url");
+    const conteudo = Buffer.from(
+        JSON.stringify({
+            versao: 1,
+            categoriaQuiz,
+            turmas: participantes,
+            expiraEm: Date.now() + DURACAO_MS,
+        }),
+    ).toString("base64url");
     return {
         categoriaQuiz,
         contextoQuiz: `${conteudo}.${assinar(conteudo).toString("base64url")}`,
@@ -66,9 +74,14 @@ function validarContextoQuiz(token, turmasLocais) {
     } catch {
         throw erroContexto();
     }
-    if (!contexto || contexto.versao !== 1 ||
-        !Number.isInteger(contexto.expiraEm) || contexto.expiraEm <= Date.now() ||
-        !CATEGORIAS.includes(contexto.categoriaQuiz)) throw erroContexto();
+    if (
+        !contexto ||
+        contexto.versao !== 1 ||
+        !Number.isInteger(contexto.expiraEm) ||
+        contexto.expiraEm <= Date.now() ||
+        !CATEGORIAS.includes(contexto.categoriaQuiz)
+    )
+        throw erroContexto();
     const participantes = normalizarTurmas(contexto.turmas);
     if (obterMenorFaixa(participantes) !== contexto.categoriaQuiz) throw erroContexto();
 

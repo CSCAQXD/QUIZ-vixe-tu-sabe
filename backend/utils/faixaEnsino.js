@@ -1,23 +1,15 @@
-const FAIXAS = [
-    "FUNDAMENTAL_1",
-    "FUNDAMENTAL_2",
-    "MEDIO",
-];
+const FAIXAS = ["FUNDAMENTAL_1", "FUNDAMENTAL_2", "MEDIO"];
 
 function obterFaixaEnsino(turma) {
     if (turma.etapaEnsino === "MEDIO") return "MEDIO";
 
-    return Number(turma.serie) <= 5
-        ? "FUNDAMENTAL_1"
-        : "FUNDAMENTAL_2";
+    return Number(turma.serie) <= 5 ? "FUNDAMENTAL_1" : "FUNDAMENTAL_2";
 }
 
 function obterMenorFaixa(turmas = []) {
     if (turmas.length === 0) return null;
 
-    return turmas
-        .map(obterFaixaEnsino)
-        .sort((a, b) => FAIXAS.indexOf(a) - FAIXAS.indexOf(b))[0];
+    return turmas.map(obterFaixaEnsino).sort((a, b) => FAIXAS.indexOf(a) - FAIXAS.indexOf(b))[0];
 }
 
 function normalizarFaixaPergunta(valor) {
@@ -42,8 +34,7 @@ function normalizarFaixaPergunta(valor) {
         ENSINOMEDIO: "MEDIO",
     };
 
-    return aliases[normalizada] ??
-        (FAIXAS.includes(normalizada) ? normalizada : null);
+    return aliases[normalizada] ?? (FAIXAS.includes(normalizada) ? normalizada : null);
 }
 
 module.exports = {
