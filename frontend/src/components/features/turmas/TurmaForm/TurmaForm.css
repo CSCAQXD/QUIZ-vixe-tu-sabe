@@ -11,6 +11,11 @@
     box-shadow: 0 4px 12px rgb(60 20 35 / 4%);
 }
 
+.turma-form--invalid {
+    border-color: #a52d37;
+    box-shadow: 0 0 0 2px rgb(165 45 55 / 10%);
+}
+
 .turma-form__header {
     display: flex;
     align-items: center;
@@ -27,6 +32,18 @@
     font-size: 0.95rem;
     font-weight: 800;
     line-height: 1.5;
+}
+
+.turma-form__error {
+    margin: 0;
+    padding: 10px 12px;
+    border-left: 4px solid #a52d37;
+    border-radius: 6px;
+    color: #7d1f29;
+    background: rgb(165 45 55 / 7%);
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.4;
 }
 
 .turma-form__configuration {
@@ -79,7 +96,7 @@
 }
 
 .turma-form .form-field__input::placeholder,
-.turma-form .select-field__control:invalid {
+.turma-form .select-field__control--placeholder {
     color: #806f66;
 }
 
@@ -94,8 +111,17 @@
 
 .turma-form .form-field__input:focus-visible,
 .turma-form .select-field__control:focus-visible {
-    outline: 2px solid #a52d37;
+    border-color: var(--color-orange);
+    outline: 2px solid rgb(240 155 50 / 55%);
     outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgb(240 155 50 / 10%);
+}
+
+.turma-form .form-field__input[aria-invalid="true"]:focus-visible,
+.turma-form .select-field__control[aria-invalid="true"]:focus-visible {
+    border-color: var(--color-error);
+    outline-color: rgb(165 45 55 / 38%);
+    box-shadow: 0 0 0 4px rgb(165 45 55 / 8%);
 }
 
 .turma-form .form-field__error,
@@ -106,7 +132,9 @@
 
 .turma-form > .form-field .form-field__error:empty,
 .turma-form__configuration > .form-field .form-field__error:empty,
-.turma-form__fields--single .select-field__error:empty {
+.turma-form__configuration > .select-field .select-field__error:empty,
+.turma-form__fields > .form-field .form-field__error:empty,
+.turma-form__fields > .select-field .select-field__error:empty {
     display: none;
 }
 
