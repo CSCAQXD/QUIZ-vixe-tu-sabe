@@ -1,68 +1,68 @@
 .quiz-page {
-    position: relative;
-    height: 100svh;
-    min-height: 620px;
-    overflow: hidden;
-    isolation: isolate;
-    background: #f7c181;
+  position: relative;
+  height: 100svh;
+  min-height: 620px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #f7c181;
 }
 
 .quiz-page--with-history {
-    height: auto;
-    min-height: 100svh;
-    overflow-y: auto;
+  height: auto;
+  min-height: 100svh;
+  overflow-y: auto;
 }
 
 .quiz-page__fence {
-    z-index: -2;
-    right: 50%;
-    bottom: clamp(110px, 14svh, 152px);
-    width: max(110%, 1920px);
-    height: clamp(145px, 27svh, 294px);
-    object-fit: fill;
-    transform: translateX(50%);
+  z-index: -2;
+  right: 50%;
+  bottom: clamp(110px, 14svh, 152px);
+  width: max(110%, 1920px);
+  height: clamp(145px, 27svh, 294px);
+  object-fit: fill;
+  transform: translateX(50%);
 }
 
 .quiz-page__ground {
-    z-index: -1;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: clamp(115px, 24svh, 260px);
-    object-fit: cover;
-    object-position: center top;
+  z-index: -1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: clamp(115px, 24svh, 260px);
+  object-fit: cover;
+  object-position: center top;
 }
 
 .quiz-page__message,
 .quiz-page__save-error {
-    position: fixed;
-    z-index: 20;
-    right: 50%;
-    bottom: 22px;
-    width: min(520px, calc(100% - 32px));
-    margin: 0;
-    padding: 18px;
-    border-radius: 16px;
-    background: var(--color-cream);
-    box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
-    text-align: center;
-    font-weight: 700;
-    transform: translateX(50%);
+  position: fixed;
+  z-index: 20;
+  right: 50%;
+  bottom: 22px;
+  width: min(520px, calc(100% - 32px));
+  margin: 0;
+  padding: 18px;
+  border-radius: 16px;
+  background: var(--color-cream);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
+  text-align: center;
+  font-weight: 700;
+  transform: translateX(50%);
 }
 
 .quiz-page__save-error {
-    border: 2px solid var(--color-error);
+  border: 2px solid var(--color-error);
 }
 
 .quiz-page__save-error p {
-    margin-top: 0;
+  margin-top: 0;
 }
 
-@media (max-width: 760px), (max-height: 680px) {
-    .quiz-page {
-        height: auto;
-        min-height: 100svh;
-        overflow-y: auto;
-    }
+@media (width <= 760px), (height <= 680px) {
+  .quiz-page {
+    height: auto;
+    min-height: 100svh;
+    overflow-y: auto;
+  }
 }
