@@ -104,7 +104,7 @@ function QuizBoard({
             )}
 
             <div className="quiz-board__meta">
-            <span>SOBRE O POETA</span>
+            <span>{currentQuestion.tema}</span>
             <strong><small>VALE</small>{availablePoints}<small>PONTOS</small></strong>
             </div>
 

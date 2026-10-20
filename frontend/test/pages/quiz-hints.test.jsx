@@ -7,10 +7,10 @@ import { saveMediation } from "../../src/utils/storage";
 
 vi.mock("../../src/api/perguntaApi", () => ({ carregarQuiz: vi.fn() }));
 vi.mock("../../src/api/sessaoApi", () => ({ registrarSessao: vi.fn() }));
-const pergunta = { id: 1, pergunta: "Quem é o Cego Aderaldo?", correta: "A",
+const pergunta = { id: 1, tema: "História & Vida", pergunta: "Quem é o Cego Aderaldo?", correta: "A",
     opcoes: ["Um violeiro", "Um cientista", "Um escritor", "Um pintor"],
     pontosIniciais: 100, dicas: ["Ele toca um instrumento.", "O instrumento tem cordas."] };
-const proxima = { ...pergunta, id: 2, pergunta: "Qual é o instrumento?" };
+const proxima = { ...pergunta, id: 2, tema: "Obra", pergunta: "Qual é o instrumento?" };
 beforeEach(() => {
     vi.clearAllMocks();
     saveMediation({ nomeEscola: "Escola Teste", turmas: [{ etapaEnsino: "MEDIO", serie: 1, turma: "A" }] });
@@ -31,6 +31,7 @@ function abrirConfirmacao() {
 
 it.each(["cancelar", "Escape", "fechar"])("avisa o custo antes da dica e não cobra ao %s", async (acao) => {
     await iniciar();
+    expect(screen.getByText("História & Vida")).toBeInTheDocument();
     expect(screen.getByText("2 dicas restantes")).toBeInTheDocument();
     const dialogo = abrirConfirmacao();
     expect(dialogo).toHaveTextContent("100");
@@ -76,6 +77,8 @@ it("consome uma dica por confirmação, informa o saldo e bloqueia após a últi
     expect(screen.getByText("PONTUAÇÃO: 50")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Próxima pergunta" }));
     expect(screen.getByRole("heading", { name: proxima.pergunta })).toBeInTheDocument();
+    expect(screen.getByText("Obra")).toBeInTheDocument();
+    expect(screen.queryByText("História & Vida")).not.toBeInTheDocument();
     expect(screen.queryByText("Dicas usadas")).not.toBeInTheDocument();
     pergunta.dicas.forEach((dica) => expect(screen.queryByText(dica)).not.toBeInTheDocument());
     expect(screen.getByText("2 dicas restantes")).toBeInTheDocument();
