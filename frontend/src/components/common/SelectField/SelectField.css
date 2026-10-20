@@ -1,14 +1,15 @@
 .select-field {
+  position: relative;
   min-width: 0;
   display: grid;
   gap: 10px;
 }
 
 .select-field__label {
-  color: #000;
+  color: #3c1423;
   font-family: var(--font-family-base);
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .select-field__control-wrap {
@@ -18,42 +19,143 @@
 
 .select-field__control {
   width: 100%;
-  min-height: 89px;
-  padding: 18px 44px 18px 16px;
-  border: 1px solid #000;
-  border-radius: 10px;
-  appearance: none;
-  color: #000;
-  background: transparent;
-  font-family: var(--font-family-base);
-  font-size: 1.15rem;
-  font-weight: 600;
-}
-
-.select-field__arrow {
-  position: absolute;
-  top: 50%;
-  right: 20px;
-  width: 14px;
-  height: 14px;
-  pointer-events: none;
-  border-right: 3px solid currentcolor;
-  border-bottom: 3px solid currentcolor;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border: 1px solid #c9b8aa;
+  border-radius: 12px;
   color: #3c1423;
-  transform: translateY(-70%) rotate(45deg);
+  background: #fff;
+  font-family: var(--font-family-base);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
 }
 
-.select-field__control:invalid {
-  color: rgb(0 0 0 / 35%);
+.select-field__control:hover {
+  border-color: var(--color-orange);
+  background: #fffdf9;
+}
+
+.select-field__control[aria-expanded="true"] {
+  border-color: var(--color-orange);
+  box-shadow: 0 0 0 3px rgb(240 155 50 / 16%);
 }
 
 .select-field__control[aria-invalid="true"] {
-  border-color: #a52d37;
+  border-color: var(--color-error);
+}
+
+.select-field__control[aria-invalid="true"][aria-expanded="true"] {
+  box-shadow: 0 0 0 3px rgb(165 45 55 / 12%);
 }
 
 .select-field__control:focus-visible {
-  outline: 3px solid rgb(240 155 50 / 45%);
+  outline: 3px solid rgb(240 155 50 / 42%);
   outline-offset: 2px;
+}
+
+.select-field__control--placeholder {
+  color: #806f66;
+  font-weight: 500;
+}
+
+.select-field__value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select-field__arrow {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  margin: -5px 3px 0 0;
+  border-right: 2px solid currentcolor;
+  border-bottom: 2px solid currentcolor;
+  transform: rotate(45deg);
+  transition: transform 150ms ease;
+}
+
+.select-field__arrow--open {
+  margin-top: 5px;
+  transform: rotate(225deg);
+}
+
+.select-field__popover {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 6px);
+  right: 0;
+  left: 0;
+  overflow: hidden;
+  border: 1px solid #d7c2af;
+  border-radius: 12px;
+  background: #fffaf4;
+  box-shadow: 0 14px 32px rgb(60 20 35 / 18%);
+}
+
+.select-field__popover--up {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
+.select-field__options {
+  max-height: 276px;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #d9a56e transparent;
+  scrollbar-width: thin;
+  list-style: none;
+}
+
+.select-field__option {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  color: #3c1423;
+  background: transparent;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.select-field__option:hover,
+.select-field__option--active {
+  color: #3c1423;
+  background: #f6dfbd;
+}
+
+.select-field__option[aria-selected="true"] {
+  color: #fffaf4;
+  background: #a52d37;
+  font-weight: 700;
+}
+
+.select-field__option[aria-selected="true"]:hover,
+.select-field__option[aria-selected="true"].select-field__option--active {
+  background: #8d2430;
+}
+
+.select-field__check {
+  color: #f9c47d;
+  font-weight: 900;
 }
 
 .select-field__error {
@@ -62,10 +164,4 @@
   font-size: 0.875rem;
   font-weight: 700;
   line-height: 1.25;
-}
-
-@media (max-width: 1100px) {
-  .select-field__control {
-    min-height: 64px;
-  }
 }

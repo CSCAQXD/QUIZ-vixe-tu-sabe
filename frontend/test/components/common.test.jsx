@@ -35,7 +35,8 @@ describe("componentes comuns", () => {
         const onSelect = vi.fn();
         render(<><FormField error="Obrigatório" id="nome" label="Nome" onChange={onText} value="" /><SelectField error="Escolha" id="serie" label="Série" onChange={onSelect} options={[{ value: "9", label: "9º" }]} placeholder="Selecione" value="" /></>);
         await user.type(screen.getByLabelText("Nome"), "A");
-        await user.selectOptions(screen.getByLabelText("Série"), "9");
+        await user.click(screen.getByLabelText("Série"));
+        await user.click(screen.getByRole("option", { name: "9º" }));
         expect(onText).toHaveBeenLastCalledWith("A");
         expect(onSelect).toHaveBeenCalledWith("9");
         expect(screen.getByText("Obrigatório")).toBeInTheDocument();
