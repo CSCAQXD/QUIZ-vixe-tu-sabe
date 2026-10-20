@@ -1,14 +1,13 @@
 const cursoRepository = require("../repositories/curso.repository");
 const escolaRepository = require("../repositories/escola.repository");
+const {
+    buscarCursosCatalogoEquivalentes,
+    cursosSaoEquivalentes,
+    obterIdentidadeCurso,
+} = require("../utils/identidadeCadastro");
 
 function normalizar(nome) {
-    return String(nome ?? "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-zA-Z0-9]+/g, " ")
-        .trim()
-        .replace(/\s+/g, " ")
-        .toLowerCase();
+    return obterIdentidadeCurso(nome);
 }
 
 function encontrarSemelhante(cursos, nomeBusca) {
@@ -31,15 +30,35 @@ async function listar(escolaId) {
 }
 
 async function cadastrar(escolaId, nome, confirmar = false) {
-    const nomeLimpo = String(nome ?? "").trim().replace(/\s+/g, " ");
-    if (nomeLimpo.length < 3 || nomeLimpo.length > 120) {
-        const erro = new Error("O curso deve possuir entre 3 e 120 caracteres.");
+    const nomeInformado = String(nome ?? "").trim().replace(/\s+/g, " ");
+    const cursosCatalogo = buscarCursosCatalogoEquivalentes(nomeInformado);
+    const nomeLimpo = nomeInformado;
+    if (cursosCatalogo.length > 1) {
+        const erro = new Error(
+            "O nome informado pode representar mais de um curso. Selecione uma opção da lista ou escreva o nome completo."
+        );
+        erro.statusCode = 409;
+        erro.sugestoes = cursosCatalogo;
+        throw erro;
+    }
+    if (
+        (nomeInformado.length < 3 && cursosCatalogo.length !== 1) ||
+        nomeLimpo.length > 120
+    ) {
+        const erro = new Error(
+            "O curso deve possuir entre 3 e 120 caracteres ou ser uma sigla reconhecida da lista."
+        );
         erro.statusCode = 400;
         throw erro;
     }
     const cursos = await listar(escolaId);
     const nomeBusca = normalizar(nomeLimpo);
-    const existente = cursos.find((curso) => curso.nomeBusca === nomeBusca);
+    const existente = cursos.find(
+        (curso) => cursosSaoEquivalentes(
+            curso.nomeBusca || curso.nome,
+            nomeBusca
+        )
+    );
     if (existente) return existente;
     const semelhante = encontrarSemelhante(cursos, nomeBusca);
     if (semelhante && !confirmar) {
@@ -51,4 +70,23 @@ async function cadastrar(escolaId, nome, confirmar = false) {
     return cursoRepository.criar(escolaId, nomeLimpo, nomeBusca);
 }
 
-module.exports = { cadastrar, listar, normalizar };
+async function resolver(escolaId, nome, cliente) {
+    const nomeLimpo = String(nome ?? "").trim().replace(/\s+/g, " ");
+    const nomeBusca = normalizar(nomeLimpo);
+    const existente = await cursoRepository.buscarEquivalente(
+        escolaId,
+        nomeBusca,
+        cliente
+    );
+
+    if (existente) return existente;
+
+    return cursoRepository.criar(
+        escolaId,
+        nomeLimpo,
+        nomeBusca,
+        cliente
+    );
+}
+
+module.exports = { cadastrar, listar, normalizar, resolver };
