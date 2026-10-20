@@ -21,12 +21,10 @@ async function buscarEquivalente(escolaId, nomeBusca, cliente = prisma) {
     if (exato) return exato;
 
     const cursos = await listarPorEscola(escolaId, cliente);
-    return cursos.find(
-        (curso) => cursosSaoEquivalentes(
-            curso.nomeBusca || curso.nome,
-            nomeBusca
-        )
-    ) || null;
+    return (
+        cursos.find((curso) => cursosSaoEquivalentes(curso.nomeBusca || curso.nome, nomeBusca)) ||
+        null
+    );
 }
 
 async function criar(escolaId, nome, nomeBusca, cliente = prisma) {
