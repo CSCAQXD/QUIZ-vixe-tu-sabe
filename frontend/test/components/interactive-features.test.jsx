@@ -21,9 +21,10 @@ describe("componentes interativos", () => {
         const onRemove = vi.fn();
         const onReuse = vi.fn();
         const onBlur = vi.fn();
-        render(<TurmaForm canReuseSchool errors={{ turma: "Obrigatório" }} index={1} onChange={onChange} onFieldBlur={onBlur} onRemove={onRemove} onUsePreviousSchool={onReuse} removable turma={{ id: "1", nomeEscola: "Escola", etapaEnsino: "", serie: "", turma: "", tipoOrganizacao: "REGULAR", organizacaoTurma: "DIVIDIDA" }} />);
+        render(<TurmaForm canReuseSchool errors={{ turma: "Obrigatório" }} index={1} onChange={onChange} onFieldBlur={onBlur} onRemove={onRemove} onUsePreviousSchool={onReuse} removable turma={{ id: "1", cidade: "Fortaleza", cidadeUf: "CE", municipioIbgeId: "2304400", codigoInep: "", nomeEscola: "Escola", etapaEnsino: "", serie: "", turma: "", tipoOrganizacao: "REGULAR", organizacaoTurma: "DIVIDIDA" }} />);
         await userEvent.type(screen.getByLabelText("Nome da escola"), " X");
-        await userEvent.selectOptions(screen.getByLabelText("Série"), "MEDIO:3");
+        await userEvent.click(screen.getByLabelText("Série"));
+        await userEvent.click(screen.getByRole("option", { name: "3º ano — Ensino Médio" }));
         await userEvent.type(screen.getByLabelText("Identificação da turma"), "A");
         await userEvent.click(screen.getByRole("button", { name: /Usar escola anterior/ }));
         await userEvent.click(screen.getByRole("button", { name: /Remover/ }));
@@ -34,10 +35,12 @@ describe("componentes interativos", () => {
 
     it("exibe dica, seleção e feedback correto e incorreto", async () => {
         const props = {
-            answerState: "answering", availablePoints: 75, currentHint: "Uma dica", currentQuestion: { id: "1", pergunta: "Pergunta?", opcoes: ["A", "B", "C", "D"], dicas: ["Uma dica"], correctIndex: 1 }, isHintOpen: false,
+            answerState: "answering", availablePoints: 75, currentHint: "Uma dica", currentQuestion: { id: "1", tema: "História & Vida", pergunta: "Pergunta?", opcoes: ["A", "B", "C", "D"], dicas: ["Uma dica"], correctIndex: 1 }, isHintOpen: false,
             onCloseHint: vi.fn(), onConfirm: vi.fn(), onNext: vi.fn(), onOpenHint: vi.fn(), onSelectAnswer: vi.fn(), score: 0, schoolName: "Teste", selectedAnswer: null,
         };
         const { rerender } = render(<QuizBoard {...props} />);
+        expect(screen.getByText("História & Vida")).toBeInTheDocument();
+        expect(screen.queryByText("SOBRE O POETA")).not.toBeInTheDocument();
         await userEvent.click(screen.getByRole("button", { name: "Ver dicas" }));
         expect(props.onOpenHint).not.toHaveBeenCalled();
         await userEvent.click(screen.getByRole("button", { name: "Usar dica", exact: true }));
