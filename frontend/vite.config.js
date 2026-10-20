@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
+    pool: 'vmThreads',
+    maxWorkers: 1,
+    isolate: false,
     setupFiles: './test/setup.js',
     coverage: {
       provider: 'v8',
