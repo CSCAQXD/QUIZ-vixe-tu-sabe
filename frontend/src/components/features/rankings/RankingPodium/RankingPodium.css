@@ -1,0 +1,80 @@
+.ranking-podium {
+  width: min(79.5rem, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 0.75rem;
+  margin: 0 auto 0.5rem;
+}
+
+.ranking-podium__place {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: center;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgb(60 20 35 / 12%);
+  border-radius: 1rem;
+  color: #3c1423;
+  background: #fff;
+  box-shadow: 0 0.25rem 0.75rem rgb(60 20 35 / 6%);
+}
+
+.ranking-podium__place > b {
+  width: 2.5rem;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  grid-row: 1 / 3;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.ranking-podium__place--1 > b {
+  background: #f4c368;
+}
+
+.ranking-podium__place--2 > b {
+  background: #b9b9b9;
+}
+
+.ranking-podium__place--3 > b {
+  background: #9a6207;
+}
+
+.ranking-podium__identity {
+  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.ranking-podium__identity strong {
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.ranking-podium__identity span {
+  color: #765944;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.ranking-podium__points {
+  grid-column: 2;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #a52d37;
+  line-height: 1.3;
+}
+
+@media (width <= 760px) {
+  .ranking-podium {
+    grid-template-columns: 1fr;
+  }
+}

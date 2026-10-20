@@ -1,0 +1,7 @@
+.scenic-backdrop__fence,
+.scenic-backdrop__ground {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}

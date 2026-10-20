@@ -1,0 +1,187 @@
+version: 2
+
+updates:
+  # Ferramentas compartilhadas pelo monorepo.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '08:00'
+      timezone: America/Sao_Paulo
+    open-pull-requests-limit: 3
+    rebase-strategy: auto
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      root-development-minor-and-patch:
+        applies-to: version-updates
+        dependency-type: development
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+
+  # Dependências da API e do Prisma.
+  - package-ecosystem: npm
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+      time: '08:15'
+      timezone: America/Sao_Paulo
+    open-pull-requests-limit: 5
+    rebase-strategy: auto
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      prisma:
+        applies-to: version-updates
+        patterns:
+          - prisma
+          - '@prisma/*'
+      backend-production-minor-and-patch:
+        applies-to: version-updates
+        dependency-type: production
+        patterns:
+          - '*'
+        exclude-patterns:
+          - prisma
+          - '@prisma/*'
+        update-types:
+          - minor
+          - patch
+      backend-development-minor-and-patch:
+        applies-to: version-updates
+        dependency-type: development
+        patterns:
+          - '*'
+        exclude-patterns:
+          - prisma
+          - '@prisma/*'
+        update-types:
+          - minor
+          - patch
+
+  # Aplicação React e ferramentas de frontend.
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+      time: '08:30'
+      timezone: America/Sao_Paulo
+    open-pull-requests-limit: 5
+    rebase-strategy: auto
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      frontend-production-minor-and-patch:
+        applies-to: version-updates
+        dependency-type: production
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+      frontend-development-minor-and-patch:
+        applies-to: version-updates
+        dependency-type: development
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+
+  # Imagens-base dos containers de produção.
+  - package-ecosystem: docker
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+      time: '08:45'
+      timezone: America/Sao_Paulo
+    open-pull-requests-limit: 3
+    rebase-strategy: auto
+    commit-message:
+      prefix: chore(docker)
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      backend-container-minor-and-patch:
+        applies-to: version-updates
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: docker
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: America/Sao_Paulo
+    open-pull-requests-limit: 3
+    rebase-strategy: auto
+    commit-message:
+      prefix: chore(docker)
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      frontend-container-minor-and-patch:
+        applies-to: version-updates
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+
+  # Actions usadas pelos workflows de CI, CodeQL e release.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:15'
+      timezone: America/Sao_Paulo
+    open-pull-requests-limit: 3
+    rebase-strategy: auto
+    commit-message:
+      prefix: ci
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      actions-minor-and-patch:
+        applies-to: version-updates
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch

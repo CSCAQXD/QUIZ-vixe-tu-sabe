@@ -1,0 +1,360 @@
+.rankings-page {
+  --ranking-ground-height: min(18svh, 13.5514vw);
+
+  position: relative;
+  height: 100svh;
+  min-height: 0;
+  overflow: hidden;
+  isolation: isolate;
+  padding: clamp(0.5rem, 1.5svh, 1rem) clamp(1rem, 3vw, 3rem);
+  background: #f7c181;
+}
+
+.rankings-page__fence {
+  z-index: -2;
+  right: 0;
+  bottom: var(--ranking-ground-height);
+  left: 0;
+  width: 100%;
+  height: auto;
+}
+
+.rankings-page__ground {
+  z-index: -1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--ranking-ground-height);
+  object-fit: cover;
+  object-position: center top;
+}
+
+.rankings-page__panel {
+  width: min(105rem, 100%);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-inline: auto;
+  padding: clamp(0.75rem, 2svh, 1.25rem) clamp(1rem, 2vw, 2rem);
+  overflow: hidden;
+  border-radius: 1.875rem;
+  background: linear-gradient(145deg, #fff7ed, #fff0df);
+  box-shadow: 0 0.5rem 2rem rgb(60 20 35 / 18%);
+  scrollbar-color: #b8b8b8 transparent;
+  scrollbar-width: thin;
+}
+
+.rankings-page__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+}
+
+.rankings-page__header .back-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3rem;
+  height: 3rem;
+  min-height: 0;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  color: #000;
+  background: #f7c181;
+}
+
+.rankings-page__home {
+  position: absolute;
+  right: 0;
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  border-color: #a52d37;
+  color: #a52d37;
+  background: transparent;
+}
+
+.rankings-page__header .back-button__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.rankings-page__header h1 {
+  margin: 0;
+  color: #000;
+  font-size: clamp(1.75rem, 2.2vw, 2.25rem);
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+}
+
+.rankings-page__tabs {
+  position: relative;
+  z-index: 1;
+  width: min(52rem, 100%);
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0.5rem auto;
+  padding: 0.25rem;
+  border: 1px solid rgb(60 20 35 / 12%);
+  border-radius: 1rem;
+  background: #f4dfc6;
+}
+
+.rankings-page__tabs button {
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.5rem;
+  border: 0;
+  border-radius: 0.75rem;
+  color: #000;
+  background: transparent;
+  font-size: clamp(0.8rem, 1vw, 1rem);
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.rankings-page__tabs button[aria-pressed='true'] {
+  color: #fff;
+  background: #a52d37;
+}
+
+.rankings-page__filters {
+  width: min(96rem, 100%);
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  margin: 0 auto 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid rgb(165 45 55 / 18%);
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 72%);
+}
+
+.rankings-page .ranking-podium,
+.rankings-page .ranking-table {
+  width: min(96rem, 100%);
+}
+
+.rankings-page__header,
+.rankings-page__tabs,
+.rankings-page__filters,
+.rankings-page__highlights,
+.rankings-page__panel > .pagination {
+  flex: 0 0 auto;
+}
+
+.rankings-page__panel > .ranking-table {
+  min-height: 0;
+  flex: 1 1 0;
+  max-height: none;
+}
+
+.rankings-page__panel > .pagination {
+  margin-top: 0.5rem;
+}
+
+.rankings-page__search {
+  min-width: 0;
+  display: grid;
+  flex: 1;
+  gap: 0.5rem;
+  color: #a52d37;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.rankings-page__search input {
+  min-width: 0;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgb(165 45 55 / 28%);
+  border-radius: 0.75rem;
+  background: #fff;
+  font: inherit;
+  font-weight: 600;
+}
+
+.rankings-page__search input:focus-visible,
+.rankings-page__school select:focus-visible {
+  outline: 3px solid rgb(165 45 55 / 25%);
+  outline-offset: 2px;
+}
+
+.rankings-page__school {
+  width: min(26rem, 100%);
+  min-width: 0;
+  display: grid;
+  gap: 0.625rem;
+  margin: 0;
+  color: #a52d37;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.rankings-page__school select {
+  min-width: 0;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgb(60 20 35 / 20%);
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: none;
+  font-weight: 700;
+}
+
+.rankings-page__school .select-field {
+  gap: 0.5rem;
+}
+
+.rankings-page__school .select-field__label {
+  color: #a52d37;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.rankings-page__school .select-field__control {
+  min-height: 3rem;
+  padding-block: 0.75rem;
+  padding-right: 3rem;
+  font-size: 0.9rem;
+}
+
+.rankings-page__school .select-field__error:empty {
+  display: none;
+}
+
+.rankings-page__panel > .page-status {
+  width: min(47rem, 100%);
+  margin: clamp(4rem, 14vh, 10rem) auto;
+}
+
+.rankings-page__highlights {
+  width: min(96rem, 100%);
+  margin: 0 auto 0.5rem;
+}
+
+.rankings-page__highlights > summary {
+  width: fit-content;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.25rem;
+  color: #3c1423;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rankings-page__highlights > summary::marker {
+  color: #a52d37;
+}
+
+.rankings-page__highlights > summary:focus-visible {
+  outline: 3px solid rgb(165 45 55 / 35%);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+.rankings-page__highlights[open] {
+  max-height: 32svh;
+  overflow-y: auto;
+}
+
+@media (width >= 1024px) and (height <= 760px) {
+  .rankings-page__header {
+    justify-content: flex-start;
+    padding-left: 4rem;
+  }
+
+  .rankings-page__header h1 {
+    font-size: 1.5rem;
+  }
+
+  .rankings-page__tabs {
+    width: min(52rem, 100%);
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (width >= 1280px) and (height <= 760px) {
+  .rankings-page__tabs {
+    width: min(60rem, calc(100% - 23rem));
+    margin-top: -3rem;
+  }
+}
+
+@media (width <= 760px) {
+  .rankings-page {
+    height: auto;
+    min-height: 100svh;
+    overflow: clip visible;
+    padding: 0;
+  }
+
+  .rankings-page__panel {
+    height: auto;
+    min-height: 100svh;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .rankings-page__header {
+    padding-top: 3.5rem;
+  }
+
+  .rankings-page__header h1 {
+    width: 100%;
+  }
+
+  .rankings-page__home {
+    top: 0;
+    font-size: 0.875rem;
+  }
+
+  .rankings-page__tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-radius: 1.875rem;
+  }
+
+  .rankings-page__tabs button {
+    border-radius: 1.375rem;
+  }
+
+  .rankings-page__filters {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rankings-page__school {
+    width: 100%;
+  }
+
+  .rankings-page__highlights[open] {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .rankings-page__panel > .ranking-table {
+    flex: 0 0 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rankings-page__tabs button {
+    transition: none;
+  }
+}

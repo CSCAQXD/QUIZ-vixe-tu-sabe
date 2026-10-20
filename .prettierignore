@@ -1,0 +1,11 @@
+**/node_modules
+**/coverage
+**/dist
+**/.vite
+backend/generated
+shared/*.json
+shared/*.json.gz
+frontend/public/assets
+frontend/public/icons.svg
+frontend/public/favicon.svg
+scripts/workspace-runner.cjs

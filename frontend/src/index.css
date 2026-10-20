@@ -1,0 +1,39 @@
+:root {
+  --font-family-base: 'DM Sans', arial, sans-serif;
+  --color-black: #000;
+  --color-cream: #fff0df;
+  --color-error: #a52d37;
+  --color-green-dark: #413c19;
+  --color-orange: #f09b32;
+  --color-orange-light: #f7c181;
+  --color-success: #219653;
+  --color-white: #fff;
+  --color-wine-dark: #3c1423;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-base);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}

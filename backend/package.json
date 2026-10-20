@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "node --watch index.js",
     "start": "node index.js",
-    "test": "node --test",
-    "test:coverage": "node --test --experimental-test-coverage",
+    "test": "node --test --test-concurrency=1",
+    "test:coverage": "node --test --test-concurrency=1 --experimental-test-coverage --test-coverage-include=**/*.js --test-coverage-exclude=test/** --test-coverage-exclude=node_modules/** --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=80",
+    "lint": "eslint . --max-warnings=0",
     "check": "node --check index.js && prisma validate",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
@@ -15,13 +16,14 @@
     "studio": "prisma studio"
   },
   "engines": {
-    "node": ">=18.18"
+    "node": ">=22"
   },
   "author": "Carla Cristina Sousa Araújo",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@prisma/client": "^6.19.3",
+    "@prisma/adapter-better-sqlite3": "7.10.1",
+    "@prisma/client": "7.10.1",
     "axios": "^1.16.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -29,6 +31,14 @@
     "papaparse": "^5.5.3"
   },
   "devDependencies": {
-    "prisma": "^6.19.3"
+    "@eslint/js": "10.0.1",
+    "eslint": "10.0.0",
+    "globals": "17.11.0",
+    "prisma": "7.10.1"
+  },
+  "allowScripts": {
+    "prisma@7.10.1": true,
+    "@prisma/client@7.10.1": true,
+    "@prisma/engines@7.10.1": true
   }
 }

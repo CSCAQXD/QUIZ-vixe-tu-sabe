@@ -1,0 +1,39 @@
+.registration-scene {
+  position: relative;
+  min-width: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: #f7c181;
+}
+
+.registration-scene__logo {
+  position: absolute;
+  z-index: 2;
+  top: 9.65%;
+  left: 11.25%;
+  display: block;
+  width: 70.3%;
+  height: auto;
+}
+
+.registration-scene__fence {
+  z-index: 0;
+  bottom: 15.2%;
+  left: -30%;
+  width: 238%;
+  height: auto;
+}
+
+.registration-scene__ground {
+  z-index: 1;
+  bottom: -9%;
+  left: 0;
+  width: 208%;
+  height: auto;
+}
+
+@media (width <= 1180px) {
+  .registration-scene {
+    display: none;
+  }
+}

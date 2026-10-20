@@ -4,23 +4,44 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 model Escola {
-  id        String    @id @default(uuid())
-  nome      String
-  cidade    String
-  partidas Partida[]
+  id               String    @id @default(uuid())
+  codigoInep       String?   @unique
+  nome             String
+  cidade           String
+  cidadeUf         String?
+  municipioIbgeId  String?
+  nomeBusca        String?
+  cidadeBusca      String?
+  partidas         Partida[]
+  cursos           Curso[]
 
   @@unique([nome, cidade])
+  @@unique([nomeBusca, cidadeBusca])
+  @@unique([nomeBusca, municipioIbgeId])
   @@index([nome])
+  @@index([municipioIbgeId])
+}
+
+model Curso {
+  id            String          @id @default(uuid())
+  nome          String
+  nomeBusca     String
+  escolaId      String
+  escola        Escola          @relation(fields: [escolaId], references: [id], onDelete: Cascade)
+  participacoes Participacao[]
+
+  @@unique([escolaId, nomeBusca])
+  @@index([escolaId])
 }
 
 model Partida {
   id             String         @id @default(uuid())
   idempotencyKey String         @unique
   pontuacaoFinal Int
+  categoriaQuiz String?
   ano            Int
   dataPartida    DateTime       @default(now())
   escolaId       String
@@ -29,18 +50,24 @@ model Partida {
 
   @@index([escolaId])
   @@index([ano])
+  @@index([ano, categoriaQuiz])
   @@index([escolaId, ano])
   @@index([dataPartida])
 }
 
 model Participacao {
-  id        String  @id @default(uuid())
-  serie     Int
-  turma     String
-  partidaId String
-  partida   Partida @relation(fields: [partidaId], references: [id], onDelete: Cascade)
+  id          String  @id @default(uuid())
+  etapaEnsino String  @default("FUNDAMENTAL")
+  serie       Int
+  turma       String
+  turmaBusca  String
+  cursoId     String?
+  curso       Curso?  @relation(fields: [cursoId], references: [id])
+  cursoBusca  String  @default("SEM_CURSO")
+  partidaId   String
+  partida     Partida @relation(fields: [partidaId], references: [id], onDelete: Cascade)
 
-  @@unique([partidaId, serie, turma])
+  @@unique([partidaId, etapaEnsino, serie, cursoBusca, turmaBusca])
   @@index([partidaId])
-  @@index([serie, turma])
+  @@index([etapaEnsino, serie, cursoBusca, turmaBusca])
 }

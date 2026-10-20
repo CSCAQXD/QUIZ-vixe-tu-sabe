@@ -1,0 +1,42 @@
+services:
+  migrate:
+    build:
+      context: ./backend
+      target: migration
+    environment:
+      DATABASE_URL: file:/data/quiz.db
+    volumes:
+      - quiz-data:/data
+    restart: no
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: file:/data/quiz.db
+      NODE_ENV: production
+      PORT: 3001
+      CORS_ORIGINS: http://localhost:8080
+      QUIZ_CONTEXT_SECRET: ${QUIZ_CONTEXT_SECRET:?Defina QUIZ_CONTEXT_SECRET}
+    ports:
+      - '3001:3001'
+    volumes:
+      - quiz-data:/data
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:3001
+    ports:
+      - '8080:8080'
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  quiz-data:
