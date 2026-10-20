@@ -1,10 +1,6 @@
-const prisma = require(
-    "../config/prisma"
-);
+const prisma = require("../config/prisma");
 
-async function buscarRankingDeEscolas(
-    ano
-) {
+async function buscarRankingDeEscolas(ano) {
     return prisma.partida.groupBy({
         by: ["escolaId"],
         where: {
@@ -24,12 +20,7 @@ async function buscarRankingDeEscolas(
     });
 }
 
-async function buscarParticipacoes(
-    ano,
-    escolaId = null,
-    categoriaQuiz = null,
-    cliente = prisma
-) {
+async function buscarParticipacoes(ano, escolaId = null, categoriaQuiz = null, cliente = prisma) {
     return cliente.participacao.findMany({
         where: {
             partida: {
@@ -37,8 +28,8 @@ async function buscarParticipacoes(
                 ...(categoriaQuiz ? { categoriaQuiz } : {}),
                 ...(escolaId
                     ? {
-                            escolaId,
-                        }
+                          escolaId,
+                      }
                     : {}),
             },
         },
@@ -74,9 +65,7 @@ async function buscarParticipacoes(
     });
 }
 
-async function buscarEscolasPorIds(
-    ids
-) {
+async function buscarEscolasPorIds(ids) {
     if (ids.length === 0) {
         return [];
     }
@@ -97,9 +86,7 @@ async function buscarEscolasPorIds(
     });
 }
 
-async function buscarEscolaPorId(
-    escolaId
-) {
+async function buscarEscolaPorId(escolaId) {
     return prisma.escola.findUnique({
         where: {
             id: escolaId,
