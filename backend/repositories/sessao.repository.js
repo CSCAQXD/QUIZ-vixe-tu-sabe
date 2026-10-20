@@ -1,11 +1,6 @@
-const prisma = require(
-    "../config/prisma"
-);
+const prisma = require("../config/prisma");
 
-async function buscarPorIdempotencyKey(
-    idempotencyKey,
-    cliente = prisma
-) {
+async function buscarPorIdempotencyKey(idempotencyKey, cliente = prisma) {
     return cliente.partida.findUnique({
         where: {
             idempotencyKey,
@@ -30,31 +25,23 @@ async function buscarPorIdempotencyKey(
     });
 }
 
-async function criar(
-    dados,
-    cliente = prisma
-) {
+async function criar(dados, cliente = prisma) {
     return cliente.partida.create({
         data: {
-            idempotencyKey:
-                dados.idempotencyKey,
-            pontuacaoFinal:
-                dados.pontuacaoFinal,
+            idempotencyKey: dados.idempotencyKey,
+            pontuacaoFinal: dados.pontuacaoFinal,
             categoriaQuiz: dados.categoriaQuiz,
             ano: dados.ano,
             escolaId: dados.escolaId,
             participacoes: {
-                create: dados.turmas.map(
-                    (turma) => ({
-                        etapaEnsino:
-                            turma.etapaEnsino,
-                        serie: turma.serie,
-                        turma: turma.turma,
-                        turmaBusca: turma.turmaBusca,
-                        cursoId: turma.cursoId,
-                        cursoBusca: turma.cursoBusca,
-                    })
-                ),
+                create: dados.turmas.map((turma) => ({
+                    etapaEnsino: turma.etapaEnsino,
+                    serie: turma.serie,
+                    turma: turma.turma,
+                    turmaBusca: turma.turmaBusca,
+                    cursoId: turma.cursoId,
+                    cursoBusca: turma.cursoBusca,
+                })),
             },
         },
         include: {
@@ -102,17 +89,14 @@ async function buscarPorId(id) {
     });
 }
 
-async function listarPorEscola(
-    escolaId,
-    ano
-) {
+async function listarPorEscola(escolaId, ano) {
     return prisma.partida.findMany({
         where: {
             escolaId,
             ...(ano
                 ? {
-                        ano,
-                    }
+                      ano,
+                  }
                 : {}),
         },
         include: {
