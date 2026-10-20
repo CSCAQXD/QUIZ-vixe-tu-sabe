@@ -1,37 +1,24 @@
 ﻿require("dotenv").config();
 
 const app = require("./app");
-const prisma = require(
-    "./config/prisma"
-);
+const prisma = require("./config/prisma");
 
-const PORT =
-    Number(process.env.PORT) ||
-    3001;
+const PORT = Number(process.env.PORT) || 3001;
 
-const servidor = app.listen(
-    PORT,
-    () => {
-        console.log(
-            `Servidor da Casa de Saberes rodando em http://localhost:${PORT}`
-        );
-    }
-);
+const servidor = app.listen(PORT, () => {
+    console.log(`Servidor da Casa de Saberes rodando em http://localhost:${PORT}`);
+});
 
 let encerrando = false;
 
-async function encerrarServidor(
-    sinal
-) {
+async function encerrarServidor(sinal) {
     if (encerrando) {
         return;
     }
 
     encerrando = true;
 
-    console.log(
-        `Encerrando servidor após ${sinal}.`
-    );
+    console.log(`Encerrando servidor após ${sinal}.`);
 
     servidor.close(async (error) => {
         try {
@@ -42,9 +29,7 @@ async function encerrarServidor(
                 process.exitCode = 1;
             }
         } catch (erroPrisma) {
-            console.error(
-                erroPrisma
-            );
+            console.error(erroPrisma);
 
             process.exitCode = 1;
         }
