@@ -4,6 +4,7 @@
   "private": true,
   "description": "Atalhos para desenvolvimento e testes do Quiz Vixe, Tu Sabe?",
   "scripts": {
+    "prepare": "husky",
     "dev": "node scripts/workspace-runner.cjs dev",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
@@ -22,18 +23,34 @@
     "build": "node scripts/workspace-runner.cjs build",
     "build:frontend": "npm --prefix frontend run build",
     "lint": "node scripts/workspace-runner.cjs lint",
+    "lint:all": "npm run lint:backend && npm run lint:frontend",
     "lint:frontend": "npm --prefix frontend run lint",
-    "check:backend": "npm --prefix backend run check",
+    "lint:backend": "npm --prefix backend run lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "audit:all": "npm audit --audit-level=high && npm audit --audit-level=high --prefix backend && npm audit --audit-level=high --prefix frontend",
+    "quality": "npm run format:check && npm run lint:all && npm run check:backend && npm run coverage:all && npm run build",
+    "check:backend": "npm --prefix backend run prisma:generate && npm --prefix backend run check",
     "prisma:generate": "npm --prefix backend run prisma:generate",
     "prisma:migrate": "npm --prefix backend run prisma:migrate",
     "prisma:deploy": "npm --prefix backend run prisma:deploy",
     "prisma:studio": "npm --prefix backend run studio",
     "catalogo:cidades": "node scripts/atualizar-municipios-ibge.mjs",
     "catalogo:escolas": "node scripts/atualizar-escolas-inep.mjs",
-    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "install:all": "node scripts/install-all.cjs",
     "shortcuts": "node scripts/workspace-runner.cjs help"
   },
+  "lint-staged": {
+    "*.{js,cjs,mjs,jsx,json,md,yml,yaml,css}": "prettier --write",
+    "frontend/**/*.{js,jsx}": "npm --prefix frontend exec -- eslint --fix --config frontend/eslint.config.js",
+    "backend/**/*.js": "npm --prefix backend exec -- eslint --fix --config backend/eslint.config.js"
+  },
   "engines": {
-    "node": ">=18.18"
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "husky": "9.1.7",
+    "lint-staged": "16.4.0",
+    "prettier": "3.6.2"
   }
 }
