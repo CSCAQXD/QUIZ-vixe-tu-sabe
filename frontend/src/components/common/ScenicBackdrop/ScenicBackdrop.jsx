@@ -1,9 +1,6 @@
-import "./ScenicBackdrop.css";
+import './ScenicBackdrop.css'
 
-function ScenicBackdrop({
-  fenceClassName = "",
-  groundClassName = "",
-}) {
+function ScenicBackdrop({ fenceClassName = '', groundClassName = '' }) {
   return (
     <>
       <img
@@ -19,7 +16,7 @@ function ScenicBackdrop({
         src="/assets/illustrations/muro-tijolos.svg"
       />
     </>
-  );
+  )
 }
 
-export default ScenicBackdrop;
+export default ScenicBackdrop
