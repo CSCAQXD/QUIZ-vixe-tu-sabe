@@ -50,6 +50,8 @@ test(
                 nomeEscola:
                     "Escola Teste",
                 cidade: "Quixadá",
+                cidadeUf: "CE",
+                municipioIbgeId: "2311306",
                 pontuacaoFinal: 100,
                 contextoQuiz: "contexto-teste.assinatura-teste",
                 turmas: [
@@ -137,6 +139,21 @@ test(
         );
     }
 );
+
+test("preserva um código INEP válido da escola", () => {
+    const resultado = validarSessao(criarSessaoValida({
+        codigoInep: "23000001",
+    }));
+
+    assert.equal(resultado.codigoInep, "23000001");
+});
+
+test("rejeita código INEP com formato inválido", () => {
+    assert.throws(
+        () => validarSessao(criarSessaoValida({ codigoInep: "2301" })),
+        /8 números/
+    );
+});
 
 test(
     "rejeita chave de idempotência ausente",
@@ -383,13 +400,102 @@ test("aceita curso técnico sem misturá-lo à divisão", () => {
     }));
 
     assert.equal(resultado.turmas[0].cursoNome, "Redes de Computadores");
-    assert.equal(resultado.turmas[0].turma, "Única");
+    assert.equal(resultado.turmas[0].turma, "UNICA");
 });
 
-test("rejeita nome de curso muito curto", () => {
+test("aceita sigla reconhecida e rejeita sigla curta fora do catálogo", () => {
+    const resultado = validarSessao(criarSessaoValida({ cursoNome: "RH" }));
+    assert.equal(resultado.turmas[0].cursoNome, "RH");
+
     assert.throws(
         () => validarSessao(criarSessaoValida({ cursoNome: "TI" })),
         /curso da turma 1/
+    );
+});
+
+test("rejeita abreviação que pode representar mais de um curso do catálogo", () => {
+    assert.throws(
+        () => validarSessao(criarSessaoValida({ cursoNome: "MEC" })),
+        /ambíguo/
+    );
+});
+
+test("permite um curso novo que não existe no catálogo", () => {
+    const resultado = validarSessao(criarSessaoValida({
+        cursoNome: "Tecnologia Subaquática",
+    }));
+
+    assert.equal(resultado.turmas[0].cursoNome, "Tecnologia Subaquática");
+});
+
+test("rejeita turmas equivalentes por sigla e nome expandido do curso", () => {
+    assert.throws(
+        () => validarSessao(criarSessaoValida({
+            serie: undefined,
+            turma: undefined,
+            turmas: [
+                {
+                    etapaEnsino: "MEDIO",
+                    serie: 1,
+                    turma: "A-1",
+                    cursoNome: "ADS",
+                },
+                {
+                    etapaEnsino: "MEDIO",
+                    serie: 1,
+                    turma: "turma a 1",
+                    cursoNome: "Análise e Desenvolvimento de Sistemas",
+                },
+            ],
+        })),
+        /representam a mesma etapa, série, curso e divisão/
+    );
+});
+
+test("mantém especializações diferentes como cursos distintos", () => {
+    const resultado = validarSessao(criarSessaoValida({
+        serie: undefined,
+        turma: undefined,
+        turmas: [
+            {
+                etapaEnsino: "MEDIO",
+                serie: 1,
+                turma: "UNICA",
+                cursoNome: "Administração",
+            },
+            {
+                etapaEnsino: "MEDIO",
+                serie: 1,
+                turma: "UNICA",
+                cursoNome: "Administração Pública",
+            },
+        ],
+    }));
+
+    assert.equal(resultado.turmas.length, 2);
+});
+
+test("valida coerência entre tipo de organização, curso e divisão", () => {
+    assert.throws(
+        () => validarSessao(criarSessaoValida({
+            tipoOrganizacao: "TECNICA",
+            cursoNome: "",
+        })),
+        /Informe o curso profissionalizante/
+    );
+    assert.throws(
+        () => validarSessao(criarSessaoValida({
+            tipoOrganizacao: "REGULAR",
+            cursoNome: "Administração",
+        })),
+        /não deve possuir curso profissionalizante/
+    );
+    assert.throws(
+        () => validarSessao(criarSessaoValida({
+            organizacaoTurma: "DIVIDIDA",
+            turma: "Única",
+        })),
+        /DIVIDIDA não pode usar/
     );
 });
 

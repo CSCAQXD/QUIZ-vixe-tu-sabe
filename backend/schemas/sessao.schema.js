@@ -1,4 +1,11 @@
 const { LIMITE_CONTEXTO_QUIZ } = require("../utils/contextoQuiz");
+const {
+    buscarCursosCatalogoEquivalentes,
+    encontrarTurmaDuplicada,
+    normalizarCurso,
+    normalizarTurma,
+} = require("../utils/identidadeCadastro");
+const { resolverMunicipio } = require("../utils/municipios");
 
 function criarErroValidacao(mensagem) {
     const erro = new Error(mensagem);
@@ -26,6 +33,18 @@ function validarSessao(dados = {}) {
         dados.cidade ?? ""
     ).trim();
 
+    const cidadeUf = String(
+        dados.cidadeUf ?? ""
+    ).trim().toUpperCase();
+
+    const municipioIbgeId = String(
+        dados.municipioIbgeId ?? ""
+    ).trim();
+
+    const codigoInep = String(
+        dados.codigoInep ?? ""
+    ).trim();
+
     const idempotencyKey = String(
         dados.idempotencyKey ?? ""
     ).trim();
@@ -49,6 +68,8 @@ function validarSessao(dados = {}) {
                         serie: dados.serie,
                         turma: dados.turma,
                         cursoNome: dados.cursoNome,
+                        tipoOrganizacao: dados.tipoOrganizacao,
+                        organizacaoTurma: dados.organizacaoTurma,
                     },
                 ];
 
@@ -73,6 +94,24 @@ function validarSessao(dados = {}) {
     if (cidade.length < 3 || cidade.length > 120) {
         throw criarErroValidacao(
             "A cidade deve possuir pelo menos 3 e no máximo 120 caracteres."
+        );
+    }
+
+    const municipioResolvido = resolverMunicipio({
+        cidade,
+        cidadeUf,
+        municipioIbgeId,
+    });
+
+    if (municipioResolvido.erro) {
+        throw criarErroValidacao(municipioResolvido.erro);
+    }
+
+    const municipio = municipioResolvido.municipio;
+
+    if (codigoInep && !/^\d{8}$/.test(codigoInep)) {
+        throw criarErroValidacao(
+            "O código INEP da escola deve possuir 8 números."
         );
     }
 
@@ -105,8 +144,6 @@ function validarSessao(dados = {}) {
         );
     }
 
-    const identificadores = new Set();
-
     const turmas = turmasRecebidas.map(
         (item, indice) => {
             const etapaEnsino = String(
@@ -117,17 +154,63 @@ function validarSessao(dados = {}) {
                 item?.serie
             );
 
-            const turma = String(
+            let turma = String(
                 item?.turma ?? ""
-            ).trim();
+            ).trim().replace(/\s+/g, " ");
 
             const cursoNome = String(
                 item?.cursoNome ?? ""
             ).trim().replace(/\s+/g, " ");
 
+            const tipoOrganizacaoRecebido = String(
+                item?.tipoOrganizacao ?? ""
+            ).trim().toUpperCase();
+
+            const organizacaoTurmaRecebida = String(
+                item?.organizacaoTurma ?? ""
+            ).trim().toUpperCase();
+
+            const tipoOrganizacao = tipoOrganizacaoRecebido ||
+                (cursoNome ? "TECNICA" : "REGULAR");
+
+            const organizacaoTurma = organizacaoTurmaRecebida ||
+                (normalizarTurma(turma) === "UNICA" ? "UNICA" : "DIVIDIDA");
+
             if (!["FUNDAMENTAL", "MEDIO"].includes(etapaEnsino)) {
                 throw criarErroValidacao(
                     `A etapa de ensino da turma ${indice + 1} deve ser FUNDAMENTAL ou MEDIO.`
+                );
+            }
+
+            if (!["REGULAR", "TECNICA"].includes(tipoOrganizacao)) {
+                throw criarErroValidacao(
+                    `O tipo de organização da turma ${indice + 1} deve ser REGULAR ou TECNICA.`
+                );
+            }
+
+            if (!["UNICA", "DIVIDIDA"].includes(organizacaoTurma)) {
+                throw criarErroValidacao(
+                    `A organização da turma ${indice + 1} deve ser UNICA ou DIVIDIDA.`
+                );
+            }
+
+            if (tipoOrganizacao === "TECNICA" && !cursoNome) {
+                throw criarErroValidacao(
+                    `Informe o curso profissionalizante da turma ${indice + 1}.`
+                );
+            }
+
+            if (tipoOrganizacao === "REGULAR" && cursoNome) {
+                throw criarErroValidacao(
+                    `A turma ${indice + 1} é regular e não deve possuir curso profissionalizante.`
+                );
+            }
+
+            if (organizacaoTurma === "UNICA") {
+                turma = "UNICA";
+            } else if (normalizarTurma(turma) === "UNICA") {
+                throw criarErroValidacao(
+                    `Identifique a divisão da turma ${indice + 1}; DIVIDIDA não pode usar “Única”.`
                 );
             }
 
@@ -145,35 +228,33 @@ function validarSessao(dados = {}) {
 
             if (
                 turma.length < 1 ||
-                turma.length > 30
+                turma.length > 30 ||
+                !normalizarTurma(turma)
             ) {
                 throw criarErroValidacao(
                     `O nome da turma ${indice + 1} deve possuir entre 1 e 30 caracteres.`
                 );
             }
 
-            if (cursoNome && (cursoNome.length < 3 || cursoNome.length > 120)) {
+            const cursosCatalogo = cursoNome
+                ? buscarCursosCatalogoEquivalentes(cursoNome)
+                : [];
+
+            if (cursosCatalogo.length > 1) {
                 throw criarErroValidacao(
-                    `O curso da turma ${indice + 1} deve possuir entre 3 e 120 caracteres.`
+                    `O curso da turma ${indice + 1} é ambíguo. Selecione uma opção da lista ou escreva o nome completo.`
                 );
             }
 
-            const identificador =
-                `${etapaEnsino}|||${serie}|||${cursoNome.toUpperCase()}|||${turma.toUpperCase()}`;
-
-            if (
-                identificadores.has(
-                    identificador
-                )
-            ) {
+            if (cursoNome && (
+                (cursoNome.length < 3 && cursosCatalogo.length !== 1) ||
+                cursoNome.length > 120 ||
+                !normalizarCurso(cursoNome)
+            )) {
                 throw criarErroValidacao(
-                    "Não é permitido repetir a mesma série e turma na partida."
+                    `O curso da turma ${indice + 1} deve possuir entre 3 e 120 caracteres ou ser uma sigla reconhecida da lista.`
                 );
             }
-
-            identificadores.add(
-                identificador
-            );
 
             return {
                 etapaEnsino,
@@ -184,9 +265,21 @@ function validarSessao(dados = {}) {
         }
     );
 
+    const duplicada = encontrarTurmaDuplicada(turmas);
+    if (duplicada) {
+        throw criarErroValidacao(
+            "Não é permitido repetir a mesma turma: " +
+            `as turmas ${duplicada.primeiroIndice + 1} e ${duplicada.segundoIndice + 1} ` +
+            "representam a mesma etapa, série, curso e divisão. Remova uma delas ou altere os dados."
+        );
+    }
+
     return {
         nomeEscola,
-        cidade,
+        cidade: municipio.nome,
+        cidadeUf: municipio.uf,
+        ...(codigoInep ? { codigoInep } : {}),
+        municipioIbgeId: municipio.id,
         idempotencyKey,
         pontuacaoFinal,
         contextoQuiz,
