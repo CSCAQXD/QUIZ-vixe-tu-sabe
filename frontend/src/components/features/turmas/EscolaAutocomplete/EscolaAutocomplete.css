@@ -1,85 +1,85 @@
 .school-autocomplete {
-    position: relative;
+  position: relative;
 }
 
 .school-autocomplete__control {
-    position: relative;
+  position: relative;
 }
 
 .school-autocomplete__input--selected {
-    padding-right: 48px !important;
+  padding-right: 48px !important;
 }
 
 .school-autocomplete__selected-mark {
-    position: absolute;
-    top: 24px;
-    right: 18px;
-    color: #188648;
-    font-size: 1.1rem;
-    font-weight: 800;
-    pointer-events: none;
+  position: absolute;
+  top: 24px;
+  right: 18px;
+  color: #188648;
+  font-size: 1.1rem;
+  font-weight: 800;
+  pointer-events: none;
 }
 
 .school-autocomplete__popover {
-    position: absolute;
-    z-index: 31;
-    top: calc(100% + 4px);
-    right: 0;
-    left: 0;
-    overflow: hidden;
-    border: 1px solid #000;
-    border-radius: 10px;
-    background: #fffdf7;
-    box-shadow: 0 12px 30px rgb(0 0 0 / 18%);
+  position: absolute;
+  z-index: 31;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  overflow: hidden;
+  border: 1px solid #000;
+  border-radius: 10px;
+  background: #fffdf7;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 18%);
 }
 
 .school-autocomplete__list {
-    max-height: 320px;
-    padding: 6px;
-    overflow-y: auto;
-    list-style: none;
+  max-height: 320px;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
 }
 
 .school-autocomplete__option {
-    width: 100%;
-    padding: 12px;
-    border: 0;
-    border-radius: 7px;
-    color: #000;
-    background: transparent;
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 7px;
+  color: #000;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
 .school-autocomplete__option span {
-    color: rgb(0 0 0 / 62%);
+  color: rgb(0 0 0 / 62%);
 }
 
 .school-autocomplete__option:hover,
-.school-autocomplete__option[aria-selected="true"] {
-    background: #f1e6c9;
+.school-autocomplete__option[aria-selected='true'] {
+  background: #f1e6c9;
 }
 
 .school-autocomplete__empty {
-    margin: 0;
-    padding: 12px;
-    line-height: 1.35;
+  margin: 0;
+  padding: 12px;
+  line-height: 1.35;
 }
 
 .school-autocomplete__status {
-    min-height: 0;
-    color: rgb(0 0 0 / 65%);
-    font-size: 0.875rem;
-    line-height: 1.35;
+  min-height: 0;
+  color: rgb(0 0 0 / 65%);
+  font-size: 0.875rem;
+  line-height: 1.35;
 }
 
 .school-autocomplete__status:empty {
-    display: none;
+  display: none;
 }
 
-@media (max-width: 700px) {
-    .school-autocomplete__list {
-        max-height: 240px;
-    }
+@media (width <= 700px) {
+  .school-autocomplete__list {
+    max-height: 240px;
+  }
 }
