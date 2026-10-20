@@ -1,133 +1,133 @@
 .turma-form {
-    min-width: 0;
-    flex: 0 0 auto;
-    display: grid;
-    gap: 12px;
-    margin: 0;
-    padding: clamp(18px, 2vw, 28px);
-    border: 1px solid #edd9c5;
-    border-radius: 18px;
-    background: #fffaf4;
-    box-shadow: 0 4px 12px rgb(60 20 35 / 4%);
+  min-width: 0;
+  flex: 0 0 auto;
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: clamp(18px, 2vw, 28px);
+  border: 1px solid #edd9c5;
+  border-radius: 18px;
+  background: #fffaf4;
+  box-shadow: 0 4px 12px rgb(60 20 35 / 4%);
 }
 
 .turma-form--invalid {
-    border-color: #a52d37;
-    box-shadow: 0 0 0 2px rgb(165 45 55 / 10%);
+  border-color: #a52d37;
+  box-shadow: 0 0 0 2px rgb(165 45 55 / 10%);
 }
 
 .turma-form__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
 }
 
 .turma-form h2 {
-    margin: 0;
-    padding: 4px 0 4px 12px;
-    border-left: 4px solid #f09b32;
-    color: #3c1423;
-    font-size: 0.95rem;
-    font-weight: 800;
-    line-height: 1.5;
+  margin: 0;
+  padding: 4px 0 4px 12px;
+  border-left: 4px solid #f09b32;
+  color: #3c1423;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.5;
 }
 
 .turma-form__error {
-    margin: 0;
-    padding: 10px 12px;
-    border-left: 4px solid #a52d37;
-    border-radius: 6px;
-    color: #7d1f29;
-    background: rgb(165 45 55 / 7%);
-    font-size: 0.85rem;
-    font-weight: 700;
-    line-height: 1.4;
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 4px solid #a52d37;
+  border-radius: 6px;
+  color: #7d1f29;
+  background: rgb(165 45 55 / 7%);
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .turma-form__configuration {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-    align-items: start;
-    gap: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  align-items: start;
+  gap: 12px;
 }
 
 .turma-form__configuration > .form-field {
-    grid-column: 1 / -1;
+  grid-column: 1 / -1;
 }
 
 .turma-form__fields {
-    display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    align-items: start;
-    gap: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  align-items: start;
+  gap: 12px;
 }
 
 .turma-form__fields--single {
-    grid-template-columns: 1fr;
+  grid-template-columns: 1fr;
 }
 
 .turma-form .form-field,
 .turma-form .select-field {
-    gap: 6px;
+  gap: 6px;
 }
 
 .turma-form .form-field__label,
 .turma-form .select-field__label {
-    color: #3c1423;
-    font-size: 0.875rem;
+  color: #3c1423;
+  font-size: 0.875rem;
 }
 
 .turma-form .form-field__input,
 .turma-form .select-field__control {
-    min-height: 52px;
-    height: 52px;
-    border-color: #c9b8aa;
-    border-radius: 10px;
-    color: #3c1423;
-    background-color: #fff;
-    font-size: 0.95rem;
-    font-weight: 500;
+  min-height: 52px;
+  height: 52px;
+  border-color: #c9b8aa;
+  border-radius: 10px;
+  color: #3c1423;
+  background-color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .turma-form .form-field__input {
-    padding: 12px 14px;
+  padding: 12px 14px;
 }
 
 .turma-form .form-field__input::placeholder,
 .turma-form .select-field__control--placeholder {
-    color: #806f66;
+  color: #806f66;
 }
 
 .turma-form .select-field__control {
-    padding: 12px 42px 12px 14px;
+  padding: 12px 42px 12px 14px;
 }
 
-.turma-form .form-field__input[aria-invalid="true"],
-.turma-form .select-field__control[aria-invalid="true"] {
-    border-color: #a52d37;
+.turma-form .form-field__input[aria-invalid='true'],
+.turma-form .select-field__control[aria-invalid='true'] {
+  border-color: #a52d37;
 }
 
 .turma-form .form-field__input:focus-visible,
 .turma-form .select-field__control:focus-visible {
-    border-color: var(--color-orange);
-    outline: 2px solid rgb(240 155 50 / 55%);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgb(240 155 50 / 10%);
+  border-color: var(--color-orange);
+  outline: 2px solid rgb(240 155 50 / 55%);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgb(240 155 50 / 10%);
 }
 
-.turma-form .form-field__input[aria-invalid="true"]:focus-visible,
-.turma-form .select-field__control[aria-invalid="true"]:focus-visible {
-    border-color: var(--color-error);
-    outline-color: rgb(165 45 55 / 38%);
-    box-shadow: 0 0 0 4px rgb(165 45 55 / 8%);
+.turma-form .form-field__input[aria-invalid='true']:focus-visible,
+.turma-form .select-field__control[aria-invalid='true']:focus-visible {
+  border-color: var(--color-error);
+  outline-color: rgb(165 45 55 / 38%);
+  box-shadow: 0 0 0 4px rgb(165 45 55 / 8%);
 }
 
 .turma-form .form-field__error,
 .turma-form .select-field__error {
-    min-height: 1.25em;
-    font-size: 0.8rem;
+  min-height: 1.25em;
+  font-size: 0.8rem;
 }
 
 .turma-form > .form-field .form-field__error:empty,
@@ -135,53 +135,53 @@
 .turma-form__configuration > .select-field .select-field__error:empty,
 .turma-form__fields > .form-field .form-field__error:empty,
 .turma-form__fields > .select-field .select-field__error:empty {
-    display: none;
+  display: none;
 }
 
 .turma-form__reuse-school {
-    width: max-content;
-    max-width: 100%;
-    min-height: 44px;
-    justify-self: start;
-    margin-top: -12px;
-    padding: 8px 0;
-    border: 0;
-    color: #a52d37;
-    background: transparent;
-    box-shadow: none;
-    font-size: 0.875rem;
-    text-decoration: underline;
-    text-underline-offset: 4px;
+  width: max-content;
+  max-width: 100%;
+  min-height: 44px;
+  justify-self: start;
+  margin-top: -12px;
+  padding: 8px 0;
+  border: 0;
+  color: #a52d37;
+  background: transparent;
+  box-shadow: none;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .turma-form__reuse-school:hover:not(:disabled) {
-    color: #7d1f29;
-    background: transparent;
-    box-shadow: none;
-    transform: none;
+  color: #7d1f29;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
 }
 
 .turma-form__remove {
-    min-height: 44px;
-    padding: 8px 12px;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    color: #a52d37;
-    background: transparent;
-    box-shadow: none;
-    font-size: 0.82rem;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #a52d37;
+  background: transparent;
+  box-shadow: none;
+  font-size: 0.82rem;
 }
 
 .turma-form__remove:hover:not(:disabled) {
-    border-color: rgb(165 45 55 / 20%);
-    background: rgb(165 45 55 / 5%);
-    box-shadow: none;
-    transform: none;
+  border-color: rgb(165 45 55 / 20%);
+  background: rgb(165 45 55 / 5%);
+  box-shadow: none;
+  transform: none;
 }
 
-@media (max-width: 640px) {
-    .turma-form__fields,
-    .turma-form__configuration {
-        grid-template-columns: 1fr;
-    }
+@media (width <= 640px) {
+  .turma-form__fields,
+  .turma-form__configuration {
+    grid-template-columns: 1fr;
+  }
 }
