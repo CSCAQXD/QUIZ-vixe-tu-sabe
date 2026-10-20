@@ -34,7 +34,10 @@
   font-weight: 600;
   text-align: left;
   cursor: pointer;
-  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease;
 }
 
 .select-field__control:hover {
@@ -42,16 +45,16 @@
   background: #fffdf9;
 }
 
-.select-field__control[aria-expanded="true"] {
+.select-field__control[aria-expanded='true'] {
   border-color: var(--color-orange);
   box-shadow: 0 0 0 3px rgb(240 155 50 / 16%);
 }
 
-.select-field__control[aria-invalid="true"] {
+.select-field__control[aria-invalid='true'] {
   border-color: var(--color-error);
 }
 
-.select-field__control[aria-invalid="true"][aria-expanded="true"] {
+.select-field__control[aria-invalid='true'][aria-expanded='true'] {
   box-shadow: 0 0 0 3px rgb(165 45 55 / 12%);
 }
 
@@ -142,14 +145,14 @@
   background: #f6dfbd;
 }
 
-.select-field__option[aria-selected="true"] {
+.select-field__option[aria-selected='true'] {
   color: #fffaf4;
   background: #a52d37;
   font-weight: 700;
 }
 
-.select-field__option[aria-selected="true"]:hover,
-.select-field__option[aria-selected="true"].select-field__option--active {
+.select-field__option[aria-selected='true']:hover,
+.select-field__option[aria-selected='true'].select-field__option--active {
   background: #8d2430;
 }
 
