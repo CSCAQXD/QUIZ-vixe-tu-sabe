@@ -1,23 +1,12 @@
-const escolaService = require(
-    "../services/escola.service"
-);
-const escolaCatalogoService = require(
-    "../services/escolaCatalogo.service"
-);
+const escolaService = require("../services/escola.service");
+const escolaCatalogoService = require("../services/escolaCatalogo.service");
 
-async function listarEscolas(
-    req,
-    res,
-    next
-) {
+async function listarEscolas(req, res, next) {
     try {
-        const escolas =
-            await escolaService
-                .listarEscolas();
+        const escolas = await escolaService.listarEscolas();
 
         return res.json({
-            total:
-                escolas.length,
+            total: escolas.length,
             escolas,
         });
     } catch (error) {
