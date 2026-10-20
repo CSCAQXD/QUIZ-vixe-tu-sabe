@@ -1,6 +1,4 @@
-﻿const perguntaService = require(
-    "../services/pergunta.service"
-);
+﻿const perguntaService = require("../services/pergunta.service");
 
 const { criarContextoQuiz } = require("../utils/contextoQuiz");
 
@@ -8,13 +6,9 @@ async function listarPerguntas(req, res, next) {
     try {
         const turmas = lerTurmas(req.query.turma);
         const contexto = turmas.length ? criarContextoQuiz(turmas) : {};
-        const perguntas =
-            await perguntaService.listarPerguntas(turmas);
+        const perguntas = await perguntaService.listarPerguntas(turmas);
 
-        res.setHeader(
-            "Cache-Control",
-            turmas.length ? "private, no-store" : "public, max-age=60"
-        );
+        res.setHeader("Cache-Control", turmas.length ? "private, no-store" : "public, max-age=60");
 
         return res.status(200).json({
             total: perguntas.length,
@@ -29,9 +23,7 @@ async function listarPerguntas(req, res, next) {
 function lerTurmas(parametro) {
     if (!parametro) return [];
 
-    const valores = Array.isArray(parametro)
-        ? parametro
-        : [parametro];
+    const valores = Array.isArray(parametro) ? parametro : [parametro];
 
     if (valores.length > 100) {
         const erro = new Error("Uma mediação pode possuir no máximo 100 turmas.");
