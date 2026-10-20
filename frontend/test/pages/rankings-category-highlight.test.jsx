@@ -11,6 +11,11 @@ vi.mock("../../src/api/rankingApi", () => ({
     listarRankingEscolas: vi.fn(), listarRankingInterno: vi.fn(),
 }));
 
+function chooseCategory(name) {
+    fireEvent.click(screen.getByLabelText("Selecione a categoria"));
+    fireEvent.click(screen.getByRole("option", { name }));
+}
+
 it.each([true, false])("destaque considera entrada após partida (%s) e categoria efetivamente jogada", async (highlightRecentResult) => {
     const turma = { etapaEnsino: "MEDIO", serie: 3, turma: "A" };
     saveResult({ partida: { categoriaQuiz: "MEDIO" }, escola: { id: "e1" }, turmas: [turma] });
@@ -27,7 +32,7 @@ it.each([true, false])("destaque considera entrada após partida (%s) e categori
         .toHaveValue(highlightRecentResult ? "MEDIO" : "FUNDAMENTAL_1");
     expect(container.querySelectorAll("tbody [aria-current=true]"))
         .toHaveLength(highlightRecentResult ? 1 : 0);
-    fireEvent.change(screen.getByLabelText("Selecione a categoria"), { target: { value: "FUNDAMENTAL_2" } });
+    chooseCategory("Fundamental II");
     await screen.findByRole("cell", { name: "Modelo" });
     expect(container.querySelectorAll("tbody [aria-current=true]")).toHaveLength(0);
 });
