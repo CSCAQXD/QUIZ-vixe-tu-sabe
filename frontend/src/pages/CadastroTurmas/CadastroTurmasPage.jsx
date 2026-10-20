@@ -4,17 +4,28 @@ import Button from "../../components/common/Button/Button";
 import BackButton from "../../components/common/BackButton/BackButton";
 import CadastroTurmasScene from "../../components/features/turmas/CadastroTurmasScene/CadastroTurmasScene";
 import TurmaForm from "../../components/features/turmas/TurmaForm/TurmaForm";
-import { groupClassroomsBySchool } from "../../utils/mediation";
+import {
+    classNameIdentityKey,
+    classroomsAreEquivalent,
+    getEquivalentTechnicalCourses,
+    groupClassroomsBySchool,
+    normalizeDisplayText,
+} from "../../utils/mediation";
+import { isMunicipalitySelectionValid } from "../../utils/municipios";
 import { saveMediation } from "../../utils/storage";
 
 import "./CadastroTurmasPage.css";
 
 function createClassroom() {
     return {
+        cidade: "",
+        cidadeUf: "",
+        codigoInep: "",
         etapaEnsino: "",
         cursoNome: "",
         id: crypto.randomUUID(),
         nomeEscola: "",
+        municipioIbgeId: "",
         organizacaoTurma: "UNICA",
         serie: "",
         tipoOrganizacao: "REGULAR",
@@ -24,14 +35,14 @@ function createClassroom() {
 
 function validateClassrooms(classrooms) {
     const errors = {};
-    const identifiers = new Set();
+    const validClassrooms = [];
 
-    classrooms.forEach((classroom) => {
+    classrooms.forEach((classroom, index) => {
         const classroomErrors = {};
-        const schoolName = classroom.nomeEscola
-            .trim()
-            .replace(/\s+/g, " ");
-        const className = classroom.turma.trim();
+        const schoolName = normalizeDisplayText(classroom.nomeEscola);
+        const city = normalizeDisplayText(classroom.cidade);
+        const className = normalizeDisplayText(classroom.turma);
+        const courseName = normalizeDisplayText(classroom.cursoNome);
         const grade = Number(classroom.serie);
         const maxGrade = classroom.etapaEnsino === "MEDIO" ? 3 : 9;
 
@@ -39,6 +50,12 @@ function validateClassrooms(classrooms) {
             classroomErrors.nomeEscola = "Campo obrigatório.";
         } else if (schoolName.length < 3) {
             classroomErrors.nomeEscola = "Digite pelo menos 3 letras.";
+        }
+
+        if (!city) {
+            classroomErrors.cidade = "Campo obrigatório.";
+        } else if (!isMunicipalitySelectionValid(classroom)) {
+            classroomErrors.cidade = "Selecione uma cidade da lista.";
         }
 
         if (!classroom.etapaEnsino || !classroom.serie) {
@@ -49,31 +66,56 @@ function validateClassrooms(classrooms) {
 
         if (!className) {
             classroomErrors.turma = "Campo obrigatório.";
+        } else if (
+            classroom.organizacaoTurma === "DIVIDIDA" &&
+            classNameIdentityKey(className) === "UNICA"
+        ) {
+            classroomErrors.turma =
+                "Use uma identificação da divisão, como A, B ou Noite. Para uma turma única, altere a organização.";
         }
 
         if (classroom.tipoOrganizacao === "TECNICA") {
-            const courseName = classroom.cursoNome.trim().replace(/\s+/g, " ");
+            const catalogCourses = courseName
+                ? getEquivalentTechnicalCourses(courseName)
+                : [];
+
             if (!courseName) {
                 classroomErrors.cursoNome = "Informe o curso.";
-            } else if (courseName.length < 3) {
-                classroomErrors.cursoNome = "Digite pelo menos 3 letras.";
+            } else if (catalogCourses.length > 1) {
+                classroomErrors.cursoNome =
+                    "Esse nome pode representar mais de um curso. Escolha uma sugestão ou escreva o nome completo.";
+            } else if (courseName.length < 3 && catalogCourses.length !== 1) {
+                classroomErrors.cursoNome =
+                    "Digite pelo menos 3 caracteres ou escolha uma sigla reconhecida.";
             }
         }
 
         if (Object.keys(classroomErrors).length === 0) {
-            const identifier = [
-                schoolName.toLocaleUpperCase("pt-BR"),
-                classroom.etapaEnsino,
-                grade,
-                className.toLocaleUpperCase("pt-BR"),
-            ].join(":");
+            const comparableClassroom = {
+                ...classroom,
+                cidade: city,
+                cursoNome: classroom.tipoOrganizacao === "TECNICA"
+                    ? courseName
+                    : "",
+                nomeEscola: schoolName,
+                serie: grade,
+                turma: className,
+            };
+            const previous = validClassrooms.find(({ classroom: candidate }) =>
+                classroomsAreEquivalent(candidate, comparableClassroom),
+            );
 
-            if (identifiers.has(identifier)) {
-                classroomErrors.turma =
-                    "Esta série e turma já foram adicionadas para esta escola.";
+            if (previous) {
+                const comparedFields = classroom.tipoOrganizacao === "TECNICA"
+                    ? "escola/cidade, curso, série e identificação"
+                    : "escola/cidade, série e identificação";
+
+                classroomErrors.form =
+                    `Duplicada da turma ${previous.index + 1}: ${comparedFields} são equivalentes. ` +
+                    "Altere os dados ou remova esta turma.";
+            } else {
+                validClassrooms.push({ classroom: comparableClassroom, index });
             }
-
-            identifiers.add(identifier);
         }
 
         errors[classroom.id] = classroomErrors;
@@ -105,6 +147,10 @@ function CadastroTurmasPage() {
     const isValid = classrooms.length > 0 && Object.values(validationErrors)
         .every((classroomErrors) => Object.keys(classroomErrors).length === 0);
 
+    const duplicateCount = Object.values(validationErrors)
+        .filter((classroomErrors) => classroomErrors.form)
+        .length;
+
     function touchField(classroomId, field) {
         setTouched((current) => ({
             ...current,
@@ -116,7 +162,9 @@ function CadastroTurmasPage() {
         return Object.fromEntries(
             Object.entries(validationErrors[classroom.id] ?? {})
                 .filter(([field]) =>
-                    submitted || touched[`${classroom.id}:${field}`]
+                    field === "form" ||
+                    submitted ||
+                    touched[`${classroom.id}:${field}`]
                 ),
         );
     }
@@ -164,7 +212,7 @@ function CadastroTurmasPage() {
         ]);
 
         requestAnimationFrame(() => {
-            document.getElementById(`escola-${newClassroom.id}`)?.focus();
+            document.getElementById(`cidade-${newClassroom.id}`)?.focus();
         });
 
         setError("");
@@ -175,14 +223,19 @@ function CadastroTurmasPage() {
         return;
         }
 
-        const previousSchool =
-        classrooms[index - 1].nomeEscola;
+        const previousClassroom = classrooms[index - 1];
+        const previousSchool = normalizeDisplayText(previousClassroom.nomeEscola);
+        const previousCity = normalizeDisplayText(previousClassroom.cidade);
 
         setClassrooms((current) =>
         current.map((classroom, classroomIndex) =>
             classroomIndex === index
             ? {
                 ...classroom,
+                cidade: previousCity,
+                cidadeUf: previousClassroom.cidadeUf,
+                codigoInep: previousClassroom.codigoInep,
+                municipioIbgeId: previousClassroom.municipioIbgeId,
                 nomeEscola: previousSchool,
                 }
             : classroom,
@@ -197,18 +250,40 @@ function CadastroTurmasPage() {
         setSubmitted(true);
 
         if (!isValid) {
-            setError("");
+            setError(
+                duplicateCount > 0
+                    ? "Não foi possível iniciar: há turmas repetidas. Corrija ou remova os cartões destacados."
+                    : "Revise os campos destacados antes de iniciar o quiz.",
+            );
             const invalidClassroom = classrooms.find((classroom) =>
                 Object.keys(validationErrors[classroom.id]).length > 0,
             );
-            const field = Object.keys(validationErrors[invalidClassroom.id])[0];
+            const classroomErrors = validationErrors[invalidClassroom.id];
+            const field = ["cidade", "nomeEscola", "cursoNome", "serie", "turma"]
+                .find((errorField) => classroomErrors[errorField]) ?? (
+                    invalidClassroom.tipoOrganizacao === "TECNICA"
+                        ? "cursoNome"
+                        : invalidClassroom.organizacaoTurma === "DIVIDIDA"
+                            ? "turma"
+                            : "serie"
+                );
             const prefix = { nomeEscola: "escola", cursoNome: "curso" }[field] ?? field;
             document.getElementById(`${prefix}-${invalidClassroom.id}`)?.focus();
             return;
         }
 
-        const escolas =
-        groupClassroomsBySchool(classrooms);
+        let escolas;
+
+        try {
+            escolas = groupClassroomsBySchool(classrooms);
+        } catch (groupingError) {
+            setError(
+                groupingError instanceof Error
+                    ? groupingError.message
+                    : "Não foi possível validar as turmas cadastradas.",
+            );
+            return;
+        }
 
         saveMediation({
         escolas,
@@ -268,7 +343,9 @@ function CadastroTurmasPage() {
                     classrooms.length > 1
                     }
                     canReuseSchool={Boolean(
-                    index > 0 && classrooms[index - 1].nomeEscola.trim()
+                    index > 0 &&
+                    classrooms[index - 1].nomeEscola.trim() &&
+                    classrooms[index - 1].cidade.trim()
                     )}
                     onUsePreviousSchool={() =>
                     copyPreviousSchool(index)
@@ -283,6 +360,7 @@ function CadastroTurmasPage() {
             <p aria-live="polite" className="registration-page__summary">
                 {classrooms.length} {classrooms.length === 1 ? "turma adicionada" : "turmas adicionadas"}
                 {classrooms.length === 20 && " · Limite de 20 turmas atingido"}
+                {duplicateCount > 0 && ` · ${duplicateCount} ${duplicateCount === 1 ? "duplicata" : "duplicatas"}`}
             </p>
             <div className="registration-page__buttons">
             <Button
@@ -301,8 +379,9 @@ function CadastroTurmasPage() {
 
             {error && (
             <p
-                aria-live="polite"
+                aria-live="assertive"
                 className="registration-page__error"
+                role="alert"
             >
                 {error}
             </p>

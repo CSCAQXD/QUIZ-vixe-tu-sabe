@@ -7,14 +7,17 @@ import CadastroTurmasPage from "../../src/pages/CadastroTurmas/CadastroTurmasPag
 
 it("adiciona, reutiliza a escola e remove uma turma", async () => {
     render(<MemoryRouter><CadastroTurmasPage /></MemoryRouter>);
+    await userEvent.type(screen.getByLabelText("Cidade"), "Quixadá");
+    await userEvent.click(screen.getByRole("option", { name: "Quixadá — CE" }));
     await userEvent.type(screen.getByLabelText("Nome da escola"), "Escola Modelo");
     await userEvent.click(screen.getByRole("button", { name: "+ ADICIONAR TURMA" }));
 
     expect(screen.getByRole("heading", { name: "TURMA 2" })).toBeInTheDocument();
-    await waitFor(() => expect(screen.getAllByLabelText("Nome da escola")[1])
+    await waitFor(() => expect(screen.getAllByLabelText("Cidade")[1])
         .toHaveFocus());
     await userEvent.click(screen.getByRole("button", { name: /Usar escola anterior/ }));
     expect(screen.getAllByLabelText("Nome da escola")[1]).toHaveValue("Escola Modelo");
+    expect(screen.getAllByLabelText("Cidade")[1]).toHaveValue("Quixadá");
 
     await userEvent.click(screen.getAllByRole("button", { name: /Remover/ })[1]);
     expect(screen.queryByRole("heading", { name: "TURMA 2" }))

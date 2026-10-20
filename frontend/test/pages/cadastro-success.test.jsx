@@ -18,9 +18,13 @@ it("salva uma mediação válida e abre o quiz", async () => {
         </MemoryRouter>,
     );
 
+    await userEvent.type(screen.getByLabelText("Cidade"), "Fortaleza");
+    await userEvent.click(screen.getByRole("option", { name: "Fortaleza — CE" }));
     await userEvent.type(screen.getByLabelText("Nome da escola"), "Escola Modelo");
-    await userEvent.selectOptions(screen.getByLabelText("Série"), "FUNDAMENTAL:3");
-    await userEvent.selectOptions(screen.getByLabelText("Organização da turma"), "DIVIDIDA");
+    await userEvent.click(screen.getByLabelText("Série"));
+    await userEvent.click(screen.getByRole("option", { name: "3º ano — Ensino Fundamental" }));
+    await userEvent.click(screen.getByLabelText("Organização da turma"));
+    await userEvent.click(screen.getByRole("option", { name: "Turma dividida" }));
     await userEvent.type(screen.getByLabelText("Identificação da turma"), "A");
     await userEvent.click(screen.getByRole("button", {
         name: "INICIAR QUIZ DA MEDIAÇÃO",
@@ -28,6 +32,19 @@ it("salva uma mediação válida e abre o quiz", async () => {
 
     expect(saveMediation).toHaveBeenCalledWith(expect.objectContaining({
         nomeEscola: "Escola Modelo",
+        escolas: [{
+            nomeEscola: "Escola Modelo",
+            cidade: "Fortaleza",
+            cidadeUf: "CE",
+            municipioIbgeId: "2304400",
+            turmas: [{
+                etapaEnsino: "FUNDAMENTAL",
+                tipoOrganizacao: "REGULAR",
+                organizacaoTurma: "DIVIDIDA",
+                serie: 3,
+                turma: "A",
+            }],
+        }],
     }));
     expect(screen.getByText("Quiz iniciado")).toBeInTheDocument();
 });
