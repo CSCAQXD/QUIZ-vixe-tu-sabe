@@ -20,7 +20,8 @@ test.after(() => {
 function assinarPayload(payload) {
     const conteudo = Buffer.from(JSON.stringify(payload)).toString("base64url");
     const assinatura = createHmac("sha256", process.env.QUIZ_CONTEXT_SECRET)
-        .update(conteudo).digest("base64url");
+        .update(conteudo)
+        .digest("base64url");
     return `${conteudo}.${assinatura}`;
 }
 
@@ -46,17 +47,24 @@ test("permite até cem turmas globais e recusa participantes excedentes", () => 
 test("rejeita turmas alteradas ou repetidas além dos participantes originais", () => {
     const { contextoQuiz } = criarContextoQuiz(turmas);
     const invalido = (error) => error.statusCode === 400 && /nova mediação/.test(error.message);
-    assert.throws(() => validarContextoQuiz(contextoQuiz, [
-        { etapaEnsino: "FUNDAMENTAL", serie: 5 },
-    ]), invalido);
+    assert.throws(
+        () => validarContextoQuiz(contextoQuiz, [{ etapaEnsino: "FUNDAMENTAL", serie: 5 }]),
+        invalido,
+    );
     assert.throws(() => validarContextoQuiz(contextoQuiz, [turmas[2], turmas[2]]), invalido);
 });
 
 test("rejeita adulteração do conteúdo e da assinatura", () => {
     const [conteudo, assinatura] = criarContextoQuiz(turmas).contextoQuiz.split(".");
     const prefixo = assinatura[0] === "A" ? "B" : "A";
-    for (const token of [null, "", "invalido", `${conteudo}.AA`,
-        `x${conteudo}.${assinatura}`, `${conteudo}.${prefixo}${assinatura.slice(1)}`]) {
+    for (const token of [
+        null,
+        "",
+        "invalido",
+        `${conteudo}.AA`,
+        `x${conteudo}.${assinatura}`,
+        `${conteudo}.${prefixo}${assinatura.slice(1)}`,
+    ]) {
         assert.throws(() => validarContextoQuiz(token, turmas), { statusCode: 400 });
     }
 });
@@ -71,16 +79,23 @@ test("o contexto expira após quatro horas", () => {
 
 test("rejeita payloads inválidos mesmo quando assinados", () => {
     const payload = {
-        versao: 1, categoriaQuiz: "FUNDAMENTAL_1", turmas,
+        versao: 1,
+        categoriaQuiz: "FUNDAMENTAL_1",
+        turmas,
         expiraEm: Date.now() + 10000,
     };
     for (const alteracao of [
-        { categoriaQuiz: "TODAS" }, { categoriaQuiz: "MEDIO" },
-        { versao: 2 }, { expiraEm: "amanhã" }, { turmas: [] },
+        { categoriaQuiz: "TODAS" },
+        { categoriaQuiz: "MEDIO" },
+        { versao: 2 },
+        { expiraEm: "amanhã" },
+        { turmas: [] },
         { turmas: [{ etapaEnsino: "MEDIO", serie: 4 }] },
         { turmas: [{ etapaEnsino: "FUNDAMENTAL", serie: "4" }] },
     ]) {
-        assert.throws(() => validarContextoQuiz(assinarPayload({ ...payload, ...alteracao }), turmas),
-            { statusCode: 400 });
+        assert.throws(
+            () => validarContextoQuiz(assinarPayload({ ...payload, ...alteracao }), turmas),
+            { statusCode: 400 },
+        );
     }
 });

@@ -8,18 +8,9 @@ const {
 } = require("../utils/faixaEnsino");
 
 test("classifica as três faixas escolares", () => {
-    assert.equal(
-        obterFaixaEnsino({ etapaEnsino: "FUNDAMENTAL", serie: 5 }),
-        "FUNDAMENTAL_1",
-    );
-    assert.equal(
-        obterFaixaEnsino({ etapaEnsino: "FUNDAMENTAL", serie: 6 }),
-        "FUNDAMENTAL_2",
-    );
-    assert.equal(
-        obterFaixaEnsino({ etapaEnsino: "MEDIO", serie: 1 }),
-        "MEDIO",
-    );
+    assert.equal(obterFaixaEnsino({ etapaEnsino: "FUNDAMENTAL", serie: 5 }), "FUNDAMENTAL_1");
+    assert.equal(obterFaixaEnsino({ etapaEnsino: "FUNDAMENTAL", serie: 6 }), "FUNDAMENTAL_2");
+    assert.equal(obterFaixaEnsino({ etapaEnsino: "MEDIO", serie: 1 }), "MEDIO");
 });
 
 test("escolhe a menor faixa em uma mediação mista", () => {
