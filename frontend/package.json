@@ -3,10 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings=0",
+    "lint:js": "eslint . --max-warnings=0",
     "preview": "vite preview",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
