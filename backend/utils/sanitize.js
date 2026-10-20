@@ -23,8 +23,13 @@ function chaveEntidade(valor, removerPrefixoEscolar = false) {
         .toUpperCase();
 
     if (removerPrefixoEscolar) {
-        chave = chave.replace(
-            /^(EEEP|ESCOLA ESTADUAL DE EDUCACAO PROFISSIONAL)\s+/,
+        chave = chave
+            .replace(
+                /\b(?:[A-Z]\s+){1,}[A-Z]\b/g,
+                (iniciais) => iniciais.replace(/\s+/g, "")
+            )
+            .replace(
+            /^(EEEP|ESCOLA\s+ESTADUAL\s+DE\s+EDUCACAO\s+PROFISSIONAL)\s+/,
             ""
         );
     }
