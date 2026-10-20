@@ -20,6 +20,10 @@ async function openCategory() {
     await screen.findByText("Ainda não há pontuações neste ranking.");
     fireEvent.click(screen.getByRole("button", { name: "Por categoria" }));
 }
+function chooseCategory(name) {
+    fireEvent.click(screen.getByLabelText("Selecione a categoria"));
+    fireEvent.click(screen.getByRole("option", { name }));
+}
 
 it("pesquisa todas as páginas da categoria atual e reinicia a paginação ao trocar", async () => {
     listarRankingCategoria.mockResolvedValue({ ranking: records });
@@ -32,7 +36,7 @@ it("pesquisa todas as páginas da categoria atual e reinicia a paginação ao tr
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "7" } });
     expect(screen.getAllByRole("cell", { name: "7º ano — Ensino Fundamental" })).toHaveLength(15);
     fireEvent.click(screen.getByRole("button", { name: "Página 2" }));
-    fireEvent.change(screen.getByLabelText("Selecione a categoria"), { target: { value: "FUNDAMENTAL_2" } });
+    chooseCategory("Fundamental II");
     await screen.findByRole("cell", { name: "Escola 0" });
     expect(listarRankingCategoria).toHaveBeenLastCalledWith("FUNDAMENTAL_2", expect.any(Object));
     expect(screen.getByRole("button", { name: "Página 1" })).toHaveAttribute("aria-current", "page");
@@ -46,7 +50,7 @@ it("permite tentar de novo e impede que uma resposta antiga substitua a categori
     listarRankingCategoria.mockImplementationOnce(() => new Promise((resolve) => { finishOldRequest = resolve; }));
     fireEvent.click(screen.getByRole("button", { name: "Tentar novamente" }));
     listarRankingCategoria.mockResolvedValue({ ranking: [] });
-    fireEvent.change(screen.getByLabelText("Selecione a categoria"), { target: { value: "MEDIO" } });
+    chooseCategory("Ensino Médio");
     await screen.findByText("Ainda não há pontuações neste ranking.");
     finishOldRequest({ ranking: records });
     await waitFor(() => expect(listarRankingCategoria).toHaveBeenLastCalledWith("MEDIO", expect.any(Object)));
