@@ -106,7 +106,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [backend, frontend]
+        include:
+          - app: backend
+            context: ./backend
+            dockerfile: ./backend/Dockerfile
+          - app: frontend
+            context: .
+            dockerfile: ./frontend/Dockerfile
 
     steps:
       - name: Checkout
@@ -115,6 +121,7 @@ jobs:
       - name: Build ${{ matrix.app }} container
         uses: docker/build-push-action@v6
         with:
-          context: ./${{ matrix.app }}
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
           push: false
           tags: quiz-vixe-tu-sabe-${{ matrix.app }}:ci

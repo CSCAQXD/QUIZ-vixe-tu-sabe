@@ -22,7 +22,13 @@ jobs:
 
     strategy:
       matrix:
-        app: [backend, frontend]
+        include:
+          - app: backend
+            context: ./backend
+            dockerfile: ./backend/Dockerfile
+          - app: frontend
+            context: .
+            dockerfile: ./frontend/Dockerfile
 
     steps:
       - name: Checkout
@@ -52,7 +58,8 @@ jobs:
       - name: Build and publish
         uses: docker/build-push-action@v6
         with:
-          context: ./${{ matrix.app }}
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
