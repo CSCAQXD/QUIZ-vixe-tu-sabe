@@ -5,6 +5,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react()],
   test: {
+    include: ['test/**/*.{test,spec}.{js,jsx}'],
     environment: 'jsdom',
     pool: 'vmThreads',
     maxWorkers: 1,

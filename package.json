@@ -29,6 +29,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "audit:all": "npm audit --audit-level=high && npm audit --audit-level=high --prefix backend && npm audit --audit-level=high --prefix frontend",
+    "backup:database": "node backend/scripts/backupDatabase.js",
+    "restore:database": "node backend/scripts/restoreDatabase.js",
     "quality": "npm run format:check && npm run lint:all && npm run check:backend && npm run coverage:all && npm run build",
     "check:backend": "npm --prefix backend run prisma:generate && npm --prefix backend run check",
     "prisma:generate": "npm --prefix backend run prisma:generate",
@@ -46,7 +48,7 @@
     "backend/**/*.js": "npm --prefix backend exec -- eslint --fix --config backend/eslint.config.js"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2 <23"
   },
   "devDependencies": {
     "husky": "9.1.7",
