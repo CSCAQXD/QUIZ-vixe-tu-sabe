@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [main, master, develop, 'feat/**', 'fix/**']
   pull_request:
   workflow_dispatch:
 
@@ -21,12 +20,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Use Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: 22
+          node-version: 22.23.2
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -65,7 +64,7 @@ jobs:
 
       - name: Upload coverage reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: coverage-${{ github.sha }}
           path: |
@@ -92,7 +91,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Audit ${{ matrix.name }}
         working-directory: ${{ matrix.directory }}
@@ -116,12 +115,47 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Build ${{ matrix.app }} container
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
           push: false
           tags: quiz-vixe-tu-sabe-${{ matrix.app }}:ci
+
+  e2e-smoke:
+    name: E2E smoke
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Use Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 22.23.2
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix frontend
+
+      - name: Install Chromium
+        run: npm --prefix frontend exec -- playwright install --with-deps chromium
+
+      - name: Run browser smoke test
+        run: npm --prefix frontend run test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: playwright-report-${{ github.sha }}
+          path: frontend/playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
