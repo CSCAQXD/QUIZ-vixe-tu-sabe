@@ -1,0 +1,13 @@
+.git
+.github
+.husky
+backend
+node_modules
+**/node_modules
+**/coverage
+**/dist
+**/.env*
+**/npm-debug.log*
+shared/*
+!shared/cursosTecnicos.json
+!shared/municipios.json

@@ -52,7 +52,7 @@ function SelectField({
     onChange(option.value)
     setIsOpen(false)
     setActiveIndex(-1)
-    requestAnimationFrame(() => triggerRef.current?.focus())
+    triggerRef.current?.focus()
   }
 
   function handleKeyDown(event) {

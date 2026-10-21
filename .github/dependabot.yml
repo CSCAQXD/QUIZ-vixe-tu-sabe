@@ -125,9 +125,7 @@ updates:
     commit-message:
       prefix: chore(docker)
     cooldown:
-      semver-major-days: 30
-      semver-minor-days: 7
-      semver-patch-days: 3
+      default-days: 7
     groups:
       backend-container-minor-and-patch:
         applies-to: version-updates
@@ -149,9 +147,7 @@ updates:
     commit-message:
       prefix: chore(docker)
     cooldown:
-      semver-major-days: 30
-      semver-minor-days: 7
-      semver-patch-days: 3
+      default-days: 7
     groups:
       frontend-container-minor-and-patch:
         applies-to: version-updates
@@ -174,9 +170,7 @@ updates:
     commit-message:
       prefix: ci
     cooldown:
-      semver-major-days: 30
-      semver-minor-days: 7
-      semver-patch-days: 3
+      default-days: 7
     groups:
       actions-minor-and-patch:
         applies-to: version-updates

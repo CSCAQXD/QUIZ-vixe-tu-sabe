@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../../components/common/Button/Button'
 import BackButton from '../../components/common/BackButton/BackButton'
@@ -124,6 +124,8 @@ function validateClassrooms(classrooms) {
 function CadastroTurmasPage() {
   const navigate = useNavigate()
 
+  const pendingClassroomFocusRef = useRef('')
+
   const [classrooms, setClassrooms] = useState([createClassroom()])
 
   const [error, setError] = useState('')
@@ -143,6 +145,14 @@ function CadastroTurmasPage() {
   const duplicateCount = Object.values(validationErrors).filter(
     (classroomErrors) => classroomErrors.form,
   ).length
+
+  useEffect(() => {
+    const classroomId = pendingClassroomFocusRef.current
+    if (!classroomId) return
+
+    document.getElementById(`cidade-${classroomId}`)?.focus()
+    pendingClassroomFocusRef.current = ''
+  }, [classrooms])
 
   function touchField(classroomId, field) {
     setTouched((current) => ({
@@ -180,11 +190,8 @@ function CadastroTurmasPage() {
     }
 
     const newClassroom = createClassroom()
+    pendingClassroomFocusRef.current = newClassroom.id
     setClassrooms((current) => [...current, newClassroom])
-
-    requestAnimationFrame(() => {
-      document.getElementById(`cidade-${newClassroom.id}`)?.focus()
-    })
 
     setError('')
   }
