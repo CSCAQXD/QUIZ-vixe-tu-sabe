@@ -100,9 +100,9 @@ Consulte tambem:
 - [Backup e restauracao](docs/BACKUP_RESTORE.md)
 - [Runbook operacional](docs/RUNBOOK.md)
 - [Releases](docs/RELEASES.md)
-- [Contribuicao](CONTRIBUTING.md)
-- [Seguranca](SECURITY.md)
-- [Suporte](SUPPORT.md)
+- [Contribuicao](.github/CONTRIBUTING.md)
+- [Seguranca](.github/SECURITY.md)
+- [Suporte](.github/SUPPORT.md)
 
 ## Licenca
 

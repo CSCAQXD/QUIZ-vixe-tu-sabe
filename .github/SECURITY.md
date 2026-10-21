@@ -23,4 +23,4 @@ Ative no GitHub a protecao da branch principal, secret scanning, push protection
 
 Nunca envie `.env`, bancos, backups ou tokens ao repositorio. Armazene `DATABASE_URL`, origens CORS e segredos do provedor no gerenciador de segredos do ambiente. Se um segredo for exposto, revogue-o imediatamente, gere outro, procure usos indevidos e registre o incidente; remover o arquivo do commit nao torna o segredo seguro novamente.
 
-Consulte o [runbook operacional](docs/RUNBOOK.md) para triagem e recuperacao.
+Consulte o [runbook operacional](../docs/RUNBOOK.md) para triagem e recuperacao.

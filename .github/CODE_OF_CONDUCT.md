@@ -15,4 +15,4 @@ Participantes e mantenedores se comprometem a tornar a colaboracao acolhedora, s
 
 Comportamentos abusivos, intimidatorios ou discriminatorios podem ser removidos e levar a advertencia ou exclusao da comunidade. Relate ocorrencias de forma privada aos mantenedores do repositorio. Toda denuncia sera tratada com confidencialidade, imparcialidade e proporcionalidade.
 
-Este texto e inspirado no Contributor Covenant 2.1.
+Este texto e inspirado no [Contributor Covenant 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).

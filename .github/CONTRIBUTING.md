@@ -53,4 +53,4 @@ Atualizacoes major devem ser tratadas individualmente. Nao reduza limiares, igno
 
 Exija pull request, uma aprovacao, conversas resolvidas, branch atualizada, historico linear e os checks `Quality gate`, `E2E smoke`, `Production dependency audit`, `Build production containers` e CodeQL. Bloqueie force-push e exclusao.
 
-Consulte [Releases](docs/RELEASES.md) e [Deploy](docs/DEPLOYMENT.md) antes de publicar.
+Consulte [Releases](../docs/RELEASES.md) e [Deploy](../docs/DEPLOYMENT.md) antes de publicar.
