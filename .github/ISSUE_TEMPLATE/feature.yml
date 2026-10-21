@@ -1,0 +1,31 @@
+name: Sugerir uma melhoria
+description: Proponha uma mudanca de produto, acessibilidade ou manutencao.
+title: 'feat: '
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema
+      description: Quem e afetado e em qual situacao?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposta
+      description: Descreva o resultado desejado, sem limitar a uma implementacao.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas e impactos
+      description: Considere acessibilidade, seguranca, privacidade e operacao.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Verificacao
+      options:
+        - label: Procurei propostas existentes.
+          required: true
