@@ -1,0 +1,7 @@
+# A mantenedora revisa mudancas em todo o repositorio.
+* @CSCAQXD
+
+# Areas operacionais e de seguranca exigem a mesma revisao explicita.
+/.github/ @CSCAQXD
+/backend/prisma/ @CSCAQXD
+/docs/ @CSCAQXD

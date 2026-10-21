@@ -16,7 +16,7 @@ describe('apiRequest', () => {
       ok: true,
     })
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3001/teste',
+      '/api/teste',
       expect.objectContaining({
         headers: { 'Content-Type': 'application/json', Authorization: 'x' },
       }),

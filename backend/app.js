@@ -1,5 +1,8 @@
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const prisma = require("./config/prisma");
+const requestContext = require("./middlewares/requestContext.middleware");
 
 const perguntaRouter = require("./routers/pergunta.router");
 
@@ -13,6 +16,11 @@ const rankingRouter = require("./routers/ranking.router");
 const errorMiddleware = require("./middlewares/error.middleware");
 
 const app = express();
+
+const trustProxy = Number(process.env.TRUST_PROXY);
+if (Number.isInteger(trustProxy) && trustProxy > 0) {
+    app.set("trust proxy", trustProxy);
+}
 
 function obterOrigensPermitidas() {
     return (process.env.CORS_ORIGINS || "*")
@@ -38,10 +46,19 @@ function validarOrigem(origem, callback) {
 app.disable("x-powered-by");
 
 app.use(
+    helmet({
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+    }),
+);
+
+app.use(requestContext);
+
+app.use(
     cors({
         origin: validarOrigem,
         methods: ["GET", "POST", "OPTIONS"],
         allowedHeaders: ["Content-Type"],
+        exposedHeaders: ["X-Request-ID", "RateLimit"],
         maxAge: 86400,
     }),
 );
@@ -59,6 +76,16 @@ app.get("/health", (req, res) => {
         servico: "Quiz Vixe, Tu Sabe? - API",
         horario: new Date().toISOString(),
     });
+});
+
+app.get("/ready", async (req, res, next) => {
+    try {
+        await prisma.$queryRawUnsafe("SELECT 1");
+        return res.status(200).json({ status: "ready" });
+    } catch (error) {
+        error.statusCode = 503;
+        return next(error);
+    }
 });
 
 app.use("/perguntas", perguntaRouter);

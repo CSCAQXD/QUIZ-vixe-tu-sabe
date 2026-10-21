@@ -31,7 +31,9 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
       args:
-        VITE_API_URL: http://localhost:3001
+        VITE_API_URL: /api
+    environment:
+      BACKEND_URL: http://backend:3001
     ports:
       - '8080:8080'
     depends_on:

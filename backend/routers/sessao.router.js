@@ -3,12 +3,13 @@ const express = require("express");
 const sessaoController = require("../controllers/sessao.controller");
 
 const validar = require("../middlewares/validation.middleware");
+const limitarEscritas = require("../middlewares/rateLimit.middleware");
 
 const { validarSessao } = require("../schemas/sessao.schema");
 
 const router = express.Router();
 
-router.post("/", validar(validarSessao), sessaoController.registrarSessoes);
+router.post("/", limitarEscritas, validar(validarSessao), sessaoController.registrarSessoes);
 
 router.get("/:id", sessaoController.buscarPartida);
 

@@ -1,4 +1,6 @@
-﻿function tratarErroPrisma(error) {
+const logger = require("../utils/logger");
+
+function tratarErroPrisma(error) {
     if (error.code === "P2002") {
         return {
             statusCode: 409,
@@ -29,9 +31,7 @@ function errorMiddleware(error, req, res, next) {
     }
 
     const erroPrisma = tratarErroPrisma(error);
-
     const jsonInvalido = error instanceof SyntaxError && error.status === 400 && "body" in error;
-
     const statusCode = erroPrisma?.statusCode || (jsonInvalido ? 400 : error.statusCode) || 500;
 
     let mensagem;
@@ -47,7 +47,8 @@ function errorMiddleware(error, req, res, next) {
     }
 
     if (statusCode >= 500) {
-        console.error({
+        logger.error("http_error", {
+            requestId: req.requestId,
             metodo: req.method,
             rota: req.originalUrl,
             mensagem: error.message,
@@ -57,6 +58,7 @@ function errorMiddleware(error, req, res, next) {
 
     return res.status(statusCode).json({
         erro: mensagem,
+        ...(req.requestId ? { requestId: req.requestId } : {}),
         ...(error.sugestao ? { sugestao: error.sugestao } : {}),
     });
 }

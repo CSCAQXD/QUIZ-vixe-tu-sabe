@@ -10,6 +10,8 @@ node_modules/
 # Build, test and tool output
 dist/
 coverage/
+playwright-report/
+test-results/
 .nyc_output/
 .vite/
 .cache/
@@ -29,6 +31,8 @@ report.*.json
 *.pid
 *.pid.lock
 *.seed
+backups/
+backend/backups/
 
 # Prisma / SQLite
 *.db
