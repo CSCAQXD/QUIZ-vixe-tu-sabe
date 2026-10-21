@@ -63,6 +63,7 @@ test("a aplicação expõe headers seguros, health e ready", async () => {
         await comServidor(app, async (origem) => {
             const health = await fetch(`${origem}/health`);
             assert.equal(health.status, 200);
+            assert.match(health.headers.get("content-security-policy"), /default-src 'self'/);
             assert.equal(health.headers.get("x-content-type-options"), "nosniff");
             assert.equal(health.headers.get("x-powered-by"), null);
             assert.ok(health.headers.get("x-request-id"));
