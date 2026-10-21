@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM node:22-bookworm-slim AS dependencies
+FROM node:25-bookworm-slim AS dependencies
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -15,7 +15,7 @@ RUN groupadd --system nodeapp && useradd --system --gid nodeapp nodeapp \
 USER nodeapp
 CMD ["npx", "prisma", "migrate", "deploy"]
 
-FROM node:22-bookworm-slim AS production
+FROM node:25-bookworm-slim AS production
 ENV NODE_ENV=production
 WORKDIR /app
 RUN groupadd --system nodeapp && useradd --system --gid nodeapp nodeapp
