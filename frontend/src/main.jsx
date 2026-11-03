@@ -8,9 +8,12 @@ import '@fontsource/dm-sans/latin-800.css'
 import '@fontsource/dm-sans/latin-900.css'
 import './index.css'
 import App from './App.jsx'
+import AppErrorBoundary from './components/common/AppErrorBoundary/AppErrorBoundary.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <AppErrorBoundary>
+      <App />
+    </AppErrorBoundary>
   </StrictMode>,
 )

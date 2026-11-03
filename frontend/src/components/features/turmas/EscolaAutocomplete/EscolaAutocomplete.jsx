@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { buscarEscolasCatalogo } from '../../../../api/escolaApi'
+import { getUserErrorMessage } from '../../../../utils/errors'
 import { normalizeIdentityText, schoolIdentityKey } from '../../../../utils/mediation'
 import '../../../common/FormField/FormField.css'
 import './EscolaAutocomplete.css'
@@ -47,7 +48,12 @@ function EscolaAutocomplete({
       } catch (requestError) {
         if (controller.signal.aborted) return
         setSuggestions([])
-        setSearchError(requestError.message)
+        setSearchError(
+          getUserErrorMessage(
+            requestError,
+            'Não foi possível buscar as escolas agora. Tente novamente em alguns instantes.',
+          ),
+        )
       } finally {
         if (!controller.signal.aborted) setIsLoading(false)
       }

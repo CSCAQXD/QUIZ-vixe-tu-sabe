@@ -79,3 +79,32 @@ it('não inicia ou salva uma mediação sem o contexto confirmado pelo backend',
   expect(screen.queryByText(pergunta.pergunta)).not.toBeInTheDocument()
   expect(registrarSessao).not.toHaveBeenCalled()
 })
+
+it('mostra uma orientação clara quando o servidor retorna uma resposta vazia', async () => {
+  saveMediation({ nomeEscola: 'Modelo', turmas: [medio] })
+  carregarQuiz.mockResolvedValue(null)
+
+  render(
+    <MemoryRouter>
+      <QuizPage />
+    </MemoryRouter>,
+  )
+
+  expect(await screen.findByText(/Não foi possível preparar esta mediação/)).toBeInTheDocument()
+  expect(screen.queryByText(/Cannot read properties/)).not.toBeInTheDocument()
+  expect(registrarSessao).not.toHaveBeenCalled()
+})
+
+it('não exibe detalhes técnicos de uma falha inesperada', async () => {
+  saveMediation({ nomeEscola: 'Modelo', turmas: [medio] })
+  carregarQuiz.mockRejectedValue(new TypeError("Cannot read properties of null (reading 'x')"))
+
+  render(
+    <MemoryRouter>
+      <QuizPage />
+    </MemoryRouter>,
+  )
+
+  expect(await screen.findByText(/Não foi possível carregar as perguntas/)).toBeInTheDocument()
+  expect(screen.queryByText(/Cannot read properties/)).not.toBeInTheDocument()
+})

@@ -1,3 +1,5 @@
+import { UserFacingError } from '../utils/errors'
+
 const API_URL = (import.meta.env.VITE_API_URL ?? '/api').replace(/\/$/, '')
 
 export async function apiRequest(path, options = {}) {
@@ -11,7 +13,9 @@ export async function apiRequest(path, options = {}) {
       },
     })
   } catch {
-    throw new Error('Não foi possível conectar ao servidor. Verifique a conexão e tente novamente.')
+    throw new UserFacingError(
+      'Não foi possível conectar ao servidor. Verifique a conexão e tente novamente.',
+    )
   }
 
   const contentType = response.headers.get('content-type')
@@ -19,7 +23,9 @@ export async function apiRequest(path, options = {}) {
   const data = contentType?.includes('application/json') ? await response.json() : null
 
   if (!response.ok) {
-    throw new Error(data?.erro ?? data?.mensagem ?? 'Não foi possível concluir a requisição.')
+    throw new UserFacingError(
+      data?.erro ?? data?.mensagem ?? 'Não foi possível concluir a requisição.',
+    )
   }
 
   return data

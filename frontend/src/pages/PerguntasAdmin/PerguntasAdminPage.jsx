@@ -7,6 +7,7 @@ import {
   consultarStatusPerguntas,
   validarPlanilhaPerguntas,
 } from '../../api/perguntaAdminApi'
+import { getUserErrorMessage } from '../../utils/errors'
 
 import './PerguntasAdminPage.css'
 
@@ -32,7 +33,12 @@ function PerguntasAdminPage() {
     try {
       return await acao()
     } catch (falha) {
-      setErro(falha.message)
+      setErro(
+        getUserErrorMessage(
+          falha,
+          'Não foi possível concluir esta operação. Tente novamente em alguns instantes.',
+        ),
+      )
       return null
     } finally {
       setCarregando(false)
