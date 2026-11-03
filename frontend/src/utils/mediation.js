@@ -78,7 +78,7 @@ function collapseInitials(value) {
   const terms = value.split(' ').filter(Boolean)
   const collapsed = []
 
-  for (let index = 0; index < terms.length; ) {
+  for (let index = 0; index < terms.length;) {
     if (!/^[A-Z]$/.test(terms[index])) {
       collapsed.push(terms[index])
       index += 1

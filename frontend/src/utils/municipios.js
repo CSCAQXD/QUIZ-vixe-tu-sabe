@@ -103,11 +103,11 @@ export function isMunicipalitySelectionValid({ cidade, cidadeUf, municipioIbgeId
 
   return Boolean(
     municipality &&
-      municipality.uf ===
-        String(cidadeUf ?? '')
-          .trim()
-          .toUpperCase() &&
-      municipality.nomeBusca === normalizeMunicipalityText(cidade),
+    municipality.uf ===
+      String(cidadeUf ?? '')
+        .trim()
+        .toUpperCase() &&
+    municipality.nomeBusca === normalizeMunicipalityText(cidade),
   )
 }
 

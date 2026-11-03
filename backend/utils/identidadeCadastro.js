@@ -73,7 +73,7 @@ function compactarIniciais(valor) {
         .filter(Boolean);
     const compactados = [];
 
-    for (let indice = 0; indice < termos.length; ) {
+    for (let indice = 0; indice < termos.length;) {
         if (!/^[A-Z]$/.test(termos[indice])) {
             compactados.push(termos[indice]);
             indice += 1;
