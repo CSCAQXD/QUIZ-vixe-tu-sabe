@@ -122,12 +122,27 @@
 }
 
 .quiz-board__question h1 {
+  width: min(100%, 68ch);
+  display: grid;
+  gap: 0.65em;
   margin: 0;
   font-size: clamp(1.35rem, 2.34vw, 2.8125rem);
   font-weight: 700;
-  line-height: 1.18;
+  line-height: 1.25;
   overflow-wrap: anywhere;
   text-align: center;
+  text-wrap: pretty;
+  white-space: pre-line;
+}
+
+.quiz-board__question-paragraph {
+  display: block;
+}
+
+.quiz-board__question-paragraph--reference {
+  font-size: 0.8em;
+  font-weight: 500;
+  line-height: 1.3;
 }
 
 .quiz-board__options {
@@ -149,7 +164,8 @@
 
 .quiz-board--dense .quiz-board__question h1 {
   font-size: clamp(1.2rem, 1.9vw, 2.25rem);
-  line-height: 1.2;
+  line-height: 1.3;
+  text-align: left;
 }
 
 .quiz-board--dense .answer-option {
@@ -183,7 +199,8 @@
 
 .quiz-board--compact .quiz-board__question h1 {
   font-size: clamp(1.05rem, 1.55vw, 1.85rem);
-  line-height: 1.2;
+  line-height: 1.32;
+  text-align: left;
 }
 
 .quiz-board--compact .quiz-board__options {
