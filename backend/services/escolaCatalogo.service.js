@@ -6,7 +6,7 @@ const { promisify } = require("node:util");
 const { chaveEntidade } = require("../utils/sanitize");
 
 const gunzip = promisify(zlib.gunzip);
-const CATALOGO_PATH = path.resolve(__dirname, "../../shared/escolasCatalogo.json.gz");
+const CATALOGO_PATH = path.resolve(__dirname, "../data/escolasCatalogo.json.gz");
 
 let catalogoPromise;
 

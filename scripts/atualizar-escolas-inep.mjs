@@ -8,7 +8,7 @@ import readline from 'node:readline'
 import { gzipSync } from 'node:zlib'
 
 const SOURCE_URL = 'https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2025_.zip'
-const OUTPUT_PATH = path.resolve('shared/escolasCatalogo.json.gz')
+const OUTPUT_PATH = path.resolve('backend/data/escolasCatalogo.json.gz')
 const SOURCE_YEAR = 2025
 
 const DEPENDENCIAS = {
