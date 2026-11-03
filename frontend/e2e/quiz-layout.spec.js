@@ -54,6 +54,7 @@ for (const viewport of [
     const options = page.locator('.quiz-board__options')
     await expect(page.getByRole('heading', { name: longQuestion })).toBeVisible()
     await expect(board).toHaveClass(/quiz-board--compact/)
+    await expect(question.locator('.quiz-board__question-paragraph')).toHaveCount(2)
 
     const questionBox = await question.boundingBox()
     const optionsBox = await options.boundingBox()
