@@ -1,0 +1,127 @@
+.perguntas-admin {
+  min-height: 100vh;
+  padding: clamp(24px, 5vw, 64px);
+  background: #fff0df;
+  color: #3c1423;
+}
+
+.perguntas-admin--login {
+  display: grid;
+  place-items: center;
+}
+
+.perguntas-admin__header {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0 auto 24px;
+}
+
+.perguntas-admin h1,
+.perguntas-admin h2,
+.perguntas-admin p {
+  margin-top: 0;
+}
+
+.perguntas-admin h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: 8px;
+}
+
+.perguntas-admin__eyebrow {
+  font-weight: 800;
+  color: #a52d37;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.perguntas-admin__panel,
+.perguntas-admin__error,
+.perguntas-admin__message {
+  max-width: 1000px;
+  margin: 0 auto 20px;
+  padding: 24px;
+  border: 2px solid #3c1423;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 5px 5px 0 #3c1423;
+}
+
+.perguntas-admin--login .perguntas-admin__panel {
+  width: min(100%, 520px);
+}
+
+.perguntas-admin__error {
+  border-color: #a52d37;
+  color: #a52d37;
+  box-shadow: none;
+}
+
+.perguntas-admin__message {
+  border-color: #219653;
+  color: #175f37;
+  box-shadow: none;
+}
+
+.perguntas-admin__summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.perguntas-admin__summary div {
+  padding: 16px;
+  border-radius: 12px;
+  background: #fff0df;
+}
+
+.perguntas-admin__summary dt {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.perguntas-admin__summary dd {
+  margin: 4px 0 0;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.perguntas-admin__candidate .button {
+  margin-top: 16px;
+}
+
+.perguntas-admin__history {
+  display: grid;
+  gap: 12px;
+}
+
+.perguntas-admin__version {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  border: 1px solid #d7b99e;
+  border-radius: 10px;
+}
+
+.perguntas-admin__version div {
+  display: grid;
+  gap: 3px;
+}
+
+.perguntas-admin__version span {
+  color: #6c5960;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .perguntas-admin__header,
+  .perguntas-admin__version {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
