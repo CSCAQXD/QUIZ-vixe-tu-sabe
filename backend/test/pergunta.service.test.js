@@ -24,8 +24,27 @@ function criarPergunta(alteracoes = {}) {
     };
 }
 
+let versaoSalva;
+
 test.beforeEach(() => {
     perguntaService.limparCache();
+    versaoSalva = null;
+    mock.method(perguntaRepository, "buscarVersaoAtiva", async () => null);
+    mock.method(perguntaRepository, "salvarVersao", async (perguntas, hash) => {
+        versaoSalva = {
+            id: "versao-1",
+            status: "RASCUNHO",
+            hash,
+            total: perguntas.length,
+            perguntas,
+        };
+        return versaoSalva;
+    });
+    mock.method(perguntaRepository, "ativarVersao", async () => ({
+        ...versaoSalva,
+        status: "ATIVA",
+    }));
+    mock.method(perguntaRepository, "listarVersoes", async () => []);
 });
 
 test.afterEach(() => {
@@ -85,7 +104,7 @@ test("reutiliza o cache se a planilha ficar indisponível", async () => {
     assert.deepEqual(segundaConsulta, primeiraConsulta);
 });
 
-test("ignora linhas incompletas da planilha", async () => {
+test("recusa a atualização inteira quando existe uma linha incompleta", async () => {
     mock.method(perguntaRepository, "buscarDaPlanilha", async () => [
         criarPergunta(),
         criarPergunta({
@@ -94,9 +113,7 @@ test("ignora linhas incompletas da planilha", async () => {
         }),
     ]);
 
-    const perguntas = await perguntaService.listarPerguntas();
-
-    assert.equal(perguntas.length, 1);
+    await assert.rejects(() => perguntaService.listarPerguntas(), /linha\(s\) inválida\(s\): 3/);
 });
 
 test("rejeita IDs duplicados", async () => {
@@ -111,11 +128,7 @@ test("rejeita IDs duplicados", async () => {
 });
 
 test("retorna erro quando não existem perguntas válidas", async () => {
-    mock.method(perguntaRepository, "buscarDaPlanilha", async () => [
-        criarPergunta({
-            pergunta: "",
-        }),
-    ]);
+    mock.method(perguntaRepository, "buscarDaPlanilha", async () => []);
 
     await assert.rejects(() => perguntaService.listarPerguntas(), /Nenhuma pergunta válida/);
 });
@@ -161,4 +174,68 @@ test("retorna quantidade variável de perguntas da faixa e comuns", async () => 
     assert.equal(perguntas.length, 33);
     assert.equal(new Set(perguntas.map((pergunta) => pergunta.id)).size, 33);
     assert.ok(perguntas.every((pergunta) => pergunta.id !== "medio"));
+});
+
+test("usa a versão ativa local sem consultar a planilha", async () => {
+    mock.restoreAll();
+    perguntaService.limparCache();
+    mock.method(perguntaRepository, "buscarVersaoAtiva", async () => ({
+        id: "ativa",
+        status: "ATIVA",
+        hash: "hash",
+        total: 1,
+        perguntas: [
+            {
+                id: "local",
+                faixa: "FUNDAMENTAL_1",
+                tema: "Tema",
+                pergunta: "Pergunta local?",
+                opcoes: ["A", "B", "C", "D"],
+                correta: "A",
+                pontosIniciais: 100,
+                dicas: [],
+            },
+        ],
+    }));
+    const buscarRemota = mock.method(perguntaRepository, "buscarDaPlanilha", async () => {
+        throw new Error("Sem internet");
+    });
+
+    const perguntas = await perguntaService.listarPerguntas();
+
+    assert.equal(perguntas[0].id, "local");
+    assert.equal(buscarRemota.mock.callCount(), 0);
+});
+
+test("valida diferenças sem ativar automaticamente a candidata", async () => {
+    const atual = criarPergunta({ id: "mantida", faixa: "Fundamental I" });
+    const ativa = {
+        id: "ativa",
+        status: "ATIVA",
+        hash: "anterior",
+        perguntas: [
+            {
+                id: "removida",
+                faixa: "FUNDAMENTAL_1",
+                tema: "Tema",
+                pergunta: "Antiga?",
+                opcoes: ["A", "B", "C", "D"],
+                correta: "A",
+                pontosIniciais: 100,
+                dicas: [],
+            },
+        ],
+    };
+    perguntaRepository.buscarVersaoAtiva.mock.mockImplementation(async () => ativa);
+    mock.method(perguntaRepository, "buscarDaPlanilha", async () => [atual]);
+
+    const resultado = await perguntaService.validarAtualizacao();
+
+    assert.equal(resultado.resultado, "VERSAO_PRONTA");
+    assert.deepEqual(resultado.diferencas.totais, {
+        adicionadas: 1,
+        alteradas: 0,
+        removidas: 1,
+    });
+    assert.equal(perguntaRepository.ativarVersao.mock.callCount(), 0);
 });

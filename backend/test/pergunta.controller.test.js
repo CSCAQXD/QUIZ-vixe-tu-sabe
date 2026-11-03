@@ -71,3 +71,50 @@ test("recusa participantes malformados antes de consultar a planilha", async () 
     }
     assert.equal(buscar.mock.callCount(), 0);
 });
+
+test("retorna o status sem expor o conteúdo das perguntas", async () => {
+    mock.method(perguntaService, "obterStatus", async () => ({
+        ativa: {
+            id: "ativa",
+            total: 50,
+            status: "ATIVA",
+            perguntas: [{ id: "segredo" }],
+        },
+        versoes: [{ id: "ativa", total: 50, status: "ATIVA" }],
+    }));
+    const resposta = {};
+    const res = {
+        status(codigo) {
+            resposta.status = codigo;
+            return this;
+        },
+        json(dados) {
+            resposta.dados = dados;
+            return this;
+        },
+    };
+
+    await perguntaController.obterStatus({}, res, assert.fail);
+
+    assert.equal(resposta.status, 200);
+    assert.equal(resposta.dados.ativa.total, 50);
+    assert.equal("perguntas" in resposta.dados.ativa, false);
+});
+
+test("valida a planilha sem ativar a versão candidata", async () => {
+    const validar = mock.method(perguntaService, "validarAtualizacao", async () => ({
+        resultado: "VERSAO_PRONTA",
+        versao: { id: "rascunho", total: 51, perguntas: [{ id: "1" }] },
+        diferencas: { totais: { adicionadas: 1, alteradas: 0, removidas: 0 } },
+    }));
+    const ativar = mock.method(perguntaService, "ativarVersao", async () => {});
+    let dados;
+    const res = { status: () => res, json: (valor) => (dados = valor) };
+
+    await perguntaController.validarAtualizacao({}, res, assert.fail);
+
+    assert.equal(validar.mock.callCount(), 1);
+    assert.equal(ativar.mock.callCount(), 0);
+    assert.equal(dados.versao.id, "rascunho");
+    assert.equal("perguntas" in dados.versao, false);
+});

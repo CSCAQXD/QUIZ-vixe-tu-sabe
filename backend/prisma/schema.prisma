@@ -71,3 +71,39 @@ model Participacao {
   @@index([partidaId])
   @@index([etapaEnsino, serie, cursoBusca, turmaBusca])
 }
+
+model VersaoPerguntas {
+  id         String              @id @default(uuid())
+  criadaEm   DateTime            @default(now())
+  ativadaEm  DateTime?
+  status     String              @default("RASCUNHO")
+  hash       String              @unique
+  total      Int
+  perguntas  PerguntaImportada[]
+
+  @@index([status])
+  @@index([criadaEm])
+}
+
+model PerguntaImportada {
+  id              String          @id @default(uuid())
+  versaoId        String
+  idExterno       String
+  ordem           Int
+  faixa           String
+  tema            String
+  enunciado       String
+  altA            String
+  altB            String
+  altC            String
+  altD            String
+  correta         String
+  pontosIniciais  Int
+  dica1           String?
+  dica2           String?
+  dica3           String?
+  versao          VersaoPerguntas @relation(fields: [versaoId], references: [id], onDelete: Cascade)
+
+  @@unique([versaoId, idExterno])
+  @@index([versaoId, ordem])
+}

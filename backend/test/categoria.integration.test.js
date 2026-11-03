@@ -6,6 +6,7 @@ test(
     "HTTP integra perguntas, contexto misto e quatro rankings em SQLite isolado",
     { timeout: 120000 },
     async (t) => {
+        const cenario = await iniciarCenario();
         const repositorio = require("../repositories/pergunta.repository");
         t.mock.method(repositorio, "buscarDaPlanilha", async () => [
             pergunta("f1-a", "fundamental 1"),
@@ -17,7 +18,6 @@ test(
         ]);
         const servicoPerguntas = require("../services/pergunta.service");
         servicoPerguntas.limparCache();
-        const cenario = await iniciarCenario();
         t.after(async () => {
             servicoPerguntas.limparCache();
             await cenario.encerrar();
