@@ -3,7 +3,7 @@
   place-items: center;
   padding: clamp(1rem, 3vw, 2rem);
   color: var(--color-wine-dark, #3c1423);
-  font-family: var(--font-family-base, 'DM Sans', sans-serif);
+  font-family: var(--font-family-base, 'Atkinson Hyperlegible Next', sans-serif);
 }
 
 .loading-state__card {
