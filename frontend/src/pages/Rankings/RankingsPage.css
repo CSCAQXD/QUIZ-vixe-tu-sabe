@@ -90,7 +90,7 @@
   margin: 0;
   color: #000;
   font-size: clamp(1.75rem, 2.2vw, 2.25rem);
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1;
   text-align: center;
 }

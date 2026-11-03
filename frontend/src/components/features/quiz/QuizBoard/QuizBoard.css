@@ -127,7 +127,7 @@
   gap: 0.65em;
   margin: 0;
   font-size: clamp(1.35rem, 2.34vw, 2.8125rem);
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.25;
   overflow-wrap: anywhere;
   text-align: center;
@@ -349,7 +349,7 @@
 }
 
 .quiz-board__feedback strong {
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .quiz-board__feedback--correct {
@@ -406,7 +406,7 @@
   color: #3c1423;
   background: #fff;
   font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1.2;
 }
 

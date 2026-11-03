@@ -4,7 +4,7 @@
   width: 100%;
   padding: clamp(1rem, 3vw, 2rem);
   color: var(--color-wine-dark, #3c1423);
-  font-family: var(--font-family-base, 'DM Sans', sans-serif);
+  font-family: var(--font-family-base, 'Atkinson Hyperlegible Next', sans-serif);
   text-align: center;
 }
 
@@ -64,7 +64,7 @@
   background: var(--color-orange, #f09b32);
   box-shadow: 0.4rem 0.4rem 0 var(--color-wine-dark, #3c1423);
   font-size: 2.25rem;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1;
   transform: rotate(-3deg);
 }
@@ -82,7 +82,7 @@
   max-width: 22ch;
   margin: 0;
   font-size: clamp(1.45rem, 3vw, 2.15rem);
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1.12;
   text-wrap: balance;
 }
