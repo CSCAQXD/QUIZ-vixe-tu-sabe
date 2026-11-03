@@ -6,12 +6,45 @@ import HintHistory from '../HintHistory/HintHistory'
 import './QuizBoard.css'
 
 const MAX_SCHOOL_NAME_LENGTH = 100
+const DENSE_QUESTION_LENGTH = 180
+const COMPACT_QUESTION_LENGTH = 320
+const DENSE_OPTIONS_LENGTH = 170
+const COMPACT_OPTIONS_LENGTH = 240
+const DENSE_OPTION_LENGTH = 50
+const COMPACT_OPTION_LENGTH = 70
 
 function truncateSchoolName(name) {
   const characters = Array.from(String(name ?? ''))
   return characters.length > MAX_SCHOOL_NAME_LENGTH
     ? `${characters.slice(0, MAX_SCHOOL_NAME_LENGTH).join('')}...`
     : characters.join('')
+}
+
+function getContentDensity(question) {
+  const questionLength = Array.from(String(question?.pergunta ?? '')).length
+  const optionLengths = (question?.opcoes ?? []).map(
+    (option) => Array.from(String(option ?? '')).length,
+  )
+  const longestOption = Math.max(0, ...optionLengths)
+  const totalOptionsLength = optionLengths.reduce((total, length) => total + length, 0)
+
+  if (
+    questionLength >= COMPACT_QUESTION_LENGTH ||
+    totalOptionsLength >= COMPACT_OPTIONS_LENGTH ||
+    longestOption >= COMPACT_OPTION_LENGTH
+  ) {
+    return 'compact'
+  }
+
+  if (
+    questionLength >= DENSE_QUESTION_LENGTH ||
+    totalOptionsLength >= DENSE_OPTIONS_LENGTH ||
+    longestOption >= DENSE_OPTION_LENGTH
+  ) {
+    return 'dense'
+  }
+
+  return 'standard'
 }
 
 function QuizBoard({
@@ -70,10 +103,13 @@ function QuizBoard({
 
   const feedback = getFeedback()
   const displayedSchoolName = truncateSchoolName(schoolName)
+  const contentDensity = getContentDensity(currentQuestion)
 
   return (
     <>
-      <section className={`quiz-board${usedHints.length > 0 ? ' quiz-board--with-history' : ''}`}>
+      <section
+        className={`quiz-board quiz-board--${contentDensity}${usedHints.length > 0 ? ' quiz-board--with-history' : ''}`}
+      >
         {answered ? (
           <header
             aria-live="polite"

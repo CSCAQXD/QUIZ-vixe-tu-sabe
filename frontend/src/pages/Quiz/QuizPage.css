@@ -1,8 +1,8 @@
 .quiz-page {
   position: relative;
-  height: 100svh;
-  min-height: 620px;
-  overflow: hidden;
+  min-height: max(100svh, 620px);
+  overflow-x: hidden;
+  overflow-y: auto;
   isolation: isolate;
   background: #f7c181;
 }

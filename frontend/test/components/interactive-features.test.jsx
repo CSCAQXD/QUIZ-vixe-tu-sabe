@@ -128,4 +128,48 @@ describe('componentes interativos', () => {
     expect(label).toHaveTextContent(`ESCOLA ${'A'.repeat(100)}...`)
     expect(label).toHaveAttribute('title', schoolName)
   })
+
+  it('adapta a densidade visual ao tamanho da pergunta e das alternativas', () => {
+    const baseProps = {
+      answerState: 'answering',
+      availablePoints: 100,
+      currentHint: '',
+      isHintOpen: false,
+      onCloseHint: vi.fn(),
+      onConfirm: vi.fn(),
+      onNext: vi.fn(),
+      onOpenHint: vi.fn(),
+      onSelectAnswer: vi.fn(),
+      score: 0,
+      schoolName: 'Escola Teste',
+      selectedAnswer: null,
+    }
+    const shortQuestion = {
+      id: 'curta',
+      tema: 'Tema',
+      pergunta: 'Pergunta curta?',
+      opcoes: ['A', 'B', 'C', 'D'],
+      dicas: [],
+      correctIndex: 0,
+    }
+    const { container, rerender } = render(
+      <QuizBoard {...baseProps} currentQuestion={shortQuestion} />,
+    )
+
+    expect(container.querySelector('.quiz-board')).toHaveClass('quiz-board--standard')
+
+    rerender(
+      <QuizBoard
+        {...baseProps}
+        currentQuestion={{
+          ...shortQuestion,
+          id: 'extensa',
+          pergunta: 'P'.repeat(406),
+          opcoes: ['A'.repeat(63), 'B'.repeat(58), 'C'.repeat(61), 'D'.repeat(48)],
+        }}
+      />,
+    )
+
+    expect(container.querySelector('.quiz-board')).toHaveClass('quiz-board--compact')
+  })
 })
