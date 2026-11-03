@@ -17,6 +17,7 @@ services:
       PORT: 3001
       CORS_ORIGINS: http://localhost:8080
       QUIZ_CONTEXT_SECRET: ${QUIZ_CONTEXT_SECRET:?Defina QUIZ_CONTEXT_SECRET}
+      PERGUNTAS_ADMIN_TOKEN: ${PERGUNTAS_ADMIN_TOKEN:?Defina PERGUNTAS_ADMIN_TOKEN}
     ports:
       - '3001:3001'
     volumes:

@@ -1,21 +1,9 @@
+const { createHash } = require("node:crypto");
 const perguntaRepository = require("../repositories/pergunta.repository");
 const { normalizarFaixaPergunta, obterMenorFaixa } = require("../utils/faixaEnsino");
 
-const CACHE_TTL_PADRAO = 5 * 60 * 1000;
-
-let cache = null;
-let cacheExpiraEm = 0;
-let buscaEmAndamento = null;
-
-function obterCacheTtl() {
-    const valor = Number(process.env.PERGUNTAS_CACHE_TTL_MS);
-
-    if (Number.isInteger(valor) && valor >= 1000) {
-        return valor;
-    }
-
-    return CACHE_TTL_PADRAO;
-}
+let cacheVersaoAtiva = null;
+let carregamentoEmAndamento = null;
 
 function normalizarTexto(valor) {
     return String(valor ?? "").trim();
@@ -23,42 +11,27 @@ function normalizarTexto(valor) {
 
 function normalizarPergunta(pergunta, indice) {
     const id = normalizarTexto(pergunta.id) || `PERGUNTA-${indice + 1}`;
-
     const enunciado = normalizarTexto(pergunta.pergunta);
-
     const tema = normalizarTexto(pergunta.tema);
-
     const opcoes = [pergunta.altA, pergunta.altB, pergunta.altC, pergunta.altD].map(
         normalizarTexto,
     );
-
-    const correta = normalizarTexto(pergunta.correta);
-
+    const correta = normalizarTexto(pergunta.correta).toUpperCase();
     const pontosIniciais = Number(pergunta.pontosIniciais);
-
     const faixa = normalizarFaixaPergunta(pergunta.faixa);
-
     const dicas = [pergunta.dica1, pergunta.dica2, pergunta.dica3]
         .map(normalizarTexto)
         .filter(Boolean);
 
-    if (!enunciado) {
-        return null;
-    }
-
-    if (opcoes.some((opcao) => !opcao)) {
-        return null;
-    }
-
-    if (!correta) {
-        return null;
-    }
-
-    if (!faixa) {
-        return null;
-    }
-
-    if (!Number.isInteger(pontosIniciais) || pontosIniciais < 0) {
+    if (
+        !enunciado ||
+        !tema ||
+        opcoes.some((opcao) => !opcao) ||
+        !["A", "B", "C", "D"].includes(correta) ||
+        !faixa ||
+        !Number.isInteger(pontosIniciais) ||
+        pontosIniciais < 0
+    ) {
         return null;
     }
 
@@ -75,80 +48,132 @@ function normalizarPergunta(pergunta, indice) {
 }
 
 function transformarPerguntas(dados) {
-    const perguntas = dados.map(normalizarPergunta).filter(Boolean);
+    const processadas = dados.map(normalizarPergunta);
+    const linhasInvalidas = processadas
+        .map((pergunta, indice) => (pergunta ? null : indice + 2))
+        .filter(Boolean);
 
-    if (perguntas.length === 0) {
+    if (linhasInvalidas.length > 0) {
+        const erro = new Error(
+            `A planilha possui ${linhasInvalidas.length} linha(s) inválida(s): ${linhasInvalidas
+                .slice(0, 10)
+                .join(", ")}.`,
+        );
+        erro.statusCode = 422;
+        throw erro;
+    }
+
+    if (processadas.length === 0) {
         const erro = new Error("Nenhuma pergunta válida foi encontrada na planilha.");
-
-        erro.statusCode = 502;
-
+        erro.statusCode = 422;
         throw erro;
     }
 
     const ids = new Set();
-
-    for (const pergunta of perguntas) {
+    for (const pergunta of processadas) {
         if (ids.has(pergunta.id)) {
             const erro = new Error(`A planilha possui o ID duplicado: ${pergunta.id}.`);
-
-            erro.statusCode = 502;
-
+            erro.statusCode = 422;
             throw erro;
         }
-
         ids.add(pergunta.id);
     }
 
-    return perguntas;
+    return processadas;
 }
 
-async function atualizarCache() {
+function calcularHash(perguntas) {
+    return createHash("sha256").update(JSON.stringify(perguntas)).digest("hex");
+}
+
+function compararPerguntas(atuais = [], candidatas = []) {
+    const porIdAtual = new Map(atuais.map((pergunta) => [pergunta.id, pergunta]));
+    const porIdCandidata = new Map(candidatas.map((pergunta) => [pergunta.id, pergunta]));
+    const adicionadas = candidatas
+        .filter((pergunta) => !porIdAtual.has(pergunta.id))
+        .map((pergunta) => pergunta.id);
+    const removidas = atuais
+        .filter((pergunta) => !porIdCandidata.has(pergunta.id))
+        .map((pergunta) => pergunta.id);
+    const alteradas = candidatas
+        .filter((pergunta) => {
+            const atual = porIdAtual.get(pergunta.id);
+            return atual && JSON.stringify(atual) !== JSON.stringify(pergunta);
+        })
+        .map((pergunta) => pergunta.id);
+
+    return {
+        adicionadas,
+        alteradas,
+        removidas,
+        totais: {
+            adicionadas: adicionadas.length,
+            alteradas: alteradas.length,
+            removidas: removidas.length,
+        },
+    };
+}
+
+async function validarAtualizacao() {
     const dados = await perguntaRepository.buscarDaPlanilha();
-
     const perguntas = transformarPerguntas(dados);
+    const hash = calcularHash(perguntas);
+    const ativa = await perguntaRepository.buscarVersaoAtiva();
+    const diferencas = compararPerguntas(ativa?.perguntas, perguntas);
 
-    cache = perguntas;
+    if (ativa?.hash === hash) {
+        return { resultado: "SEM_ALTERACOES", versao: ativa, diferencas };
+    }
 
-    cacheExpiraEm = Date.now() + obterCacheTtl();
+    const versao = await perguntaRepository.salvarVersao(perguntas, hash);
+    return { resultado: "VERSAO_PRONTA", versao, diferencas };
+}
 
-    return cache;
+async function ativarVersao(id) {
+    const versao = await perguntaRepository.ativarVersao(id);
+    cacheVersaoAtiva = versao;
+    return versao;
+}
+
+async function carregarVersaoAtiva() {
+    if (cacheVersaoAtiva) return cacheVersaoAtiva;
+
+    const armazenada = await perguntaRepository.buscarVersaoAtiva();
+    if (armazenada) {
+        cacheVersaoAtiva = armazenada;
+        return armazenada;
+    }
+
+    const importacaoInicial = await validarAtualizacao();
+    return ativarVersao(importacaoInicial.versao.id);
+}
+
+async function garantirVersaoAtiva() {
+    if (!carregamentoEmAndamento) {
+        carregamentoEmAndamento = carregarVersaoAtiva().finally(() => {
+            carregamentoEmAndamento = null;
+        });
+    }
+
+    return carregamentoEmAndamento;
 }
 
 async function listarPerguntas(turmas = []) {
-    const cacheValido = cache && Date.now() < cacheExpiraEm;
+    const versao = await garantirVersaoAtiva();
+    return filtrarPorTurmas(versao.perguntas, turmas);
+}
 
-    if (cacheValido) {
-        return filtrarPorTurmas(cache, turmas);
-    }
-
-    if (buscaEmAndamento) {
-        const perguntas = await buscaEmAndamento;
-        return filtrarPorTurmas(perguntas, turmas);
-    }
-
-    buscaEmAndamento = atualizarCache();
-
-    try {
-        const perguntas = await buscaEmAndamento;
-        return filtrarPorTurmas(perguntas, turmas);
-    } catch (error) {
-        if (cache) {
-            return filtrarPorTurmas(cache, turmas);
-        }
-
-        throw error;
-    } finally {
-        buscaEmAndamento = null;
-    }
+async function obterStatus() {
+    const ativa = await perguntaRepository.buscarVersaoAtiva();
+    const versoes = await perguntaRepository.listarVersoes();
+    return { ativa, versoes };
 }
 
 function filtrarPorTurmas(perguntas, turmas) {
     const faixa = obterMenorFaixa(turmas);
-
     if (!faixa) return omitirFaixa(perguntas);
 
     const filtradas = perguntas.filter((pergunta) => ["TODAS", faixa].includes(pergunta.faixa));
-
     if (filtradas.length === 0) {
         const erro = new Error("Nenhuma pergunta disponível para esta faixa de ensino.");
         erro.statusCode = 404;
@@ -163,12 +188,16 @@ function omitirFaixa(perguntas) {
 }
 
 function limparCache() {
-    cache = null;
-    cacheExpiraEm = 0;
-    buscaEmAndamento = null;
+    cacheVersaoAtiva = null;
+    carregamentoEmAndamento = null;
 }
 
 module.exports = {
+    ativarVersao,
+    compararPerguntas,
     listarPerguntas,
     limparCache,
+    obterStatus,
+    transformarPerguntas,
+    validarAtualizacao,
 };

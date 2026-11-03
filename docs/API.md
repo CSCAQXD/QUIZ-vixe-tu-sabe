@@ -23,7 +23,6 @@ As respostas JSON de erro seguem, em geral:
 | Metodo | Rota                        | Descricao                                   |
 | ------ | --------------------------- | ------------------------------------------- |
 | `GET`  | `/perguntas`                | Lista perguntas do quiz                     |
-| `GET`  | `/perguntas/:id`            | Consulta uma pergunta                       |
 | `GET`  | `/cidades`                  | Lista cidades disponiveis                   |
 | `GET`  | `/escolas`                  | Lista escolas, com filtros aceitos pela API |
 | `GET`  | `/escolas/:escolaId/cursos` | Lista cursos da escola                      |
@@ -32,6 +31,18 @@ As respostas JSON de erro seguem, em geral:
 | `POST` | `/sessao`                   | Registra uma sessao; sujeito a rate limit   |
 
 O contrato detalhado de campos e validacoes fica nos routers, validators e testes do backend. Ao integrar, trate `400`, `404`, `409`, `429` e `500`; preserve `X-Request-ID` ao relatar falhas.
+
+## Administracao das perguntas
+
+As rotas abaixo exigem `Authorization: Bearer <PERGUNTAS_ADMIN_TOKEN>` e nao sao usadas durante uma partida:
+
+| Metodo | Rota                                  | Descricao                                       |
+| ------ | ------------------------------------- | ----------------------------------------------- |
+| `GET`  | `/perguntas/admin/status`             | Mostra a versao ativa e as ultimas 20 versoes   |
+| `POST` | `/perguntas/admin/validar`            | Valida a planilha e cria uma versao em rascunho |
+| `POST` | `/perguntas/admin/versoes/:id/ativar` | Publica ou restaura a versao escolhida          |
+
+A validacao rejeita a importacao inteira se houver linha incompleta, alternativa ausente, resposta correta invalida, pontuacao invalida, faixa desconhecida ou ID duplicado. Validar nunca publica automaticamente. A resposta apresenta os IDs adicionados, alterados e removidos para revisao antes da ativacao.
 
 ## CORS e proxy
 

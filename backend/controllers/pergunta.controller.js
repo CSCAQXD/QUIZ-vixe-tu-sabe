@@ -20,6 +20,49 @@ async function listarPerguntas(req, res, next) {
     }
 }
 
+function resumirVersao(versao) {
+    if (!versao) return null;
+    const resumo = { ...versao };
+    delete resumo.perguntas;
+    return resumo;
+}
+
+async function obterStatus(req, res, next) {
+    try {
+        const status = await perguntaService.obterStatus();
+        return res.status(200).json({
+            ativa: resumirVersao(status.ativa),
+            versoes: status.versoes.map(resumirVersao),
+        });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+async function validarAtualizacao(req, res, next) {
+    try {
+        const resultado = await perguntaService.validarAtualizacao();
+        return res.status(200).json({
+            ...resultado,
+            versao: resumirVersao(resultado.versao),
+        });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+async function ativarVersao(req, res, next) {
+    try {
+        const versao = await perguntaService.ativarVersao(req.params.id);
+        return res.status(200).json({
+            mensagem: "Versão de perguntas ativada com sucesso.",
+            versao: resumirVersao(versao),
+        });
+    } catch (error) {
+        return next(error);
+    }
+}
+
 function lerTurmas(parametro) {
     if (!parametro) return [];
 
@@ -54,5 +97,8 @@ function lerTurmas(parametro) {
 }
 
 module.exports = {
+    ativarVersao,
     listarPerguntas,
+    obterStatus,
+    validarAtualizacao,
 };

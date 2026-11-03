@@ -23,7 +23,7 @@ O backend é responsável por:
 
 ## Pré-requisitos
 
-- Node.js 18.18 ou superior
+- Node.js 22.23.2
 - npm
 
 ## Instalação
@@ -49,6 +49,17 @@ e outra do 4º ano recebe perguntas do Fundamental I, além das perguntas gerais
 
 A quantidade de perguntas é variável: não há limite fixo de 15 específicas
 e 5 comuns. Todas as perguntas válidas da faixa escolhida e as comuns são usadas.
+
+## Sincronização das perguntas
+
+A planilha publicada continua sendo o lugar simples para editar o conteúdo. O quiz, porém, lê a versão ativa armazenada no SQLite e não depende da internet durante as partidas.
+
+1. Configure `PERGUNTAS_CSV_URL` e um `PERGUNTAS_ADMIN_TOKEN` com pelo menos 16 caracteres.
+2. Abra `/administracao/perguntas` no frontend e informe o token.
+3. Use **Verificar planilha** para validar todas as linhas e revisar o resumo das mudanças.
+4. Use **Publicar esta versão** somente depois da revisão.
+
+Uma linha inválida rejeita a atualização inteira e preserva a versão atual. Versões anteriores permanecem no histórico e podem ser restauradas pela mesma tela. Na primeira execução de um banco vazio, o backend importa e ativa a planilha automaticamente; depois disso, a versão local também funciona offline.
 
 ## Ranking por categoria
 

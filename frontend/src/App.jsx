@@ -5,6 +5,7 @@ import PageStatus from './components/common/PageStatus/PageStatus'
 import MainLayout from './layouts/MainLayout/MainLayout'
 
 const CadastroTurmasPage = lazy(() => import('./pages/CadastroTurmas/CadastroTurmasPage'))
+const PerguntasAdminPage = lazy(() => import('./pages/PerguntasAdmin/PerguntasAdminPage'))
 const QuizConcluidoPage = lazy(() => import('./pages/QuizConcluido/QuizConcluidoPage'))
 const QuizPage = lazy(() => import('./pages/Quiz/QuizPage'))
 const RankingsPage = lazy(() => import('./pages/Rankings/RankingsPage'))
@@ -27,6 +28,8 @@ function App() {
             <Route path="/quiz-concluido" element={<QuizConcluidoPage />} />
 
             <Route path="/rankings" element={<RankingsPage />} />
+
+            <Route path="/administracao/perguntas" element={<PerguntasAdminPage />} />
 
             <Route path="*" element={<Navigate replace to="/" />} />
           </Route>
