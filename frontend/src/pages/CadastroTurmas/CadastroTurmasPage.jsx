@@ -301,8 +301,8 @@ function CadastroTurmasPage() {
                 removable={classrooms.length > 1}
                 canReuseSchool={Boolean(
                   index > 0 &&
-                    classrooms[index - 1].nomeEscola.trim() &&
-                    classrooms[index - 1].cidade.trim(),
+                  classrooms[index - 1].nomeEscola.trim() &&
+                  classrooms[index - 1].cidade.trim(),
                 )}
                 onUsePreviousSchool={() => copyPreviousSchool(index)}
                 turma={classroom}
