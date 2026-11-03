@@ -17,6 +17,7 @@ import {
   listarRankingInterno,
   listarRankingTurmas,
 } from '../../api/rankingApi'
+import { getUserErrorMessage } from '../../utils/errors'
 import { getResult } from '../../utils/storage'
 import { filterRanking, paginateRanking, RANKING_PAGE_SIZE } from '../../utils/rankingView'
 
@@ -158,7 +159,12 @@ function RankingsPage() {
 
         setSchools([])
         setSelectedSchoolId('')
-        setSchoolError(requestError.message)
+        setSchoolError(
+          getUserErrorMessage(
+            requestError,
+            'Não foi possível carregar as escolas. Tente novamente em alguns instantes.',
+          ),
+        )
       })
       .finally(() => {
         if (isActive) setIsSchoolsLoading(false)
@@ -192,7 +198,14 @@ function RankingsPage() {
         if (isActive) setRecords(response.ranking ?? [])
       })
       .catch((requestError) => {
-        if (isActive) setError(requestError.message)
+        if (isActive) {
+          setError(
+            getUserErrorMessage(
+              requestError,
+              'Não foi possível carregar o ranking. Tente novamente em alguns instantes.',
+            ),
+          )
+        }
       })
       .finally(() => {
         if (isActive) setIsLoading(false)

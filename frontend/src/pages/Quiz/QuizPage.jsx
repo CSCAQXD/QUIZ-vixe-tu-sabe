@@ -8,8 +8,9 @@ import PageStatus from '../../components/common/PageStatus/PageStatus'
 import ScenicBackdrop from '../../components/common/ScenicBackdrop/ScenicBackdrop'
 import QuizBoard from '../../components/features/quiz/QuizBoard/QuizBoard'
 
-import { calculateAvailablePoints, isCorrectAnswer, normalizeQuestion } from '../../utils/quiz'
+import { getUserErrorMessage, UserFacingError } from '../../utils/errors'
 import { getMediationSchools } from '../../utils/mediation'
+import { calculateAvailablePoints, isCorrectAnswer, normalizeQuestion } from '../../utils/quiz'
 
 import { getMediation, saveResult } from '../../utils/storage'
 
@@ -65,8 +66,8 @@ function QuizPage() {
           return
         }
 
-        if (!response.contextoQuiz || !response.categoriaQuiz) {
-          throw new Error(
+        if (!response?.contextoQuiz || !response?.categoriaQuiz) {
+          throw new UserFacingError(
             'Não foi possível preparar esta mediação. Tente carregar as perguntas novamente.',
           )
         }
@@ -76,7 +77,7 @@ function QuizPage() {
           .filter((question) => question.opcoes.length === 4 && question.correctIndex !== -1)
 
         if (normalizedQuestions.length === 0) {
-          throw new Error('Nenhuma pergunta válida foi encontrada.')
+          throw new UserFacingError('Nenhuma pergunta válida foi encontrada.')
         }
 
         setQuestions(normalizedQuestions)
@@ -87,7 +88,12 @@ function QuizPage() {
       })
       .catch((requestError) => {
         if (active) {
-          setError(requestError.message)
+          setError(
+            getUserErrorMessage(
+              requestError,
+              'Não foi possível carregar as perguntas. Tente novamente em alguns instantes.',
+            ),
+          )
         }
       })
       .finally(() => {
@@ -194,7 +200,12 @@ function QuizPage() {
         replace: true,
       })
     } catch (requestError) {
-      setError(requestError.message)
+      setError(
+        getUserErrorMessage(
+          requestError,
+          'Não foi possível salvar o resultado. Tente novamente antes de sair desta tela.',
+        ),
+      )
       setIsSaving(false)
     }
   }
