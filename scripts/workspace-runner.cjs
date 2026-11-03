@@ -83,13 +83,28 @@ const targets = target === "all" ? supportedTargets : [target];
 let exitCode = 0;
 let children = [];
 
+function waitForExit(child) {
+  return new Promise((resolve) => {
+    child.on("exit", (childCode, signal) => resolve(signal ? 1 : childCode || 0));
+  });
+}
+
 async function runTargets() {
+  if (action === "dev" && target === "all") {
+    children = targets.map(run);
+    const exits = children.map(waitForExit);
+    const firstExitCode = await Promise.race(exits);
+    exitCode = firstExitCode;
+    stopChildren("SIGTERM");
+    await Promise.all(exits);
+    process.exitCode = exitCode;
+    return;
+  }
+
   for (const targetName of targets) {
     const child = run(targetName);
     children = [child];
-    const code = await new Promise((resolve) => {
-      child.on("exit", (childCode, signal) => resolve(signal ? 1 : childCode || 0));
-    });
+    const code = await waitForExit(child);
     if (code !== 0) exitCode = code;
   }
   process.exitCode = exitCode;
