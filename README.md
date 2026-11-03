@@ -12,9 +12,9 @@ Nginx (frontend React/Vite)
    | /api
    v
 API Express
-   |
-   v
-SQLite + Prisma
+   |              edicao
+   v                |
+SQLite + Prisma <- Google Sheets
 ```
 
 - `frontend/`: interface React, testes Vitest e fluxo E2E com Playwright.
@@ -63,6 +63,8 @@ Frontend: `http://localhost:5173`. API: `http://localhost:3001`.
 | `WRITE_RATE_LIMIT_MAX`       | backend            | Limite de operacoes de escrita por janela         |
 | `WRITE_RATE_LIMIT_WINDOW_MS` | backend            | Duracao da janela de limitacao em milissegundos   |
 | `TRUST_PROXY`                | backend            | Quantidade de proxies confiaveis antes da API     |
+| `PERGUNTAS_CSV_URL`          | backend            | Planilha publicada usada na sincronizacao         |
+| `PERGUNTAS_ADMIN_TOKEN`      | backend            | Token forte da administracao das perguntas        |
 | `VITE_API_URL`               | frontend           | URL da API; use `/api` em producao                |
 | `BACKEND_URL`                | frontend container | Destino interno do proxy Nginx                    |
 
@@ -87,6 +89,8 @@ docker compose up --build
 ```
 
 A aplicacao fica disponivel em `http://localhost:8080`; o Nginx entrega o frontend e encaminha `/api` ao backend. A prontidao da API e verificada em `/ready`.
+
+A planilha e a fonte de edicao, mas o quiz usa a versao ativa gravada no SQLite. O mediador verifica, revisa e publica atualizacoes em `/administracao/perguntas`; depois da primeira importacao, as perguntas continuam disponiveis sem internet.
 
 ## Qualidade e seguranca
 

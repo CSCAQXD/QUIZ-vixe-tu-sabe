@@ -6,6 +6,8 @@ Mudancas relevantes deste projeto sao registradas aqui. O formato segue [Keep a 
 
 ### Added
 
+- Sincronizacao validada da planilha para versoes persistidas no SQLite.
+- Tela administrativa para revisar, publicar e restaurar versoes das perguntas.
 - Documentacao de arquitetura, API, deploy, backup, operacao e releases.
 - Teste E2E do fluxo principal do quiz.
 - Logs estruturados com ID de requisicao e endpoint de prontidao.
@@ -13,6 +15,7 @@ Mudancas relevantes deste projeto sao registradas aqui. O formato segue [Keep a 
 
 ### Changed
 
+- Partidas passam a ler a versao ativa local e continuam disponiveis sem internet.
 - Frontend de producao acessa a API pelo proxy `/api`.
 - Containers e runtime usam uma versao Node.js consistente.
 - Dependabot passa a agrupar verificacoes mensais.
