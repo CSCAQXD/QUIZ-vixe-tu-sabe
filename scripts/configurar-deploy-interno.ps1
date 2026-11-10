@@ -34,6 +34,7 @@ if (-not $normalizedServerName -or $normalizedServerName -notmatch "^[a-z0-9-]+$
 
 $content = @(
     "SERVER_BIND_ADDRESS=0.0.0.0"
+    "SERVER_PORT=8080"
     "CORS_ORIGINS=http://${normalizedServerName}:8080"
     "QUIZ_CONTEXT_SECRET=$(New-HexSecret)"
     "PERGUNTAS_ADMIN_TOKEN=$(New-HexSecret)"

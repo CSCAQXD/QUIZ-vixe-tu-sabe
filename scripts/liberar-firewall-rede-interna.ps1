@@ -1,5 +1,8 @@
 [CmdletBinding()]
-param()
+param(
+    [ValidateRange(1, 65535)]
+    [int]$Port = 8080
+)
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
@@ -13,17 +16,19 @@ if (-not $privateProfiles) {
 
 $existingRule = Get-NetFirewallRule -DisplayName $ruleName -ErrorAction SilentlyContinue
 if ($existingRule) {
-    Write-Host "A regra de firewall ja existe e nao foi duplicada." -ForegroundColor Yellow
-    exit 0
+    $existingRule | Set-NetFirewallRule -Direction Inbound -Action Allow -Profile Private
+    $existingRule | Get-NetFirewallPortFilter | Set-NetFirewallPortFilter -Protocol TCP -LocalPort $Port
+    $existingRule | Get-NetFirewallAddressFilter | Set-NetFirewallAddressFilter -RemoteAddress LocalSubnet
+}
+else {
+    New-NetFirewallRule `
+        -DisplayName $ruleName `
+        -Direction Inbound `
+        -Action Allow `
+        -Protocol TCP `
+        -LocalPort $Port `
+        -Profile Private `
+        -RemoteAddress LocalSubnet | Out-Null
 }
 
-New-NetFirewallRule `
-    -DisplayName $ruleName `
-    -Direction Inbound `
-    -Action Allow `
-    -Protocol TCP `
-    -LocalPort 8080 `
-    -Profile Private `
-    -RemoteAddress LocalSubnet | Out-Null
-
-Write-Host "Porta 8080 liberada somente para a sub-rede local em perfil privado." -ForegroundColor Green
+Write-Host "Porta $Port liberada somente para a sub-rede local em perfil privado." -ForegroundColor Green

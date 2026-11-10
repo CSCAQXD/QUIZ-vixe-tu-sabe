@@ -52,9 +52,24 @@ local e somente no perfil privado:
 .\scripts\liberar-firewall-rede-interna.ps1
 ```
 
-Os funcionarios acessam `http://NOME-DO-SERVIDOR:8080`. Nao encaminhe a porta 8080 no roteador e
-nao publique a porta 3001. O arquivo `.env` contem segredos e nao deve ser copiado para mensagens,
-Issues ou commits.
+Para oferecer o endereco curto `http://vixetusabe`, reserve primeiro o IPv4 do servidor no DHCP
+do roteador. Depois, no servidor, atualize a configuracao e a regra de firewall:
+
+```powershell
+.\scripts\configurar-url-interna.ps1
+.\scripts\liberar-firewall-rede-interna.ps1 -Port 80
+docker compose up -d
+```
+
+Em cada notebook autorizado, copie o script de configuracao e execute em um PowerShell aberto como
+administrador, informando o IPv4 reservado do servidor:
+
+```powershell
+.\configurar-cliente-rede-interna.ps1 -ServerAddress 192.168.0.6
+```
+
+Os funcionarios passam a acessar `http://vixetusabe`. Nao encaminhe as portas 80, 8080 ou 3001 no
+roteador. O arquivo `.env` contem segredos e nao deve ser copiado para mensagens, Issues ou commits.
 
 Crie um backup consistente do SQLite dentro da pasta local `backups` com:
 
