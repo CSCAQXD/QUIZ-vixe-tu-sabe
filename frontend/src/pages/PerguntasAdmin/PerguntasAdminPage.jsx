@@ -117,6 +117,7 @@ function PerguntasAdminPage() {
               id="token-perguntas"
               label="Senha administrativa"
               onChange={setToken}
+              revealable
               required
               type="password"
               value={token}

@@ -53,7 +53,14 @@ describe('administração das perguntas', () => {
     const user = userEvent.setup()
     renderPage()
 
-    fireEvent.change(screen.getByLabelText('Senha administrativa'), {
+    const passwordField = screen.getByLabelText('Senha administrativa')
+    expect(passwordField).toHaveAttribute('type', 'password')
+
+    await user.click(screen.getByRole('button', { name: 'Mostrar senha' }))
+    expect(passwordField).toHaveAttribute('type', 'text')
+    expect(screen.getByRole('button', { name: 'Ocultar senha' })).toBeVisible()
+
+    fireEvent.change(passwordField, {
       target: { value: 'token-administrativo-com-32-caracteres' },
     })
     await user.click(screen.getByRole('button', { name: 'Entrar' }))
