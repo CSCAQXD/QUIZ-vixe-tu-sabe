@@ -45,6 +45,14 @@ docker compose up --build -d
 docker compose ps
 ```
 
+Em instalacoes existentes que ainda nao possuem uma versao ativa de perguntas, configure a fonte
+publica antes de recriar o backend:
+
+```powershell
+.\scripts\configurar-fonte-perguntas.ps1
+docker compose up -d
+```
+
 Em um PowerShell executado como administrador, libere apenas a porta do frontend para a sub-rede
 local e somente no perfil privado:
 
