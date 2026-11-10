@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, expect, it, vi } from 'vitest'
 import QuizPage from '../../src/pages/Quiz/QuizPage'
 import { carregarQuiz } from '../../src/api/perguntaApi'
-import { saveMediation } from '../../src/utils/storage'
+import { getMediation, saveMediation } from '../../src/utils/storage'
 
 vi.mock('../../src/api/perguntaApi', () => ({ carregarQuiz: vi.fn() }))
 vi.mock('../../src/api/sessaoApi', () => ({ registrarSessao: vi.fn() }))
@@ -117,4 +117,41 @@ it('mostra o estado indisponível quando a pergunta não possui dicas', async ()
   expect(screen.getByText('Sem dicas restantes')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: /Ver dica/i })).toBeDisabled()
   verificarValor(100)
+})
+
+it('revê a pergunta anterior sem permitir alterar a resposta', async () => {
+  await iniciar()
+
+  fireEvent.click(screen.getByRole('button', { name: /Um violeiro/ }))
+  fireEvent.click(screen.getByRole('button', { name: 'Confirmar resposta' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Próxima pergunta' }))
+
+  expect(screen.getByRole('heading', { name: proxima.pergunta })).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Voltar para a pergunta anterior' }))
+
+  expect(screen.getByRole('heading', { name: pergunta.pergunta })).toBeInTheDocument()
+  expect(screen.getByText('RESPOSTA CORRETA')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /Um cientista/ })).toBeDisabled()
+  expect(screen.queryByRole('button', { name: 'Confirmar resposta' })).not.toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Próxima pergunta' }))
+  expect(screen.getByRole('heading', { name: proxima.pergunta })).toBeInTheDocument()
+})
+
+it('pede confirmação antes de descartar a mediação e voltar ao início', async () => {
+  await iniciar()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Sair do quiz e voltar ao início' }))
+  let dialogo = screen.getByRole('dialog', { name: 'Sair do quiz?' })
+  expect(getMediation()).not.toBeNull()
+
+  fireEvent.click(within(dialogo).getByRole('button', { name: 'Continuar no quiz' }))
+  expect(screen.queryByRole('dialog', { name: 'Sair do quiz?' })).not.toBeInTheDocument()
+  expect(getMediation()).not.toBeNull()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Sair do quiz e voltar ao início' }))
+  dialogo = screen.getByRole('dialog', { name: 'Sair do quiz?' })
+  fireEvent.click(within(dialogo).getByRole('button', { name: 'Descartar e sair' }))
+
+  expect(getMediation()).toBeNull()
 })
