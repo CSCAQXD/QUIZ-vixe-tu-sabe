@@ -172,4 +172,71 @@ describe('componentes interativos', () => {
 
     expect(container.querySelector('.quiz-board')).toHaveClass('quiz-board--compact')
   })
+
+  it('organiza o contexto e a pergunta direta em blocos legíveis', () => {
+    const question = {
+      id: 'contextualizada',
+      tema: 'Tema',
+      pergunta: `${'Contexto histórico relevante. '.repeat(8)}Qual interpretação explica melhor esse processo?`,
+      opcoes: ['Alternativa A', 'Alternativa B', 'Alternativa C', 'Alternativa D'],
+      dicas: [],
+      correctIndex: 0,
+    }
+    const { container } = render(
+      <QuizBoard
+        answerState="answering"
+        availablePoints={100}
+        currentHint=""
+        currentQuestion={question}
+        isHintOpen={false}
+        onCloseHint={vi.fn()}
+        onConfirm={vi.fn()}
+        onNext={vi.fn()}
+        onOpenHint={vi.fn()}
+        onSelectAnswer={vi.fn()}
+        score={0}
+        schoolName="Escola Teste"
+        selectedAnswer={null}
+      />,
+    )
+
+    const paragraphs = container.querySelectorAll('.quiz-board__question-paragraph')
+    expect(paragraphs).toHaveLength(2)
+    expect(paragraphs[1]).toHaveTextContent('Qual interpretação explica melhor esse processo?')
+  })
+
+  it('identifica a referência para exibi-la um pouco menor', () => {
+    const question = {
+      id: 'com-referencia',
+      tema: 'Tema',
+      pergunta:
+        'Texto de apoio.\n\nCARIRY, R. Cego Aderaldo: o homem, o poeta e o mito. Fortaleza: Interarte, 2017 (adaptado).\n\nPergunta direta?',
+      opcoes: ['Alternativa A', 'Alternativa B', 'Alternativa C', 'Alternativa D'],
+      dicas: [],
+      correctIndex: 0,
+    }
+    const { container } = render(
+      <QuizBoard
+        answerState="answering"
+        availablePoints={100}
+        currentHint=""
+        currentQuestion={question}
+        isHintOpen={false}
+        onCloseHint={vi.fn()}
+        onConfirm={vi.fn()}
+        onNext={vi.fn()}
+        onOpenHint={vi.fn()}
+        onSelectAnswer={vi.fn()}
+        score={0}
+        schoolName="Escola Teste"
+        selectedAnswer={null}
+      />,
+    )
+
+    const paragraphs = container.querySelectorAll('.quiz-board__question-paragraph')
+    expect(paragraphs).toHaveLength(3)
+    expect(paragraphs[0]).not.toHaveClass('quiz-board__question-paragraph--reference')
+    expect(paragraphs[1]).toHaveClass('quiz-board__question-paragraph--reference')
+    expect(paragraphs[2]).not.toHaveClass('quiz-board__question-paragraph--reference')
+  })
 })

@@ -48,6 +48,34 @@ function getContentDensity(question) {
   return 'standard'
 }
 
+function getQuestionParagraphs(question) {
+  const text = String(question ?? '').trim()
+  const explicitParagraphs = text
+    .split(/\r?\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+
+  if (explicitParagraphs.length > 1 || Array.from(text).length < DENSE_QUESTION_LENGTH) {
+    return explicitParagraphs
+  }
+
+  const directQuestionStart = text.lastIndexOf('. ')
+  const directQuestion = text.slice(directQuestionStart + 2)
+
+  if (directQuestionStart > 0 && directQuestion.length >= 30 && directQuestion.endsWith('?')) {
+    return [text.slice(0, directQuestionStart + 1), directQuestion]
+  }
+
+  return explicitParagraphs
+}
+
+function isQuestionReference(paragraph) {
+  return (
+    /\((?:adaptad[oa]|tradução nossa)\)/i.test(paragraph) ||
+    /^(?:fonte:|disponível em:)/i.test(paragraph)
+  )
+}
+
 function QuizBoard({
   answerState,
   availablePoints,
@@ -110,6 +138,7 @@ function QuizBoard({
   const feedback = getFeedback()
   const displayedSchoolName = truncateSchoolName(schoolName)
   const contentDensity = getContentDensity(currentQuestion)
+  const questionParagraphs = getQuestionParagraphs(currentQuestion.pergunta)
 
   return (
     <>
@@ -163,7 +192,16 @@ function QuizBoard({
         </div>
 
         <article className="quiz-board__question">
-          <h1>{currentQuestion.pergunta}</h1>
+          <h1>
+            {questionParagraphs.map((paragraph, index) => (
+              <span
+                className={`quiz-board__question-paragraph${isQuestionReference(paragraph) ? ' quiz-board__question-paragraph--reference' : ''}`}
+                key={`${currentQuestion.id}-${index}`}
+              >
+                {paragraph}
+              </span>
+            ))}
+          </h1>
         </article>
 
         <div className="quiz-board__options">
