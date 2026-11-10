@@ -6,6 +6,7 @@ import '../../../common/FormField/FormField.css'
 import './EscolaAutocomplete.css'
 
 const MAX_SUGGESTIONS = 8
+const SEARCH_DEBOUNCE_MS = 120
 
 function EscolaAutocomplete({
   codigoInep,
@@ -57,7 +58,7 @@ function EscolaAutocomplete({
       } finally {
         if (!controller.signal.aborted) setIsLoading(false)
       }
-    }, 250)
+    }, SEARCH_DEBOUNCE_MS)
 
     return () => {
       window.clearTimeout(timeout)
