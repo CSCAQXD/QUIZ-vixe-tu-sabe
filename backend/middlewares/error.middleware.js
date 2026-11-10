@@ -58,6 +58,7 @@ function errorMiddleware(error, req, res, next) {
 
     return res.status(statusCode).json({
         erro: mensagem,
+        ...(statusCode < 500 && error.publicCode ? { codigo: error.publicCode } : {}),
         ...(req.requestId ? { requestId: req.requestId } : {}),
         ...(error.sugestao ? { sugestao: error.sugestao } : {}),
     });

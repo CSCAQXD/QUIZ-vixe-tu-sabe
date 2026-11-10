@@ -50,6 +50,30 @@ describe('apiRequest', () => {
     await expect(apiRequest('/vazio')).resolves.toBeNull()
   })
 
+  it('preserva o código, o status e o identificador de erros recuperáveis', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({
+          codigo: 'QUIZ_CONTEXT_INVALID',
+          erro: 'Contexto inválido.',
+          requestId: 'request-123',
+        }),
+      }),
+    )
+
+    const error = await apiRequest('/sessao').catch((requestError) => requestError)
+    expect(error).toMatchObject({
+      code: 'QUIZ_CONTEXT_INVALID',
+      message: 'Contexto inválido.',
+      requestId: 'request-123',
+      status: 400,
+    })
+  })
+
   it('traduz falhas de rede sem expor mensagens técnicas', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')))
     await expect(apiRequest('/ranking-categoria/MEDIO')).rejects.toThrow(

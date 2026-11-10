@@ -11,6 +11,7 @@ function erroContexto() {
         "Este quiz não pode ser registrado. Inicie uma nova mediação para continuar.",
     );
     erro.statusCode = 400;
+    erro.publicCode = "QUIZ_CONTEXT_INVALID";
     return erro;
 }
 
