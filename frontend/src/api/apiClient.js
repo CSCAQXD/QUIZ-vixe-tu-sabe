@@ -25,6 +25,11 @@ export async function apiRequest(path, options = {}) {
   if (!response.ok) {
     throw new UserFacingError(
       data?.erro ?? data?.mensagem ?? 'Não foi possível concluir a requisição.',
+      {
+        code: data?.codigo,
+        requestId: data?.requestId,
+        status: response.status,
+      },
     )
   }
 

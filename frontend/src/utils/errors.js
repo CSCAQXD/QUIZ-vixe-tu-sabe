@@ -1,7 +1,10 @@
 export class UserFacingError extends Error {
-  constructor(message) {
+  constructor(message, details = {}) {
     super(message)
     this.name = 'UserFacingError'
+    this.code = details.code
+    this.requestId = details.requestId
+    this.status = details.status
   }
 }
 

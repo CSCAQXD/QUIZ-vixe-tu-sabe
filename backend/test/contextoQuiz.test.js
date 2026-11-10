@@ -74,7 +74,10 @@ test("o contexto expira após quatro horas", () => {
     mock.method(Date, "now", () => agora);
     const { contextoQuiz } = criarContextoQuiz(turmas);
     mock.method(Date, "now", () => agora + 4 * 60 * 60 * 1000);
-    assert.throws(() => validarContextoQuiz(contextoQuiz, turmas), { statusCode: 400 });
+    assert.throws(() => validarContextoQuiz(contextoQuiz, turmas), {
+        statusCode: 400,
+        publicCode: "QUIZ_CONTEXT_INVALID",
+    });
 });
 
 test("rejeita payloads inválidos mesmo quando assinados", () => {

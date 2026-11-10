@@ -5,6 +5,7 @@ import QuizPage from '../../src/pages/Quiz/QuizPage'
 import { carregarQuiz } from '../../src/api/perguntaApi'
 import { registrarSessao } from '../../src/api/sessaoApi'
 import { getResult, saveMediation } from '../../src/utils/storage'
+import { UserFacingError } from '../../src/utils/errors'
 
 vi.mock('../../src/api/perguntaApi', () => ({ carregarQuiz: vi.fn() }))
 vi.mock('../../src/api/sessaoApi', () => ({ registrarSessao: vi.fn() }))
@@ -78,6 +79,48 @@ it('não inicia ou salva uma mediação sem o contexto confirmado pelo backend',
   expect(await screen.findByText(/Não foi possível preparar esta mediação/)).toBeInTheDocument()
   expect(screen.queryByText(pergunta.pergunta)).not.toBeInTheDocument()
   expect(registrarSessao).not.toHaveBeenCalled()
+})
+
+it('renova um contexto invalidado e tenta salvar novamente sem duplicar a partida', async () => {
+  saveMediation({
+    nomeEscola: 'Modelo',
+    turmas: [medio],
+  })
+  carregarQuiz
+    .mockResolvedValueOnce({
+      perguntas: [pergunta],
+      categoriaQuiz: 'MEDIO',
+      contextoQuiz: 'contexto-expirado.assinatura',
+    })
+    .mockResolvedValueOnce({
+      perguntas: [pergunta],
+      categoriaQuiz: 'MEDIO',
+      contextoQuiz: 'contexto-renovado.assinatura',
+    })
+  registrarSessao
+    .mockRejectedValueOnce(
+      new UserFacingError('Contexto inválido.', { code: 'QUIZ_CONTEXT_INVALID' }),
+    )
+    .mockResolvedValueOnce({
+      partida: { pontuacaoFinal: 100, categoriaQuiz: 'MEDIO' },
+    })
+
+  render(
+    <MemoryRouter>
+      <QuizPage />
+    </MemoryRouter>,
+  )
+  await screen.findByText(pergunta.pergunta)
+  fireEvent.click(screen.getByText('Selecionar A'))
+  fireEvent.click(screen.getByText('Confirmar'))
+  fireEvent.click(screen.getByText('Avançar'))
+
+  await waitFor(() => expect(registrarSessao).toHaveBeenCalledTimes(2))
+  expect(registrarSessao.mock.calls[0][0].contextoQuiz).toBe('contexto-expirado.assinatura')
+  expect(registrarSessao.mock.calls[1][0]).toMatchObject({
+    contextoQuiz: 'contexto-renovado.assinatura',
+    idempotencyKey: registrarSessao.mock.calls[0][0].idempotencyKey,
+  })
 })
 
 it('mostra uma orientação clara quando o servidor retorna uma resposta vazia', async () => {

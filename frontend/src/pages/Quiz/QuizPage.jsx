@@ -171,17 +171,38 @@ function QuizPage() {
 
     try {
       const schools = getMediationSchools(mediation)
+      const turmas = schools.flatMap((school) => school.turmas ?? [])
+      let activeContext = quizContext
+      const saveSchools = (contextoQuiz) =>
+        Promise.all(
+          schools.map((school, index) =>
+            registrarSessao({
+              ...school,
+              idempotencyKey: `${idempotencyKey}-${index}`,
+              pontuacaoFinal: score,
+              contextoQuiz,
+            }),
+          ),
+        )
+      let results
 
-      const results = await Promise.all(
-        schools.map((school, index) =>
-          registrarSessao({
-            ...school,
-            idempotencyKey: `${idempotencyKey}-${index}`,
-            pontuacaoFinal: score,
-            contextoQuiz: quizContext.contextoQuiz,
-          }),
-        ),
-      )
+      try {
+        results = await saveSchools(activeContext.contextoQuiz)
+      } catch (requestError) {
+        if (requestError?.code !== 'QUIZ_CONTEXT_INVALID') throw requestError
+
+        const refreshedContext = await carregarQuiz(turmas)
+        if (!refreshedContext?.contextoQuiz || !refreshedContext?.categoriaQuiz) {
+          throw requestError
+        }
+
+        activeContext = {
+          contextoQuiz: refreshedContext.contextoQuiz,
+          categoriaQuiz: refreshedContext.categoriaQuiz,
+        }
+        setQuizContext(activeContext)
+        results = await saveSchools(activeContext.contextoQuiz)
+      }
 
       const result =
         results.length === 1
@@ -189,7 +210,7 @@ function QuizPage() {
           : {
               partida: {
                 pontuacaoFinal: score,
-                categoriaQuiz: quizContext.categoriaQuiz,
+                categoriaQuiz: activeContext.categoriaQuiz,
               },
               resultados: results,
             }
