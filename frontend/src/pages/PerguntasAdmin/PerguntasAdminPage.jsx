@@ -186,20 +186,37 @@ function PerguntasAdminPage() {
         </div>
 
         <main className="perguntas-admin__main">
-          <div className="perguntas-admin__dashboard-grid">
-            <article className="perguntas-admin__panel perguntas-admin__upload">
-              <div className="perguntas-admin__panel-heading">
-                <span aria-hidden="true" className="perguntas-admin__panel-icon">
-                  ↑
-                </span>
-                <div>
-                  <p className="perguntas-admin__step">Atualizar perguntas</p>
-                  <h2>Envie o arquivo CSV</h2>
-                </div>
-              </div>
-              <p className="perguntas-admin__panel-description">
-                Baixe a planilha privada como CSV. Antes de publicar, mostraremos tudo que mudou.
+          <article className="perguntas-admin__active">
+            <span aria-hidden="true" className="perguntas-admin__active-check">
+              ✓
+            </span>
+            <div className="perguntas-admin__active-copy">
+              <h2>{status.ativa ? 'Quiz pronto para jogar' : 'Aguardando publicação'}</h2>
+              <p>
+                {status.ativa
+                  ? `Versão publicada em ${formatarData(status.ativa.ativadaEm)} e disponível mesmo sem internet.`
+                  : 'Envie o primeiro arquivo para disponibilizar as perguntas.'}
               </p>
+            </div>
+            {status.ativa && (
+              <div className="perguntas-admin__active-total">
+                <strong>{status.ativa.total}</strong>
+                <span>perguntas</span>
+              </div>
+            )}
+          </article>
+
+          <article className="perguntas-admin__panel perguntas-admin__upload">
+            <div className="perguntas-admin__panel-heading">
+              <div>
+                <p className="perguntas-admin__step">Atualizar conteúdo</p>
+                <h2>Envie uma nova planilha</h2>
+              </div>
+            </div>
+            <p className="perguntas-admin__panel-description">
+              Baixe a planilha privada como CSV. O arquivo será conferido antes de qualquer mudança.
+            </p>
+            <div className="perguntas-admin__upload-actions">
               <label className="perguntas-admin__file">
                 <span className="perguntas-admin__file-title">
                   {arquivo ? arquivo.name : 'Escolher arquivo CSV'}
@@ -221,39 +238,8 @@ function PerguntasAdminPage() {
               <Button disabled={carregando || !arquivo} onClick={validarArquivo}>
                 {carregando ? 'Verificando...' : 'Verificar arquivo'}
               </Button>
-            </article>
-
-            <article className="perguntas-admin__panel perguntas-admin__active">
-              <div className="perguntas-admin__panel-heading">
-                <span aria-hidden="true" className="perguntas-admin__status-dot" />
-                <div>
-                  <p className="perguntas-admin__step">Em uso agora</p>
-                  <h2>Versão ativa</h2>
-                </div>
-              </div>
-              {status.ativa ? (
-                <dl className="perguntas-admin__summary">
-                  <div>
-                    <dt>Perguntas</dt>
-                    <dd>{status.ativa.total}</dd>
-                  </div>
-                  <div>
-                    <dt>Publicada em</dt>
-                    <dd>{formatarData(status.ativa.ativadaEm)}</dd>
-                  </div>
-                  <div>
-                    <dt>Identificação</dt>
-                    <dd>{status.ativa.id.slice(0, 8)}</dd>
-                  </div>
-                </dl>
-              ) : (
-                <p>Nenhuma versão foi ativada ainda.</p>
-              )}
-              <p className="perguntas-admin__offline-note">
-                Disponível no servidor mesmo sem internet.
-              </p>
-            </article>
-          </div>
+            </div>
+          </article>
 
           {candidata && (
             <article className="perguntas-admin__panel perguntas-admin__candidate">
@@ -299,12 +285,9 @@ function PerguntasAdminPage() {
 
           <article className="perguntas-admin__panel perguntas-admin__history-panel">
             <div className="perguntas-admin__panel-heading">
-              <span aria-hidden="true" className="perguntas-admin__panel-icon">
-                ↺
-              </span>
               <div>
-                <p className="perguntas-admin__step">Versões anteriores</p>
-                <h2>Histórico</h2>
+                <p className="perguntas-admin__step">Segurança</p>
+                <h2>Histórico de versões</h2>
               </div>
             </div>
             <div className="perguntas-admin__history">
@@ -319,7 +302,7 @@ function PerguntasAdminPage() {
                       versao.status === 'ATIVA' ? 'perguntas-admin__badge--active' : ''
                     }`}
                   >
-                    {versao.status === 'ATIVA' ? 'Em uso' : versao.status.toLowerCase()}
+                    {versao.status === 'ATIVA' ? 'Publicada' : versao.status.toLowerCase()}
                   </span>
                   {versao.status !== 'ATIVA' && (
                     <Button
