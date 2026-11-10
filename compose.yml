@@ -24,6 +24,7 @@ services:
     volumes:
       - quiz-data:/data
       - ./backups:/backups
+      - ./shared:/shared:ro
     depends_on:
       migrate:
         condition: service_completed_successfully
