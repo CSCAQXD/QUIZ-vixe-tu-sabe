@@ -12,6 +12,7 @@ import {
   normalizeDisplayText,
 } from '../../utils/mediation'
 import { isMunicipalitySelectionValid } from '../../utils/municipios'
+import { createRandomId } from '../../utils/randomId'
 import { saveMediation } from '../../utils/storage'
 
 import './CadastroTurmasPage.css'
@@ -23,7 +24,7 @@ function createClassroom() {
     codigoInep: '',
     etapaEnsino: '',
     cursoNome: '',
-    id: crypto.randomUUID(),
+    id: createRandomId(),
     nomeEscola: '',
     municipioIbgeId: '',
     organizacaoTurma: 'UNICA',

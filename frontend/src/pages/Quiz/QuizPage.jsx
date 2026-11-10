@@ -11,6 +11,7 @@ import QuizBoard from '../../components/features/quiz/QuizBoard/QuizBoard'
 import { getUserErrorMessage, UserFacingError } from '../../utils/errors'
 import { getMediationSchools } from '../../utils/mediation'
 import { calculateAvailablePoints, isCorrectAnswer, normalizeQuestion } from '../../utils/quiz'
+import { createRandomId } from '../../utils/randomId'
 
 import { clearQuizStorage, getMediation, saveResult } from '../../utils/storage'
 
@@ -21,7 +22,7 @@ function QuizPage() {
 
   const mediation = useMemo(() => getMediation(), [])
 
-  const [idempotencyKey] = useState(() => mediation?.idempotencyKey ?? crypto.randomUUID())
+  const [idempotencyKey] = useState(() => mediation?.idempotencyKey ?? createRandomId())
 
   const [questions, setQuestions] = useState([])
 

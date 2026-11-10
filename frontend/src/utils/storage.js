@@ -1,3 +1,5 @@
+import { createRandomId } from './randomId'
+
 const MEDIATION_KEY = 'vixe-tu-sabe:mediacao'
 
 const RESULT_KEY = 'vixe-tu-sabe:resultado'
@@ -9,7 +11,7 @@ function withStableIdempotencyKey(data) {
 
   return {
     ...data,
-    idempotencyKey: crypto.randomUUID(),
+    idempotencyKey: createRandomId(),
   }
 }
 
