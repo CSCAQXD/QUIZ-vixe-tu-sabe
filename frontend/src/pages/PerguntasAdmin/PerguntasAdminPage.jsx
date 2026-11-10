@@ -153,118 +153,194 @@ function PerguntasAdminPage() {
   }
 
   return (
-    <section className="perguntas-admin">
-      <header className="perguntas-admin__header">
-        <div>
-          <p className="perguntas-admin__eyebrow">Casa de Saberes Cego Aderaldo</p>
-          <h1>Banco de perguntas</h1>
-          <p>O quiz usa a versão ativa no servidor, mesmo quando a internet está indisponível.</p>
-        </div>
-        <div className="perguntas-admin__actions">
-          <HomeButton />
-        </div>
-      </header>
+    <section className="perguntas-admin perguntas-admin--dashboard">
+      <img
+        alt=""
+        aria-hidden="true"
+        className="perguntas-admin__dashboard-sun"
+        src="/assets/illustrations/sol.svg"
+      />
 
-      {erro && <p className="perguntas-admin__error">{erro}</p>}
-      {mensagem && <p className="perguntas-admin__message">{mensagem}</p>}
-
-      <article className="perguntas-admin__panel perguntas-admin__upload">
-        <div>
-          <p className="perguntas-admin__step">Atualizar perguntas</p>
-          <h2>Envie o arquivo CSV</h2>
-          <p>Na planilha privada, baixe como CSV e selecione o arquivo aqui.</p>
-        </div>
-        <label className="perguntas-admin__file">
-          <span>{arquivo ? arquivo.name : 'Escolher arquivo CSV'}</span>
-          <input
-            accept=".csv,text/csv"
-            onChange={(event) => {
-              setArquivo(event.target.files?.[0] ?? null)
-              setCandidata(null)
-              setErro('')
-              setMensagem('')
-            }}
-            type="file"
+      <div className="perguntas-admin__content">
+        <header className="perguntas-admin__header">
+          <img
+            alt="Vixe, Tu Sabe?"
+            className="perguntas-admin__header-logo"
+            src="/assets/brand/vixe-tu-sabe.svg"
           />
-        </label>
-        <Button disabled={carregando || !arquivo} onClick={validarArquivo}>
-          {carregando ? 'Verificando...' : 'Verificar arquivo'}
-        </Button>
-      </article>
+          <div className="perguntas-admin__heading">
+            <p className="perguntas-admin__eyebrow">Área da equipe</p>
+            <h1>Banco de perguntas</h1>
+            <p>Atualize o conteúdo com segurança e mantenha o quiz pronto para jogar.</p>
+          </div>
+          <div className="perguntas-admin__actions">
+            <HomeButton />
+          </div>
+        </header>
 
-      <article className="perguntas-admin__panel">
-        <h2>Versão ativa</h2>
-        {status.ativa ? (
-          <dl className="perguntas-admin__summary">
-            <div>
-              <dt>Perguntas</dt>
-              <dd>{status.ativa.total}</dd>
-            </div>
-            <div>
-              <dt>Ativada em</dt>
-              <dd>{formatarData(status.ativa.ativadaEm)}</dd>
-            </div>
-            <div>
-              <dt>Identificação</dt>
-              <dd>{status.ativa.id.slice(0, 8)}</dd>
-            </div>
-          </dl>
-        ) : (
-          <p>Nenhuma versão foi ativada ainda.</p>
-        )}
-      </article>
-
-      {candidata && (
-        <article className="perguntas-admin__panel perguntas-admin__candidate">
-          <h2>Alterações encontradas</h2>
-          <dl className="perguntas-admin__summary">
-            <div>
-              <dt>Adicionadas</dt>
-              <dd>{candidata.diferencas.totais.adicionadas}</dd>
-            </div>
-            <div>
-              <dt>Alteradas</dt>
-              <dd>{candidata.diferencas.totais.alteradas}</dd>
-            </div>
-            <div>
-              <dt>Removidas</dt>
-              <dd>{candidata.diferencas.totais.removidas}</dd>
-            </div>
-            <div>
-              <dt>Total novo</dt>
-              <dd>{candidata.versao.total}</dd>
-            </div>
-          </dl>
-          <p>A versão ativa permanecerá disponível caso seja necessário restaurá-la.</p>
-          <Button
-            disabled={carregando}
-            onClick={() => ativar(candidata.versao.id)}
-            variant="success"
-          >
-            Publicar atualização
-          </Button>
-        </article>
-      )}
-
-      <article className="perguntas-admin__panel">
-        <h2>Histórico</h2>
-        <div className="perguntas-admin__history">
-          {status.versoes.map((versao) => (
-            <div className="perguntas-admin__version" key={versao.id}>
-              <div>
-                <strong>{versao.total} perguntas</strong>
-                <span>{formatarData(versao.ativadaEm || versao.criadaEm)}</span>
-                <span>{versao.status}</span>
-              </div>
-              {versao.status !== 'ATIVA' && (
-                <Button disabled={carregando} onClick={() => ativar(versao.id)} variant="secondary">
-                  {versao.status === 'RASCUNHO' ? 'Publicar' : 'Restaurar'}
-                </Button>
-              )}
-            </div>
-          ))}
+        <div aria-live="polite">
+          {erro && <p className="perguntas-admin__notice perguntas-admin__error">{erro}</p>}
+          {mensagem && (
+            <p className="perguntas-admin__notice perguntas-admin__message">{mensagem}</p>
+          )}
         </div>
-      </article>
+
+        <main className="perguntas-admin__main">
+          <div className="perguntas-admin__dashboard-grid">
+            <article className="perguntas-admin__panel perguntas-admin__upload">
+              <div className="perguntas-admin__panel-heading">
+                <span aria-hidden="true" className="perguntas-admin__panel-icon">
+                  ↑
+                </span>
+                <div>
+                  <p className="perguntas-admin__step">Atualizar perguntas</p>
+                  <h2>Envie o arquivo CSV</h2>
+                </div>
+              </div>
+              <p className="perguntas-admin__panel-description">
+                Baixe a planilha privada como CSV. Antes de publicar, mostraremos tudo que mudou.
+              </p>
+              <label className="perguntas-admin__file">
+                <span className="perguntas-admin__file-title">
+                  {arquivo ? arquivo.name : 'Escolher arquivo CSV'}
+                </span>
+                <span className="perguntas-admin__file-hint">
+                  {arquivo ? 'Clique para escolher outro' : 'Tamanho máximo: 2 MB'}
+                </span>
+                <input
+                  accept=".csv,text/csv"
+                  onChange={(event) => {
+                    setArquivo(event.target.files?.[0] ?? null)
+                    setCandidata(null)
+                    setErro('')
+                    setMensagem('')
+                  }}
+                  type="file"
+                />
+              </label>
+              <Button disabled={carregando || !arquivo} onClick={validarArquivo}>
+                {carregando ? 'Verificando...' : 'Verificar arquivo'}
+              </Button>
+            </article>
+
+            <article className="perguntas-admin__panel perguntas-admin__active">
+              <div className="perguntas-admin__panel-heading">
+                <span aria-hidden="true" className="perguntas-admin__status-dot" />
+                <div>
+                  <p className="perguntas-admin__step">Em uso agora</p>
+                  <h2>Versão ativa</h2>
+                </div>
+              </div>
+              {status.ativa ? (
+                <dl className="perguntas-admin__summary">
+                  <div>
+                    <dt>Perguntas</dt>
+                    <dd>{status.ativa.total}</dd>
+                  </div>
+                  <div>
+                    <dt>Publicada em</dt>
+                    <dd>{formatarData(status.ativa.ativadaEm)}</dd>
+                  </div>
+                  <div>
+                    <dt>Identificação</dt>
+                    <dd>{status.ativa.id.slice(0, 8)}</dd>
+                  </div>
+                </dl>
+              ) : (
+                <p>Nenhuma versão foi ativada ainda.</p>
+              )}
+              <p className="perguntas-admin__offline-note">
+                Disponível no servidor mesmo sem internet.
+              </p>
+            </article>
+          </div>
+
+          {candidata && (
+            <article className="perguntas-admin__panel perguntas-admin__candidate">
+              <div className="perguntas-admin__panel-heading">
+                <span aria-hidden="true" className="perguntas-admin__panel-icon">
+                  ✓
+                </span>
+                <div>
+                  <p className="perguntas-admin__step">Revisão</p>
+                  <h2>Alterações encontradas</h2>
+                </div>
+              </div>
+              <dl className="perguntas-admin__summary perguntas-admin__summary--changes">
+                <div>
+                  <dt>Adicionadas</dt>
+                  <dd>+{candidata.diferencas.totais.adicionadas}</dd>
+                </div>
+                <div>
+                  <dt>Alteradas</dt>
+                  <dd>{candidata.diferencas.totais.alteradas}</dd>
+                </div>
+                <div>
+                  <dt>Removidas</dt>
+                  <dd>−{candidata.diferencas.totais.removidas}</dd>
+                </div>
+                <div>
+                  <dt>Total novo</dt>
+                  <dd>{candidata.versao.total}</dd>
+                </div>
+              </dl>
+              <div className="perguntas-admin__candidate-footer">
+                <p>A versão atual fica salva no histórico e poderá ser restaurada.</p>
+                <Button
+                  disabled={carregando}
+                  onClick={() => ativar(candidata.versao.id)}
+                  variant="success"
+                >
+                  Publicar atualização
+                </Button>
+              </div>
+            </article>
+          )}
+
+          <article className="perguntas-admin__panel perguntas-admin__history-panel">
+            <div className="perguntas-admin__panel-heading">
+              <span aria-hidden="true" className="perguntas-admin__panel-icon">
+                ↺
+              </span>
+              <div>
+                <p className="perguntas-admin__step">Versões anteriores</p>
+                <h2>Histórico</h2>
+              </div>
+            </div>
+            <div className="perguntas-admin__history">
+              {status.versoes.map((versao) => (
+                <div className="perguntas-admin__version" key={versao.id}>
+                  <div className="perguntas-admin__version-info">
+                    <strong>{versao.total} perguntas</strong>
+                    <span>{formatarData(versao.ativadaEm || versao.criadaEm)}</span>
+                  </div>
+                  <span
+                    className={`perguntas-admin__badge ${
+                      versao.status === 'ATIVA' ? 'perguntas-admin__badge--active' : ''
+                    }`}
+                  >
+                    {versao.status === 'ATIVA' ? 'Em uso' : versao.status.toLowerCase()}
+                  </span>
+                  {versao.status !== 'ATIVA' && (
+                    <Button
+                      disabled={carregando}
+                      onClick={() => ativar(versao.id)}
+                      variant="secondary"
+                    >
+                      {versao.status === 'RASCUNHO' ? 'Publicar' : 'Restaurar'}
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </article>
+        </main>
+      </div>
+
+      <ScenicBackdrop
+        fenceClassName="perguntas-admin__dashboard-fence"
+        groundClassName="perguntas-admin__dashboard-ground"
+      />
     </section>
   )
 }
