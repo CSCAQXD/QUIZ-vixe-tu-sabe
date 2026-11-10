@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 import { carregarQuiz } from '../../api/perguntaApi'
@@ -12,7 +12,7 @@ import { getUserErrorMessage, UserFacingError } from '../../utils/errors'
 import { getMediationSchools } from '../../utils/mediation'
 import { calculateAvailablePoints, isCorrectAnswer, normalizeQuestion } from '../../utils/quiz'
 
-import { getMediation, saveResult } from '../../utils/storage'
+import { clearQuizStorage, getMediation, saveResult } from '../../utils/storage'
 
 import './QuizPage.css'
 
@@ -46,6 +46,8 @@ function QuizPage() {
   const [error, setError] = useState('')
 
   const [loadAttempt, setLoadAttempt] = useState(0)
+
+  const questionProgress = useRef([])
 
   useEffect(() => {
     if (!mediation) {
@@ -231,7 +233,39 @@ function QuizPage() {
     }
   }
 
+  function saveQuestionProgress() {
+    questionProgress.current[questionIndex] = {
+      answerState,
+      hintsUsed,
+      selectedAnswer,
+    }
+  }
+
+  function showQuestion(index) {
+    const progress = questionProgress.current[index]
+
+    setQuestionIndex(index)
+    setSelectedAnswer(progress?.selectedAnswer ?? null)
+    setAnswerState(progress?.answerState ?? 'answering')
+    setHintsUsed(progress?.hintsUsed ?? 0)
+    setIsHintOpen(false)
+  }
+
+  function previousQuestion() {
+    if (questionIndex === 0 || isSaving) return
+
+    saveQuestionProgress()
+    showQuestion(questionIndex - 1)
+  }
+
+  function discardQuiz() {
+    clearQuizStorage()
+    navigate('/', { replace: true })
+  }
+
   function nextQuestion() {
+    saveQuestionProgress()
+
     const nextIndex = questionIndex + 1
 
     if (nextIndex >= questions.length) {
@@ -239,11 +273,7 @@ function QuizPage() {
       return
     }
 
-    setQuestionIndex(nextIndex)
-    setSelectedAnswer(null)
-    setAnswerState('answering')
-    setHintsUsed(0)
-    setIsHintOpen(false)
+    showQuestion(nextIndex)
   }
 
   if (isLoading) {
@@ -286,16 +316,20 @@ function QuizPage() {
       <QuizBoard
         answerState={answerState}
         availablePoints={availablePoints}
+        canGoPrevious={questionIndex > 0}
         currentHint={currentHint}
         currentQuestion={currentQuestion}
         remainingHints={remainingHints}
         usedHints={usedHints}
         nextHintPoints={nextHintPoints}
         isHintOpen={isHintOpen}
+        navigationDisabled={isSaving}
         onCloseHint={() => setIsHintOpen(false)}
         onConfirm={confirmAnswer}
+        onExit={discardQuiz}
         onNext={nextQuestion}
         onOpenHint={openHint}
+        onPrevious={previousQuestion}
         onSelectAnswer={setSelectedAnswer}
         score={score}
         schoolName={mediation.nomeEscola}

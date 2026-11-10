@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import AnswerOption from '../AnswerOption/AnswerOption'
 import Button from '../../../common/Button/Button'
 import Modal from '../../../common/Modal/Modal'
@@ -50,21 +51,26 @@ function getContentDensity(question) {
 function QuizBoard({
   answerState,
   availablePoints,
+  canGoPrevious = false,
   currentHint,
   currentQuestion,
   remainingHints = currentQuestion.dicas.length,
   usedHints = [],
   nextHintPoints = availablePoints,
   isHintOpen,
+  navigationDisabled = false,
   onCloseHint,
   onConfirm,
+  onExit,
   onNext,
   onOpenHint,
+  onPrevious,
   onSelectAnswer,
   score,
   schoolName,
   selectedAnswer,
 }) {
+  const [isExitConfirmationOpen, setIsExitConfirmationOpen] = useState(false)
   const answered = answerState === 'correct' || answerState === 'wrong'
 
   function getOptionStatus(index) {
@@ -187,6 +193,35 @@ function QuizBoard({
               Próxima pergunta
             </Button>
           )}
+
+          <nav aria-label="Navegação do quiz" className="quiz-board__secondary-navigation">
+            <button
+              aria-label="Voltar para a pergunta anterior"
+              className="quiz-board__navigation-link"
+              disabled={!canGoPrevious || navigationDisabled}
+              onClick={onPrevious}
+              type="button"
+            >
+              <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+                <path d="M19 12H5m6-6-6 6 6 6" />
+              </svg>
+              Pergunta anterior
+            </button>
+
+            <button
+              aria-haspopup="dialog"
+              aria-label="Sair do quiz e voltar ao início"
+              className="quiz-board__navigation-link"
+              disabled={navigationDisabled}
+              onClick={() => setIsExitConfirmationOpen(true)}
+              type="button"
+            >
+              Sair do quiz
+              <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+                <path d="m4 11 8-7 8 7v9h-6v-6h-4v6H4z" />
+              </svg>
+            </button>
+          </nav>
         </div>
         <HintHistory hints={usedHints} key={currentQuestion.id} />
       </section>
@@ -202,6 +237,23 @@ function QuizBoard({
         <p className="quiz-board__hint-warning">
           O valor da pergunta agora é de {availablePoints} pontos.
         </p>
+      </Modal>
+
+      <Modal
+        className="quiz-board__exit-modal"
+        isOpen={isExitConfirmationOpen}
+        onClose={() => setIsExitConfirmationOpen(false)}
+        title="Sair do quiz?"
+      >
+        <p>A partida atual será descartada e não poderá ser recuperada.</p>
+        <div className="quiz-board__exit-actions">
+          <Button onClick={() => setIsExitConfirmationOpen(false)} variant="secondary">
+            Continuar no quiz
+          </Button>
+          <Button onClick={onExit} variant="danger">
+            Descartar e sair
+          </Button>
+        </div>
       </Modal>
     </>
   )
