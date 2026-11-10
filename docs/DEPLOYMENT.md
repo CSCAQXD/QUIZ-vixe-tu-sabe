@@ -53,6 +53,15 @@ publica antes de recriar o backend:
 docker compose up -d
 ```
 
+Defina uma senha administrativa legivel, sem exibir ou substituir os demais segredos:
+
+```powershell
+.\scripts\definir-senha-administracao.ps1
+docker compose up -d --force-recreate backend
+```
+
+Na tela inicial, use o botao **Administracao** para revisar e publicar alteracoes da planilha.
+
 Em um PowerShell executado como administrador, libere apenas a porta do frontend para a sub-rede
 local e somente no perfil privado:
 

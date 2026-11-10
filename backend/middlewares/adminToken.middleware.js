@@ -23,7 +23,7 @@ function adminToken(req, res, next) {
         timingSafeEqual(bufferEsperado, bufferRecebido);
 
     if (!autorizado) {
-        const erro = new Error("Token administrativo inválido.");
+        const erro = new Error("Senha administrativa inválida.");
         erro.statusCode = 401;
         return next(erro);
     }

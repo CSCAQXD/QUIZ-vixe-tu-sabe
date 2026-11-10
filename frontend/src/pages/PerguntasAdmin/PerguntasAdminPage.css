@@ -6,8 +6,14 @@
 }
 
 .perguntas-admin--login {
+  position: relative;
   display: grid;
   place-items: center;
+  min-height: 100svh;
+  padding: clamp(24px, 4vw, 56px);
+  overflow: hidden;
+  background: #f7c181;
+  isolation: isolate;
 }
 
 .perguntas-admin__header {
@@ -17,6 +23,12 @@
   justify-content: space-between;
   max-width: 1000px;
   margin: 0 auto 24px;
+}
+
+.perguntas-admin__actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .perguntas-admin h1,
@@ -50,7 +62,142 @@
 }
 
 .perguntas-admin--login .perguntas-admin__panel {
-  width: min(100%, 520px);
+  width: min(100%, 560px);
+}
+
+.perguntas-admin__login-card {
+  position: relative;
+  z-index: 4;
+  padding: clamp(28px, 4vw, 44px);
+  overflow: hidden;
+  text-align: center;
+  border: 2px solid #3c1423;
+  border-radius: 26px;
+  background: #fff0df;
+  box-shadow: 10px 12px 0 #3c1423;
+}
+
+.perguntas-admin__login-card::before,
+.perguntas-admin__login-card::after {
+  position: absolute;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #f7c181;
+  content: '';
+}
+
+.perguntas-admin__login-card::before {
+  top: -35px;
+  left: -35px;
+}
+
+.perguntas-admin__login-card::after {
+  right: -35px;
+  bottom: -35px;
+}
+
+.perguntas-admin__login-logo {
+  display: block;
+  width: clamp(132px, 13vw, 190px);
+  height: auto;
+  margin: 0 auto 18px;
+}
+
+.perguntas-admin__lock {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  place-items: center;
+  border: 2px solid #3c1423;
+  border-radius: 18px;
+  color: #3c1423;
+  background: #f09b32;
+  box-shadow: 5px 6px 0 #3c1423;
+  transform: rotate(-2deg);
+}
+
+.perguntas-admin__lock svg {
+  width: 36px;
+}
+
+.perguntas-admin__login-card h1 {
+  margin-bottom: 10px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 0.95;
+}
+
+.perguntas-admin__login-description {
+  max-width: 410px;
+  margin-right: auto;
+  margin-bottom: 24px;
+  margin-left: auto;
+  color: #6c5960;
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+
+.perguntas-admin__login-form {
+  display: grid;
+  gap: 14px;
+  text-align: left;
+}
+
+.perguntas-admin__login-form .form-field__input {
+  min-height: 62px;
+  background: #fff;
+}
+
+.perguntas-admin__login-form .form-field__error {
+  min-height: 0;
+}
+
+.perguntas-admin__login-form .perguntas-admin__error {
+  margin: 0;
+  padding: 14px 16px;
+  text-align: center;
+  background: #fff;
+}
+
+.perguntas-admin__login-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 12px;
+}
+
+.perguntas-admin__login-actions .button {
+  width: 100%;
+}
+
+.perguntas-admin__login-sun,
+.perguntas-admin__login-fence,
+.perguntas-admin__login-ground {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+.perguntas-admin__login-sun {
+  z-index: -3;
+  top: -20%;
+  right: -12%;
+  width: min(68vw, 980px);
+}
+
+.perguntas-admin__login-fence {
+  z-index: -1;
+  bottom: 13%;
+  left: -10%;
+  width: 120%;
+}
+
+.perguntas-admin__login-ground {
+  z-index: -2;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 }
 
 .perguntas-admin__error {
@@ -123,5 +270,18 @@
   .perguntas-admin__version {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .perguntas-admin__actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .perguntas-admin__login-card {
+    box-shadow: 6px 8px 0 #3c1423;
+  }
+
+  .perguntas-admin__login-actions {
+    grid-template-columns: 1fr;
   }
 }

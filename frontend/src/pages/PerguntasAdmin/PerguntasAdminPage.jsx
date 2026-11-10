@@ -2,6 +2,8 @@ import { useState } from 'react'
 
 import Button from '../../components/common/Button/Button'
 import FormField from '../../components/common/FormField/FormField'
+import HomeButton from '../../components/common/HomeButton/HomeButton'
+import ScenicBackdrop from '../../components/common/ScenicBackdrop/ScenicBackdrop'
 import {
   ativarVersaoPerguntas,
   consultarStatusPerguntas,
@@ -78,25 +80,61 @@ function PerguntasAdminPage() {
   if (!status) {
     return (
       <section className="perguntas-admin perguntas-admin--login">
-        <div className="perguntas-admin__panel">
-          <p className="perguntas-admin__eyebrow">Área restrita</p>
-          <h1>Administração das perguntas</h1>
-          <p>Use o token configurado no servidor. Ele permanece apenas nesta tela.</p>
-          <form onSubmit={entrar}>
+        <img
+          alt=""
+          aria-hidden="true"
+          className="perguntas-admin__login-sun"
+          src="/assets/illustrations/sol.svg"
+        />
+
+        <div className="perguntas-admin__panel perguntas-admin__login-card">
+          <img
+            alt="Vixe, Tu Sabe?"
+            className="perguntas-admin__login-logo"
+            src="/assets/brand/vixe-tu-sabe.svg"
+          />
+
+          <div aria-hidden="true" className="perguntas-admin__lock">
+            <svg fill="none" viewBox="0 0 32 32">
+              <path
+                d="M10 14v-3a6 6 0 0 1 12 0v3m-13 0h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V16a2 2 0 0 1 2-2Z"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.2"
+              />
+              <path d="M16 20v3" stroke="currentColor" strokeLinecap="round" strokeWidth="2.2" />
+            </svg>
+          </div>
+
+          <p className="perguntas-admin__eyebrow">Acesso da equipe</p>
+          <h1>Banco de perguntas</h1>
+          <p className="perguntas-admin__login-description">
+            Entre para revisar e publicar alterações feitas na planilha.
+          </p>
+          <form className="perguntas-admin__login-form" onSubmit={entrar}>
             <FormField
               id="token-perguntas"
-              label="Token administrativo"
+              label="Senha administrativa"
               onChange={setToken}
               required
               type="password"
               value={token}
             />
             {erro && <p className="perguntas-admin__error">{erro}</p>}
-            <Button disabled={carregando || token.length < 16} type="submit">
-              {carregando ? 'Verificando...' : 'Acessar'}
-            </Button>
+            <div className="perguntas-admin__login-actions">
+              <HomeButton />
+              <Button disabled={carregando || token.length < 16} type="submit">
+                {carregando ? 'Verificando...' : 'Entrar'}
+              </Button>
+            </div>
           </form>
         </div>
+
+        <ScenicBackdrop
+          fenceClassName="perguntas-admin__login-fence"
+          groundClassName="perguntas-admin__login-ground"
+        />
       </section>
     )
   }
@@ -109,9 +147,12 @@ function PerguntasAdminPage() {
           <h1>Banco de perguntas</h1>
           <p>O quiz usa a versão ativa no servidor, mesmo quando a internet está indisponível.</p>
         </div>
-        <Button disabled={carregando} onClick={validarPlanilha}>
-          {carregando ? 'Verificando...' : 'Verificar planilha'}
-        </Button>
+        <div className="perguntas-admin__actions">
+          <HomeButton />
+          <Button disabled={carregando} onClick={validarPlanilha}>
+            {carregando ? 'Verificando...' : 'Verificar alterações'}
+          </Button>
+        </div>
       </header>
 
       {erro && <p className="perguntas-admin__error">{erro}</p>}
@@ -166,7 +207,7 @@ function PerguntasAdminPage() {
             onClick={() => ativar(candidata.versao.id)}
             variant="success"
           >
-            Publicar esta versão
+            Publicar atualização
           </Button>
         </article>
       )}

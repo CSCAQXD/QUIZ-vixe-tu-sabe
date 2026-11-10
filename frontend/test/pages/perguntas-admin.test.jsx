@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import PerguntasAdminPage from '../../src/pages/PerguntasAdmin/PerguntasAdminPage'
@@ -34,20 +35,28 @@ const status = {
   ],
 }
 
+function renderPage() {
+  return render(
+    <MemoryRouter>
+      <PerguntasAdminPage />
+    </MemoryRouter>,
+  )
+}
+
 describe('administração das perguntas', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     consultarStatusPerguntas.mockResolvedValue(status)
   })
 
-  it('exige o token e apresenta a versão ativa', async () => {
+  it('exige a senha e apresenta a versão ativa', async () => {
     const user = userEvent.setup()
-    render(<PerguntasAdminPage />)
+    renderPage()
 
-    fireEvent.change(screen.getByLabelText('Token administrativo'), {
+    fireEvent.change(screen.getByLabelText('Senha administrativa'), {
       target: { value: 'token-administrativo-com-32-caracteres' },
     })
-    await user.click(screen.getByRole('button', { name: 'Acessar' }))
+    await user.click(screen.getByRole('button', { name: 'Entrar' }))
 
     expect(await screen.findByRole('heading', { name: 'Banco de perguntas' })).toBeVisible()
     expect(screen.getByText('50 perguntas')).toBeVisible()
@@ -64,18 +73,18 @@ describe('administração das perguntas', () => {
     ativarVersaoPerguntas.mockResolvedValue({
       mensagem: 'Versão de perguntas ativada com sucesso.',
     })
-    render(<PerguntasAdminPage />)
+    renderPage()
 
-    fireEvent.change(screen.getByLabelText('Token administrativo'), {
+    fireEvent.change(screen.getByLabelText('Senha administrativa'), {
       target: { value: 'token-administrativo-com-32-caracteres' },
     })
-    await user.click(screen.getByRole('button', { name: 'Acessar' }))
-    await user.click(await screen.findByRole('button', { name: 'Verificar planilha' }))
+    await user.click(screen.getByRole('button', { name: 'Entrar' }))
+    await user.click(await screen.findByRole('button', { name: 'Verificar alterações' }))
 
     expect(await screen.findByRole('heading', { name: 'Alterações encontradas' })).toBeVisible()
     expect(ativarVersaoPerguntas).not.toHaveBeenCalled()
 
-    await user.click(screen.getByRole('button', { name: 'Publicar esta versão' }))
+    await user.click(screen.getByRole('button', { name: 'Publicar atualização' }))
     expect(ativarVersaoPerguntas).toHaveBeenCalledWith(
       'token-administrativo-com-32-caracteres',
       'candidata',
