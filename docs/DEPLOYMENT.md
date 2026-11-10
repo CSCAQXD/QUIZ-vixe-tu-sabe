@@ -28,7 +28,42 @@ docker compose ps
 
 Abra `http://localhost:8080`. O container frontend encaminha `/api` para `http://backend:3001`.
 
+Por seguranca, o Compose publica apenas o frontend. O backend e o SQLite permanecem acessiveis
+somente pela rede interna dos containers.
+
 O primeiro carregamento de perguntas requer acesso a planilha publicada. Depois que uma versao e ativada, as partidas leem apenas o SQLite e continuam funcionando sem internet. Preserve o volume `quiz-data`; recriar esse volume apaga perguntas versionadas, rankings e sessoes.
+
+## Servidor Windows em rede interna
+
+Use este modo somente em uma rede confiavel e exclusiva para funcionarios. No PowerShell, dentro
+do repositorio:
+
+```powershell
+.\scripts\configurar-deploy-interno.ps1
+docker compose config
+docker compose up --build -d
+docker compose ps
+```
+
+Em um PowerShell executado como administrador, libere apenas a porta do frontend para a sub-rede
+local e somente no perfil privado:
+
+```powershell
+.\scripts\liberar-firewall-rede-interna.ps1
+```
+
+Os funcionarios acessam `http://NOME-DO-SERVIDOR:8080`. Nao encaminhe a porta 8080 no roteador e
+nao publique a porta 3001. O arquivo `.env` contem segredos e nao deve ser copiado para mensagens,
+Issues ou commits.
+
+Crie um backup consistente do SQLite dentro da pasta local `backups` com:
+
+```powershell
+docker compose exec -T backend node scripts/backupDatabase.js
+```
+
+Copie periodicamente essa pasta para uma unidade externa criptografada e teste a restauracao em
+ambiente isolado.
 
 ## Rollback
 
