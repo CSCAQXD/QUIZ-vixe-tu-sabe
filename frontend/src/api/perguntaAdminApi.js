@@ -11,8 +11,15 @@ export function consultarStatusPerguntas(token) {
   return apiRequest('/perguntas/admin/status', opcoes(token))
 }
 
-export function validarPlanilhaPerguntas(token) {
-  return apiRequest('/perguntas/admin/validar', opcoes(token, 'POST'))
+export function validarArquivoPerguntas(token, conteudoCsv) {
+  return apiRequest('/perguntas/admin/validar-arquivo', {
+    ...opcoes(token, 'POST'),
+    headers: {
+      ...opcoes(token).headers,
+      'Content-Type': 'text/csv; charset=utf-8',
+    },
+    body: conteudoCsv,
+  })
 }
 
 export function ativarVersaoPerguntas(token, versaoId) {

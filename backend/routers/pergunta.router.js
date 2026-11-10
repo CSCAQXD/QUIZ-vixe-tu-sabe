@@ -8,7 +8,13 @@ const router = express.Router();
 
 router.get("/", perguntaController.listarPerguntas);
 router.get("/admin/status", adminToken, perguntaController.obterStatus);
-router.post("/admin/validar", adminToken, limitarEscritas, perguntaController.validarAtualizacao);
+router.post(
+    "/admin/validar-arquivo",
+    adminToken,
+    limitarEscritas,
+    express.text({ type: ["text/csv", "text/plain"], limit: "2mb" }),
+    perguntaController.validarArquivo,
+);
 router.post(
     "/admin/versoes/:id/ativar",
     adminToken,

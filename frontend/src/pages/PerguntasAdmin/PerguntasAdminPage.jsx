@@ -7,7 +7,7 @@ import ScenicBackdrop from '../../components/common/ScenicBackdrop/ScenicBackdro
 import {
   ativarVersaoPerguntas,
   consultarStatusPerguntas,
-  validarPlanilhaPerguntas,
+  validarArquivoPerguntas,
 } from '../../api/perguntaAdminApi'
 import { getUserErrorMessage } from '../../utils/errors'
 
@@ -27,6 +27,7 @@ function PerguntasAdminPage() {
   const [mensagem, setMensagem] = useState('')
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(false)
+  const [arquivo, setArquivo] = useState(null)
 
   async function executar(acao) {
     setCarregando(true)
@@ -53,18 +54,29 @@ function PerguntasAdminPage() {
     if (dados) setStatus(dados)
   }
 
-  async function validarPlanilha() {
-    const resultado = await executar(() => validarPlanilhaPerguntas(token))
+  async function validarArquivo() {
+    if (!arquivo) {
+      setErro('Escolha primeiro o arquivo CSV com as perguntas.')
+      return
+    }
+
+    if (arquivo.size > 2 * 1024 * 1024) {
+      setErro('O arquivo é muito grande. O limite é 2 MB.')
+      return
+    }
+
+    const conteudoCsv = await arquivo.text()
+    const resultado = await executar(() => validarArquivoPerguntas(token, conteudoCsv))
     if (!resultado) return
 
     if (resultado.resultado === 'SEM_ALTERACOES') {
       setCandidata(null)
-      setMensagem('A planilha está igual à versão ativa. Nenhuma publicação é necessária.')
+      setMensagem('O arquivo está igual à versão ativa. Nenhuma publicação é necessária.')
       return
     }
 
     setCandidata(resultado)
-    setMensagem('Planilha validada. Revise o resumo antes de publicar.')
+    setMensagem('Arquivo validado. Revise o resumo antes de publicar.')
   }
 
   async function ativar(versaoId) {
@@ -110,7 +122,7 @@ function PerguntasAdminPage() {
           <p className="perguntas-admin__eyebrow">Acesso da equipe</p>
           <h1>Banco de perguntas</h1>
           <p className="perguntas-admin__login-description">
-            Entre para revisar e publicar alterações feitas na planilha.
+            Entre para revisar e publicar novas versões das perguntas.
           </p>
           <form className="perguntas-admin__login-form" onSubmit={entrar}>
             <FormField
@@ -150,14 +162,35 @@ function PerguntasAdminPage() {
         </div>
         <div className="perguntas-admin__actions">
           <HomeButton />
-          <Button disabled={carregando} onClick={validarPlanilha}>
-            {carregando ? 'Verificando...' : 'Verificar alterações'}
-          </Button>
         </div>
       </header>
 
       {erro && <p className="perguntas-admin__error">{erro}</p>}
       {mensagem && <p className="perguntas-admin__message">{mensagem}</p>}
+
+      <article className="perguntas-admin__panel perguntas-admin__upload">
+        <div>
+          <p className="perguntas-admin__step">Atualizar perguntas</p>
+          <h2>Envie o arquivo CSV</h2>
+          <p>Na planilha privada, baixe como CSV e selecione o arquivo aqui.</p>
+        </div>
+        <label className="perguntas-admin__file">
+          <span>{arquivo ? arquivo.name : 'Escolher arquivo CSV'}</span>
+          <input
+            accept=".csv,text/csv"
+            onChange={(event) => {
+              setArquivo(event.target.files?.[0] ?? null)
+              setCandidata(null)
+              setErro('')
+              setMensagem('')
+            }}
+            type="file"
+          />
+        </label>
+        <Button disabled={carregando || !arquivo} onClick={validarArquivo}>
+          {carregando ? 'Verificando...' : 'Verificar arquivo'}
+        </Button>
+      </article>
 
       <article className="perguntas-admin__panel">
         <h2>Versão ativa</h2>

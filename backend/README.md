@@ -18,7 +18,6 @@ O backend é responsável por:
 - Express
 - Prisma ORM
 - SQLite
-- Axios
 - Papa Parse
 
 ## Pré-requisitos
@@ -36,7 +35,7 @@ npm install
 
 ## Faixas das perguntas
 
-A planilha publicada deve possuir a coluna `faixa`. Os valores aceitos são:
+O arquivo CSV deve possuir a coluna `faixa`. Os valores aceitos são:
 
 - `Fundamental 1`, `Fundamental I` ou `FUNDAMENTAL_1`: 1º ao 5º ano;
 - `Fundamental 2`, `Fundamental II` ou `FUNDAMENTAL_2`: 6º ao 9º ano;
@@ -50,16 +49,17 @@ e outra do 4º ano recebe perguntas do Fundamental I, além das perguntas gerais
 A quantidade de perguntas é variável: não há limite fixo de 15 específicas
 e 5 comuns. Todas as perguntas válidas da faixa escolhida e as comuns são usadas.
 
-## Sincronização das perguntas
+## Atualização das perguntas
 
-A planilha publicada continua sendo o lugar simples para editar o conteúdo. O quiz, porém, lê a versão ativa armazenada no SQLite e não depende da internet durante as partidas.
+A planilha pode continuar privada. O quiz lê a versão ativa armazenada no SQLite e não depende da internet durante as partidas.
 
-1. Configure `PERGUNTAS_CSV_URL` e um `PERGUNTAS_ADMIN_TOKEN` com pelo menos 16 caracteres.
-2. Abra `/administracao/perguntas` no frontend e informe o token.
-3. Use **Verificar planilha** para validar todas as linhas e revisar o resumo das mudanças.
-4. Use **Publicar esta versão** somente depois da revisão.
+1. Configure um `PERGUNTAS_ADMIN_TOKEN` com pelo menos 16 caracteres.
+2. Baixe a planilha privada no formato CSV.
+3. Abra a Administração pela tela inicial e informe a senha.
+4. Selecione o CSV, use **Verificar arquivo** e revise o resumo das mudanças.
+5. Use **Publicar atualização** somente depois da revisão.
 
-Uma linha inválida rejeita a atualização inteira e preserva a versão atual. Versões anteriores permanecem no histórico e podem ser restauradas pela mesma tela. Na primeira execução de um banco vazio, o backend importa e ativa a planilha automaticamente; depois disso, a versão local também funciona offline.
+Uma linha inválida rejeita a atualização inteira e preserva a versão atual. Versões anteriores permanecem no histórico e podem ser restauradas pela mesma tela. Um banco vazio precisa receber e publicar seu primeiro CSV pela Administração.
 
 ## Ranking por categoria
 

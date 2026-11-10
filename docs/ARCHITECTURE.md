@@ -5,8 +5,8 @@
 O projeto e um monorepo com frontend React/Vite e API Express. Em producao, um Nginx sem privilegios entrega os arquivos estaticos e encaminha `/api` ao backend. O backend acessa SQLite por Prisma.
 
 ```text
-Google Sheets -> validacao manual -> versoes no SQLite
-                                        ^
+CSV privado -> Administracao -> versoes no SQLite
+                                   ^
 cliente -> frontend/Nginx -> /api -> Express
 ```
 
@@ -26,9 +26,9 @@ cliente -> frontend/Nginx -> /api -> Express
 - `/health` indica que o processo HTTP responde; `/ready` confirma tambem o acesso ao banco.
 - Cada resposta inclui `X-Request-ID`, reaproveitado nos logs para diagnostico.
 - Escritas sensiveis recebem limitacao por IP; os valores sao configuraveis por ambiente.
-- A planilha publicada e a fonte editorial, mas nao e consultada durante as partidas. Uma atualizacao e validada como rascunho e so passa a servir o quiz depois da confirmacao do mediador.
+- A planilha pode permanecer privada. O CSV baixado e enviado manualmente pela Administracao, validado como rascunho e so passa a servir o quiz depois da confirmacao do mediador.
 - O SQLite conserva uma unica versao ativa e o historico recente. Isso permite restaurar uma versao anterior e mantem o quiz operacional sem internet depois da primeira importacao.
-- A primeira execucao sem versao ativa faz uma importacao inicial da planilha. Por isso, o servidor precisa de internet ao menos na preparacao inicial.
+- A primeira execucao sem versao ativa exige o envio e a publicacao de um CSV pela Administracao.
 
 ## Limites conhecidos
 

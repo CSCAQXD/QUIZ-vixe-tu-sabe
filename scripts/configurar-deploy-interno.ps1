@@ -36,8 +36,6 @@ $content = @(
     "SERVER_BIND_ADDRESS=0.0.0.0"
     "SERVER_PORT=8080"
     "CORS_ORIGINS=http://${normalizedServerName}:8080"
-    "PERGUNTAS_CSV_URL=https://docs.google.com/spreadsheets/d/e/2PACX-1vTsNj_z-lz_htrzuv0pbyFllv_z2cFNeRRvX-GUV2RPUEsx08TfUoSS24LjXZS3OML3O1f_yW-e-E6t/pub?output=csv"
-    "PERGUNTAS_TIMEOUT_MS=10000"
     "QUIZ_CONTEXT_SECRET=$(New-HexSecret)"
     "PERGUNTAS_ADMIN_TOKEN=$(New-HexSecret)"
     "BACKUP_RETENTION_DAYS=30"

@@ -39,9 +39,9 @@ async function obterStatus(req, res, next) {
     }
 }
 
-async function validarAtualizacao(req, res, next) {
+async function validarArquivo(req, res, next) {
     try {
-        const resultado = await perguntaService.validarAtualizacao();
+        const resultado = await perguntaService.validarArquivo(req.body);
         return res.status(200).json({
             ...resultado,
             versao: resumirVersao(resultado.versao),
@@ -100,5 +100,5 @@ module.exports = {
     ativarVersao,
     listarPerguntas,
     obterStatus,
-    validarAtualizacao,
+    validarArquivo,
 };

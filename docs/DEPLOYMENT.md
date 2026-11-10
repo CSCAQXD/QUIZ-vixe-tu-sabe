@@ -14,9 +14,9 @@
 3. Crie uma tag SemVer assinada ou protegida, por exemplo `v1.1.0`.
 4. Aguarde o workflow de release publicar as imagens no GHCR.
 5. Fixe no ambiente a tag exata; evite depender de `latest` para rollback.
-6. Configure `DATABASE_URL`, `CORS_ORIGINS`, `TRUST_PROXY`, limites, `BACKEND_URL`, `PERGUNTAS_CSV_URL` e um `PERGUNTAS_ADMIN_TOKEN` forte e exclusivo.
+6. Configure `DATABASE_URL`, `CORS_ORIGINS`, `TRUST_PROXY`, limites, `BACKEND_URL` e um `PERGUNTAS_ADMIN_TOKEN` forte e exclusivo.
 7. Execute `npm run prisma:deploy` no contexto do backend.
-8. Acesse `/administracao/perguntas`, valide a planilha e confirme que existe uma versao ativa.
+8. Abra a Administracao, envie o CSV privado e confirme que existe uma versao ativa.
 9. Verifique `/health`, `/ready` e o fluxo principal do quiz.
 
 ## Docker Compose local
@@ -31,7 +31,7 @@ Abra `http://localhost:8080`. O container frontend encaminha `/api` para `http:/
 Por seguranca, o Compose publica apenas o frontend. O backend e o SQLite permanecem acessiveis
 somente pela rede interna dos containers.
 
-O primeiro carregamento de perguntas requer acesso a planilha publicada. Depois que uma versao e ativada, as partidas leem apenas o SQLite e continuam funcionando sem internet. Preserve o volume `quiz-data`; recriar esse volume apaga perguntas versionadas, rankings e sessoes.
+As perguntas entram somente por um CSV enviado na Administracao. Depois que uma versao e ativada, as partidas leem apenas o SQLite e continuam funcionando sem internet. Preserve o volume `quiz-data`; recriar esse volume apaga perguntas versionadas, rankings e sessoes.
 
 ## Servidor Windows em rede interna
 
@@ -45,14 +45,6 @@ docker compose up --build -d
 docker compose ps
 ```
 
-Em instalacoes existentes que ainda nao possuem uma versao ativa de perguntas, configure a fonte
-publica antes de recriar o backend:
-
-```powershell
-.\scripts\configurar-fonte-perguntas.ps1
-docker compose up -d
-```
-
 Defina uma senha administrativa legivel, sem exibir ou substituir os demais segredos:
 
 ```powershell
@@ -60,7 +52,7 @@ Defina uma senha administrativa legivel, sem exibir ou substituir os demais segr
 docker compose up -d --force-recreate backend
 ```
 
-Na tela inicial, use o botao **Administracao** para revisar e publicar alteracoes da planilha.
+Na tela inicial, use o botao **Administracao** para enviar, revisar e publicar o CSV baixado da planilha privada.
 
 Em um PowerShell executado como administrador, libere apenas a porta do frontend para a sub-rede
 local e somente no perfil privado:

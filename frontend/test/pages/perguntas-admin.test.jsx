@@ -7,13 +7,13 @@ import PerguntasAdminPage from '../../src/pages/PerguntasAdmin/PerguntasAdminPag
 import {
   ativarVersaoPerguntas,
   consultarStatusPerguntas,
-  validarPlanilhaPerguntas,
+  validarArquivoPerguntas,
 } from '../../src/api/perguntaAdminApi'
 
 vi.mock('../../src/api/perguntaAdminApi', () => ({
   ativarVersaoPerguntas: vi.fn(),
   consultarStatusPerguntas: vi.fn(),
-  validarPlanilhaPerguntas: vi.fn(),
+  validarArquivoPerguntas: vi.fn(),
 }))
 
 const status = {
@@ -72,7 +72,7 @@ describe('administração das perguntas', () => {
 
   it('mostra as diferenças e só publica após confirmação', async () => {
     const user = userEvent.setup()
-    validarPlanilhaPerguntas.mockResolvedValue({
+    validarArquivoPerguntas.mockResolvedValue({
       resultado: 'VERSAO_PRONTA',
       versao: { id: 'candidata', total: 51, status: 'RASCUNHO' },
       diferencas: { totais: { adicionadas: 2, alteradas: 1, removidas: 1 } },
@@ -86,9 +86,15 @@ describe('administração das perguntas', () => {
       target: { value: 'token-administrativo-com-32-caracteres' },
     })
     await user.click(screen.getByRole('button', { name: 'Entrar' }))
-    await user.click(await screen.findByRole('button', { name: 'Verificar alterações' }))
+    const arquivo = new File(['id,faixa,tema'], 'perguntas.csv', { type: 'text/csv' })
+    await user.upload(await screen.findByLabelText(/Escolher arquivo CSV/), arquivo)
+    await user.click(screen.getByRole('button', { name: 'Verificar arquivo' }))
 
     expect(await screen.findByRole('heading', { name: 'Alterações encontradas' })).toBeVisible()
+    expect(validarArquivoPerguntas).toHaveBeenCalledWith(
+      'token-administrativo-com-32-caracteres',
+      'id,faixa,tema',
+    )
     expect(ativarVersaoPerguntas).not.toHaveBeenCalled()
 
     await user.click(screen.getByRole('button', { name: 'Publicar atualização' }))

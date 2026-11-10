@@ -36,13 +36,13 @@ O contrato detalhado de campos e validacoes fica nos routers, validators e teste
 
 As rotas abaixo exigem `Authorization: Bearer <PERGUNTAS_ADMIN_TOKEN>` e nao sao usadas durante uma partida:
 
-| Metodo | Rota                                  | Descricao                                       |
-| ------ | ------------------------------------- | ----------------------------------------------- |
-| `GET`  | `/perguntas/admin/status`             | Mostra a versao ativa e as ultimas 20 versoes   |
-| `POST` | `/perguntas/admin/validar`            | Valida a planilha e cria uma versao em rascunho |
-| `POST` | `/perguntas/admin/versoes/:id/ativar` | Publica ou restaura a versao escolhida          |
+| Metodo | Rota                                  | Descricao                                     |
+| ------ | ------------------------------------- | --------------------------------------------- |
+| `GET`  | `/perguntas/admin/status`             | Mostra a versao ativa e as ultimas 20 versoes |
+| `POST` | `/perguntas/admin/validar-arquivo`    | Valida o CSV e cria uma versao em rascunho    |
+| `POST` | `/perguntas/admin/versoes/:id/ativar` | Publica ou restaura a versao escolhida        |
 
-A validacao rejeita a importacao inteira se houver linha incompleta, alternativa ausente, resposta correta invalida, pontuacao invalida, faixa desconhecida ou ID duplicado. Validar nunca publica automaticamente. A resposta apresenta os IDs adicionados, alterados e removidos para revisao antes da ativacao.
+O corpo de `/validar-arquivo` deve ser o conteúdo do CSV, com `Content-Type: text/csv`, limitado a 2 MB. A validacao rejeita a importacao inteira se houver linha incompleta, alternativa ausente, resposta correta invalida, pontuacao invalida, faixa desconhecida ou ID duplicado. Validar nunca publica automaticamente. A resposta apresenta os IDs adicionados, alterados e removidos para revisao antes da ativacao.
 
 ## CORS e proxy
 
