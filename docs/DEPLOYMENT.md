@@ -63,6 +63,14 @@ npm run dev:all
 
 Antes do fechamento anual, use **Exportar rankings** na Administracao e guarde a planilha em local seguro. Depois de conferir o arquivo, a opcao **Reiniciar rankings** apaga partidas e participacoes do ano mediante nova confirmacao da senha administrativa e frase de seguranca. Perguntas, escolas e cursos sao preservados.
 
+Para popular somente o banco SQLite local de desenvolvimento com escolas, turmas e partidas ficticias organizadas, execute em `backend`:
+
+```powershell
+npm run dados:teste -- --ano=2026
+```
+
+O script substitui apenas os dados ficticios do mesmo ano criados por ele. Registros reais permanecem intactos, e a execucao e recusada quando `NODE_ENV=production`.
+
 Em um PowerShell executado como administrador, libere apenas a porta do frontend para a sub-rede
 local e somente no perfil privado:
 
