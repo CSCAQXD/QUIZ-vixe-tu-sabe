@@ -19,12 +19,23 @@ const turma = {
     pontuacaoTotal: 180,
 };
 
+const outraTurma = {
+    ...turma,
+    escolaId: "e2",
+    escola: "Escola Modelo",
+    cidade: "Banabuiú",
+    turma: "B",
+    pontuacaoTotal: 120,
+};
+
 test.afterEach(() => {
     mock.restoreAll();
 });
 
 test("exporta uma planilha com uma aba para cada ranking", async () => {
-    mock.method(rankingService, "listarRankingDeTurmas", async () => ({ ranking: [turma] }));
+    mock.method(rankingService, "listarRankingDeTurmas", async () => ({
+        ranking: [turma, outraTurma],
+    }));
     mock.method(rankingService, "listarRankingDeEscolas", async () => ({
         ranking: [
             {
@@ -51,6 +62,8 @@ test("exporta uma planilha com uma aba para cada ranking", async () => {
         "Fundamental II",
         "Ensino Médio",
         "Interno por escola",
+        "Interno 01",
+        "Interno 02",
     ];
     assert.deepEqual(
         workbook.worksheets.map((aba) => aba.name),
@@ -61,6 +74,18 @@ test("exporta uma planilha com uma aba para cada ranking", async () => {
     assert.equal(workbook.getWorksheet("Turmas").views[0].state, "frozen");
     assert.equal(workbook.getWorksheet("Turmas").getCell("A4").fill.fgColor.argb, "FFA52D37");
     assert.equal(workbook.getWorksheet("Turmas").getCell("A5").fill.fgColor.argb, "FFFFD166");
+    assert.equal(
+        workbook.getWorksheet("Interno por escola").getCell("B5").value.hyperlink,
+        "#'Interno 01'!A1",
+    );
+    assert.equal(workbook.getWorksheet("Interno 01").getCell("B5").value, "Escola & Cultura");
+    assert.equal(workbook.getWorksheet("Interno 01").getCell("B6").value, null);
+    assert.equal(workbook.getWorksheet("Interno 01").getCell("A1").alignment.horizontal, "left");
+    assert.equal(workbook.getWorksheet("Interno 02").getCell("B5").value, "Escola Modelo");
+    assert.equal(
+        workbook.getWorksheet("Interno 02").getCell("A3").value.hyperlink,
+        "#'Interno por escola'!A1",
+    );
     assert.equal(workbook.creator, "Casa de Saberes Cego Aderaldo");
 });
 

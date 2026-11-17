@@ -48,7 +48,7 @@ As rotas abaixo exigem `Authorization: Bearer <PERGUNTAS_ADMIN_TOKEN>` e nao sao
 
 O corpo de `/validar-arquivo` deve ser o conteúdo do CSV, com `Content-Type: text/csv`, limitado a 2 MB. A validacao rejeita a importacao inteira se houver linha incompleta, alternativa ausente, resposta correta invalida, pontuacao invalida, faixa desconhecida ou ID duplicado. Validar nunca publica automaticamente. A resposta apresenta os IDs adicionados, alterados e removidos para revisao antes da ativacao.
 
-A exportacao gera uma planilha XLSX que pode ser aberta no Excel, LibreOffice e importada no Google Planilhas, com abas para turmas, escolas, categorias de ensino e ranking interno por escola. A reinicializacao exige novamente a senha administrativa e a frase exata `APAGAR DADOS DE ANO`. Ela remove somente partidas e participacoes do ano informado; perguntas, versoes, escolas e cursos permanecem no banco.
+A exportacao gera uma planilha XLSX que pode ser aberta no Excel, LibreOffice e importada no Google Planilhas, com abas para turmas, escolas e categorias de ensino. A aba **Interno por escola** funciona como um indice clicavel: cada escola abre uma pagina propria contendo somente o seu ranking interno. A reinicializacao exige novamente a senha administrativa e a frase exata `APAGAR DADOS DE ANO`. Ela remove somente partidas e participacoes do ano informado; perguntas, versoes, escolas e cursos permanecem no banco.
 
 O detalhe de uma versao retorna suas perguntas somente para uma sessao administrativa autenticada. O descarte exige novamente a senha administrativa e recusa a exclusao da versao ativa.
 
