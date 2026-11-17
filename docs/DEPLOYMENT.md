@@ -54,6 +54,15 @@ docker compose up -d --force-recreate backend
 
 Na tela inicial, use o botao **Administracao** para enviar, revisar e publicar o CSV baixado da planilha privada.
 
+Para testar essa area no navegador de desenvolvimento, defina uma senha exclusiva no arquivo ignorado `backend/.env` sem publica-la no Git:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\definir-senha-administracao.ps1 -Local
+npm run dev:all
+```
+
+Antes do fechamento anual, use **Exportar rankings** na Administracao e guarde a planilha em local seguro. Depois de conferir o arquivo, a opcao **Reiniciar rankings** apaga partidas e participacoes do ano mediante nova confirmacao da senha administrativa e frase de seguranca. Perguntas, escolas e cursos sao preservados.
+
 Em um PowerShell executado como administrador, libere apenas a porta do frontend para a sub-rede
 local e somente no perfil privado:
 

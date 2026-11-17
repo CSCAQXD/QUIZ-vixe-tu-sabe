@@ -1,5 +1,7 @@
 [CmdletBinding()]
-param()
+param(
+    [switch]$Local
+)
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
@@ -17,9 +19,14 @@ function ConvertFrom-SecureValue {
 }
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
-$environmentPath = Join-Path $repositoryRoot ".env"
+$environmentPath = if ($Local) {
+    Join-Path $repositoryRoot "backend\.env"
+}
+else {
+    Join-Path $repositoryRoot ".env"
+}
 if (-not (Test-Path -LiteralPath $environmentPath)) {
-    throw "O arquivo .env nao existe. Execute configurar-deploy-interno.ps1 primeiro."
+    throw "O arquivo $environmentPath nao existe. Crie-o a partir do exemplo antes de definir a senha."
 }
 
 $password = ConvertFrom-SecureValue (Read-Host "Nova senha administrativa" -AsSecureString)
@@ -64,4 +71,9 @@ finally {
 }
 
 Write-Host "Senha administrativa atualizada sem exibir o valor." -ForegroundColor Green
-Write-Host "Recrie o backend com: docker compose up -d --force-recreate backend"
+if ($Local) {
+    Write-Host "Reinicie o desenvolvimento local para aplicar a nova senha: npm run dev:all"
+}
+else {
+    Write-Host "Recrie o backend com: docker compose up -d --force-recreate backend"
+}

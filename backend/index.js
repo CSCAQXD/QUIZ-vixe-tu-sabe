@@ -5,9 +5,14 @@ const prisma = require("./config/prisma");
 const logger = require("./utils/logger");
 
 const PORT = Number(process.env.PORT) || 3001;
+const HOST = process.env.HOST || (process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1");
 
-const servidor = app.listen(PORT, () => {
-    logger.info("server_started", { porta: PORT, ambiente: process.env.NODE_ENV || "development" });
+const servidor = app.listen(PORT, HOST, () => {
+    logger.info("server_started", {
+        host: HOST,
+        porta: PORT,
+        ambiente: process.env.NODE_ENV || "development",
+    });
 });
 
 let encerrando = false;

@@ -12,6 +12,7 @@ function adminToken(req, res, next) {
     if (esperado.length < 16) {
         const erro = new Error("A administração das perguntas não está configurada.");
         erro.statusCode = 503;
+        erro.expose = true;
         return next(erro);
     }
 

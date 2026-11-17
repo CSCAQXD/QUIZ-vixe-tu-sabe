@@ -53,7 +53,7 @@ e 5 comuns. Todas as perguntas válidas da faixa escolhida e as comuns são usad
 
 A planilha pode continuar privada. O quiz lê a versão ativa armazenada no SQLite e não depende da internet durante as partidas.
 
-1. Configure um `PERGUNTAS_ADMIN_TOKEN` com pelo menos 16 caracteres.
+1. Configure um `PERGUNTAS_ADMIN_TOKEN` com pelo menos 16 caracteres. No desenvolvimento local, execute `powershell -ExecutionPolicy Bypass -File .\scripts\definir-senha-administracao.ps1 -Local` na raiz do repositório e reinicie o backend.
 2. Baixe a planilha privada no formato CSV.
 3. Abra a Administração pela tela inicial e informe a senha.
 4. Selecione o CSV, use **Verificar arquivo** e revise o resumo das mudanças.
