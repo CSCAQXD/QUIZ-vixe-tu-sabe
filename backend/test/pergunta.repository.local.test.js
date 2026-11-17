@@ -111,3 +111,41 @@ test("arquiva a versão anterior e ativa a versão escolhida numa transação", 
     assert.equal(operacoes[0][0], "arquivar");
     assert.equal(operacoes[1][0], "ativar");
 });
+
+test("exclui definitivamente somente uma versão inativa", async () => {
+    let idExcluido;
+    const transacao = {
+        versaoPerguntas: {
+            findUnique: async () => ({
+                id: "arquivada",
+                status: "ARQUIVADA",
+                hash: "hash-arquivada",
+                total: 50,
+            }),
+            delete: async ({ where }) => {
+                idExcluido = where.id;
+            },
+        },
+    };
+    const cliente = { $transaction: (executar) => executar(transacao) };
+
+    const versao = await repository.excluirVersaoInativa("arquivada", cliente);
+
+    assert.equal(idExcluido, "arquivada");
+    assert.equal(versao.status, "ARQUIVADA");
+});
+
+test("impede excluir a versão ativa", async () => {
+    const transacao = {
+        versaoPerguntas: {
+            findUnique: async () => ({ id: "ativa", status: "ATIVA" }),
+            delete: async () => assert.fail("não deveria excluir a versão ativa"),
+        },
+    };
+    const cliente = { $transaction: (executar) => executar(transacao) };
+
+    await assert.rejects(
+        () => repository.excluirVersaoInativa("ativa", cliente),
+        (erro) => erro.statusCode === 409 && /ativa não pode ser descartada/.test(erro.message),
+    );
+});

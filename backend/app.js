@@ -57,7 +57,7 @@ app.use(requestContext);
 app.use(
     cors({
         origin: validarOrigem,
-        methods: ["GET", "POST", "OPTIONS"],
+        methods: ["GET", "POST", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Admin-Token"],
         exposedHeaders: ["X-Request-ID", "RateLimit"],
         maxAge: 86400,

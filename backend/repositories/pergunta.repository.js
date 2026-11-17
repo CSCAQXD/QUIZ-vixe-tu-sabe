@@ -149,6 +149,27 @@ async function ativarVersao(id, cliente = prisma) {
     });
 }
 
+async function excluirVersaoInativa(id, cliente = prisma) {
+    return cliente.$transaction(async (transacao) => {
+        const versao = await transacao.versaoPerguntas.findUnique({ where: { id } });
+
+        if (!versao) {
+            const erro = new Error("A versão de perguntas não foi encontrada.");
+            erro.statusCode = 404;
+            throw erro;
+        }
+
+        if (versao.status === "ATIVA") {
+            const erro = new Error("A versão ativa não pode ser descartada.");
+            erro.statusCode = 409;
+            throw erro;
+        }
+
+        await transacao.versaoPerguntas.delete({ where: { id } });
+        return mapearVersao(versao);
+    });
+}
+
 async function listarVersoes(cliente = prisma) {
     const versoes = await cliente.versaoPerguntas.findMany({
         orderBy: { criadaEm: "desc" },
@@ -162,6 +183,7 @@ module.exports = {
     ativarVersao,
     buscarVersaoAtiva,
     buscarVersaoPorId,
+    excluirVersaoInativa,
     interpretarCsv,
     listarVersoes,
     salvarVersao,

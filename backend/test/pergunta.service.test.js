@@ -68,6 +68,11 @@ test.beforeEach(() => {
         status: "ATIVA",
     }));
     mock.method(perguntaRepository, "listarVersoes", async () => []);
+    mock.method(perguntaRepository, "buscarVersaoPorId", async () => null);
+    mock.method(perguntaRepository, "excluirVersaoInativa", async (id) => ({
+        id,
+        status: "ARQUIVADA",
+    }));
 });
 
 test.afterEach(() => {
@@ -132,6 +137,41 @@ test("orienta o envio de CSV quando o banco ainda não tem versão ativa", async
         () => perguntaService.listarPerguntas(),
         (erro) => erro.statusCode === 503 && /Envie um arquivo CSV/.test(erro.message),
     );
+});
+
+test("retorna as perguntas da versão escolhida para visualização administrativa", async () => {
+    perguntaRepository.buscarVersaoPorId.mock.mockImplementation(async () => ({
+        id: "arquivada",
+        status: "ARQUIVADA",
+        total: 1,
+        perguntas: [{ id: "P1", pergunta: "Pergunta anterior?" }],
+    }));
+
+    const versao = await perguntaService.obterVersao("arquivada");
+
+    assert.equal(versao.perguntas[0].id, "P1");
+});
+
+test("exige novamente a senha administrativa para descartar uma versão", async () => {
+    const senhaAnterior = process.env.PERGUNTAS_ADMIN_TOKEN;
+    process.env.PERGUNTAS_ADMIN_TOKEN = "senha-administrativa-segura";
+    try {
+        await assert.rejects(
+            () => perguntaService.descartarVersao("arquivada", "senha-incorreta"),
+            (erro) => erro.statusCode === 401,
+        );
+        assert.equal(perguntaRepository.excluirVersaoInativa.mock.callCount(), 0);
+
+        const versao = await perguntaService.descartarVersao(
+            "arquivada",
+            "senha-administrativa-segura",
+        );
+        assert.equal(versao.id, "arquivada");
+        assert.equal(perguntaRepository.excluirVersaoInativa.mock.callCount(), 1);
+    } finally {
+        if (senhaAnterior === undefined) delete process.env.PERGUNTAS_ADMIN_TOKEN;
+        else process.env.PERGUNTAS_ADMIN_TOKEN = senhaAnterior;
+    }
 });
 
 test("calcula adições, alterações e remoções antes da publicação", async () => {

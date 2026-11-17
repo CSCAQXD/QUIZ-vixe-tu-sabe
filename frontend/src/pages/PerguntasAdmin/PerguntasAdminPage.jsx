@@ -8,6 +8,8 @@ import ScenicBackdrop from '../../components/common/ScenicBackdrop/ScenicBackdro
 import {
   ativarVersaoPerguntas,
   consultarStatusPerguntas,
+  consultarVersaoPerguntas,
+  descartarVersaoPerguntas,
   exportarRankings,
   reiniciarRankings,
   validarArquivoPerguntas,
@@ -24,6 +26,20 @@ function formatarData(valor) {
   return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(
     new Date(valor),
   )
+}
+
+function identificarVersao(versao) {
+  return (versao.hash || versao.id).slice(0, 8)
+}
+
+function formatarFaixa(valor) {
+  const faixas = {
+    TODAS: 'Todas as faixas',
+    FUNDAMENTAL_1: 'Ensino Fundamental I',
+    FUNDAMENTAL_2: 'Ensino Fundamental II',
+    MEDIO: 'Ensino Médio',
+  }
+  return faixas[valor] ?? valor
 }
 
 function ErrorModal({ erro, onClose, titulo }) {
@@ -55,6 +71,13 @@ function PerguntasAdminPage() {
   const [senhaReinicio, setSenhaReinicio] = useState('')
   const [confirmacaoReinicio, setConfirmacaoReinicio] = useState('')
   const [sucessoReinicio, setSucessoReinicio] = useState('')
+  const [versaoVisualizada, setVersaoVisualizada] = useState(null)
+  const [buscaVersao, setBuscaVersao] = useState('')
+  const [temaVersao, setTemaVersao] = useState('TODOS')
+  const [faixaVersao, setFaixaVersao] = useState('TODAS')
+  const [versaoDescarte, setVersaoDescarte] = useState(null)
+  const [senhaDescarte, setSenhaDescarte] = useState('')
+  const [sucessoDescarte, setSucessoDescarte] = useState('')
   const [tituloErro, setTituloErro] = useState('Não foi possível concluir')
 
   function fecharErro() {
@@ -70,6 +93,11 @@ function PerguntasAdminPage() {
     setMostrarReinicio(false)
     setSenhaReinicio('')
     setConfirmacaoReinicio('')
+  }
+
+  function fecharDescarte() {
+    setVersaoDescarte(null)
+    setSenhaDescarte('')
   }
 
   async function executar(acao) {
@@ -156,6 +184,29 @@ function PerguntasAdminPage() {
     if (atualizado) setStatus(atualizado)
   }
 
+  async function visualizarVersao(versaoId) {
+    const resultado = await executar(() => consultarVersaoPerguntas(token, versaoId))
+    if (!resultado) return
+
+    setBuscaVersao('')
+    setTemaVersao('TODOS')
+    setFaixaVersao('TODAS')
+    setVersaoVisualizada(resultado.versao)
+  }
+
+  async function descartarVersao(event) {
+    event.preventDefault()
+    const resultado = await executar(() =>
+      descartarVersaoPerguntas(token, versaoDescarte.id, senhaDescarte),
+    )
+    if (!resultado) return
+
+    fecharDescarte()
+    const atualizado = await executar(() => consultarStatusPerguntas(token))
+    if (atualizado) setStatus(atualizado)
+    setSucessoDescarte(resultado.mensagem)
+  }
+
   async function baixarRankings() {
     const resultado = await executar(() => exportarRankings(token, ANO_ATUAL))
     if (!resultado) return
@@ -240,6 +291,148 @@ function PerguntasAdminPage() {
           fenceClassName="perguntas-admin__login-fence"
           groundClassName="perguntas-admin__login-ground"
         />
+      </section>
+    )
+  }
+
+  if (versaoVisualizada) {
+    const termo = buscaVersao.trim().toLocaleLowerCase('pt-BR')
+    const temas = [...new Set(versaoVisualizada.perguntas.map((pergunta) => pergunta.tema))].sort(
+      (a, b) => a.localeCompare(b, 'pt-BR'),
+    )
+    const faixas = [...new Set(versaoVisualizada.perguntas.map((pergunta) => pergunta.faixa))]
+    const perguntas = versaoVisualizada.perguntas.filter((pergunta) => {
+      const correspondeTexto =
+        !termo ||
+        [pergunta.id, pergunta.pergunta, ...pergunta.opcoes]
+          .join(' ')
+          .toLocaleLowerCase('pt-BR')
+          .includes(termo)
+      const correspondeTema = temaVersao === 'TODOS' || pergunta.tema === temaVersao
+      const correspondeFaixa = faixaVersao === 'TODAS' || pergunta.faixa === faixaVersao
+      return correspondeTexto && correspondeTema && correspondeFaixa
+    })
+
+    return (
+      <section className="perguntas-admin perguntas-admin--preview">
+        <div className="perguntas-admin__preview-shell">
+          <header className="perguntas-admin__preview-header">
+            <img
+              alt="Vixe, Tu Sabe?"
+              className="perguntas-admin__preview-logo"
+              src="/assets/brand/vixe-tu-sabe.svg"
+            />
+            <div>
+              <p className="perguntas-admin__eyebrow">Visualização da versão</p>
+              <h1>{versaoVisualizada.total} perguntas</h1>
+              <p>
+                {formatarData(versaoVisualizada.ativadaEm || versaoVisualizada.criadaEm)} ·{' '}
+                Identificação {identificarVersao(versaoVisualizada)}
+              </p>
+            </div>
+            <Button onClick={() => setVersaoVisualizada(null)} variant="secondary">
+              Voltar ao histórico
+            </Button>
+          </header>
+
+          <main className="perguntas-admin__preview-main">
+            <div className="perguntas-admin__preview-toolbar">
+              <div className="perguntas-admin__preview-filter perguntas-admin__preview-filter--search">
+                <label htmlFor="buscar-versao">Buscar</label>
+                <input
+                  id="buscar-versao"
+                  onChange={(event) => setBuscaVersao(event.target.value)}
+                  placeholder="ID, enunciado ou alternativa"
+                  type="search"
+                  value={buscaVersao}
+                />
+              </div>
+              <div className="perguntas-admin__preview-filter">
+                <label htmlFor="tema-versao">Tema</label>
+                <select
+                  id="tema-versao"
+                  onChange={(event) => setTemaVersao(event.target.value)}
+                  value={temaVersao}
+                >
+                  <option value="TODOS">Todos os temas</option>
+                  {temas.map((tema) => (
+                    <option key={tema} value={tema}>
+                      {tema}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="perguntas-admin__preview-filter">
+                <label htmlFor="faixa-versao">Faixa de ensino</label>
+                <select
+                  id="faixa-versao"
+                  onChange={(event) => setFaixaVersao(event.target.value)}
+                  value={faixaVersao}
+                >
+                  <option value="TODAS">Todas as faixas</option>
+                  {faixas.map((faixa) => (
+                    <option key={faixa} value={faixa}>
+                      {formatarFaixa(faixa)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <span aria-live="polite" className="perguntas-admin__preview-count">
+                {perguntas.length} {perguntas.length === 1 ? 'resultado' : 'resultados'}
+              </span>
+            </div>
+
+            {perguntas.length === 0 ? (
+              <div className="perguntas-admin__preview-empty">
+                <h2>Nenhuma pergunta encontrada</h2>
+                <p>Altere ou limpe os filtros para ver outros resultados.</p>
+              </div>
+            ) : (
+              <div className="perguntas-admin__question-list">
+                {perguntas.map((pergunta, indice) => (
+                  <article className="perguntas-admin__question-card" key={pergunta.id}>
+                    <header>
+                      <span>Pergunta {indice + 1}</span>
+                      <strong>{pergunta.tema}</strong>
+                      <span>{formatarFaixa(pergunta.faixa)}</span>
+                    </header>
+                    <h2>{pergunta.pergunta}</h2>
+                    <ol className="perguntas-admin__question-options">
+                      {pergunta.opcoes.map((opcao, opcaoIndice) => {
+                        const letra = String.fromCharCode(65 + opcaoIndice)
+                        const correta = letra === pergunta.correta
+                        return (
+                          <li
+                            className={correta ? 'perguntas-admin__question-option--correct' : ''}
+                            key={`${pergunta.id}-${letra}`}
+                          >
+                            <span>{letra}</span>
+                            <p>{opcao}</p>
+                            {correta && <strong>Resposta correta</strong>}
+                          </li>
+                        )
+                      })}
+                    </ol>
+                    <footer>
+                      <span>ID: {pergunta.id}</span>
+                      <span>{pergunta.pontosIniciais} pontos</span>
+                      {pergunta.dicas.length > 0 && (
+                        <details>
+                          <summary>Ver dicas ({pergunta.dicas.length})</summary>
+                          <ul>
+                            {pergunta.dicas.map((dica) => (
+                              <li key={dica}>{dica}</li>
+                            ))}
+                          </ul>
+                        </details>
+                      )}
+                    </footer>
+                  </article>
+                ))}
+              </div>
+            )}
+          </main>
+        </div>
       </section>
     )
   }
@@ -387,6 +580,7 @@ function PerguntasAdminPage() {
                   <div className="perguntas-admin__version-info">
                     <strong>{versao.total} perguntas</strong>
                     <span>{formatarData(versao.ativadaEm || versao.criadaEm)}</span>
+                    <span>Identificação {identificarVersao(versao)}</span>
                   </div>
                   <span
                     className={`perguntas-admin__badge ${
@@ -395,15 +589,33 @@ function PerguntasAdminPage() {
                   >
                     {versao.status === 'ATIVA' ? 'Publicada' : versao.status.toLowerCase()}
                   </span>
-                  {versao.status !== 'ATIVA' && (
+                  <div className="perguntas-admin__version-actions">
                     <Button
                       disabled={carregando}
-                      onClick={() => ativar(versao.id)}
+                      onClick={() => visualizarVersao(versao.id)}
                       variant="secondary"
                     >
-                      {versao.status === 'RASCUNHO' ? 'Publicar' : 'Restaurar'}
+                      Visualizar
                     </Button>
-                  )}
+                    {versao.status !== 'ATIVA' && (
+                      <>
+                        <Button
+                          disabled={carregando}
+                          onClick={() => ativar(versao.id)}
+                          variant="secondary"
+                        >
+                          {versao.status === 'RASCUNHO' ? 'Publicar' : 'Restaurar'}
+                        </Button>
+                        <Button
+                          disabled={carregando}
+                          onClick={() => setVersaoDescarte(versao)}
+                          variant="danger"
+                        >
+                          Descartar
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -506,6 +718,46 @@ function PerguntasAdminPage() {
       <ErrorModal erro={erro} onClose={fecharErro} titulo={tituloErro} />
 
       <Modal
+        className="perguntas-admin__discard-modal"
+        isOpen={Boolean(versaoDescarte)}
+        onClose={fecharDescarte}
+        title="Descartar esta versão?"
+      >
+        <div aria-hidden="true" className="perguntas-admin__reset-icon">
+          !
+        </div>
+        <p className="perguntas-admin__reset-description">
+          Esta versão e todas as suas perguntas serão removidas definitivamente. A versão publicada
+          continuará em uso.
+        </p>
+        {versaoDescarte && (
+          <p className="perguntas-admin__discard-summary">
+            <strong>{versaoDescarte.total} perguntas</strong>
+            <span>Identificação {identificarVersao(versaoDescarte)}</span>
+          </p>
+        )}
+        <form className="perguntas-admin__reset-form" onSubmit={descartarVersao}>
+          <FormField
+            id="senha-descarte"
+            label="Confirme a senha administrativa"
+            onChange={setSenhaDescarte}
+            revealable
+            required
+            type="password"
+            value={senhaDescarte}
+          />
+          <div className="perguntas-admin__reset-actions">
+            <Button disabled={carregando} onClick={fecharDescarte} variant="secondary">
+              Cancelar
+            </Button>
+            <Button disabled={carregando || !senhaDescarte.trim()} type="submit" variant="danger">
+              {carregando ? 'Descartando...' : 'Descartar definitivamente'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
         className="perguntas-admin__reset-result-modal"
         isOpen={Boolean(sucessoReinicio)}
         onClose={() => setSucessoReinicio('')}
@@ -516,6 +768,19 @@ function PerguntasAdminPage() {
         </div>
         <p>{sucessoReinicio}</p>
         <Button onClick={() => setSucessoReinicio('')}>Concluir</Button>
+      </Modal>
+
+      <Modal
+        className="perguntas-admin__reset-result-modal"
+        isOpen={Boolean(sucessoDescarte)}
+        onClose={() => setSucessoDescarte('')}
+        title="Versão descartada"
+      >
+        <div aria-hidden="true" className="perguntas-admin__reset-success-icon">
+          ✓
+        </div>
+        <p>{sucessoDescarte}</p>
+        <Button onClick={() => setSucessoDescarte('')}>Concluir</Button>
       </Modal>
 
       <ScenicBackdrop

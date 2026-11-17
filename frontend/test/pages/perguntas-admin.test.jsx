@@ -8,6 +8,8 @@ import { UserFacingError } from '../../src/utils/errors'
 import {
   ativarVersaoPerguntas,
   consultarStatusPerguntas,
+  consultarVersaoPerguntas,
+  descartarVersaoPerguntas,
   exportarRankings,
   reiniciarRankings,
   validarArquivoPerguntas,
@@ -16,6 +18,8 @@ import {
 vi.mock('../../src/api/perguntaAdminApi', () => ({
   ativarVersaoPerguntas: vi.fn(),
   consultarStatusPerguntas: vi.fn(),
+  consultarVersaoPerguntas: vi.fn(),
+  descartarVersaoPerguntas: vi.fn(),
   exportarRankings: vi.fn(),
   reiniciarRankings: vi.fn(),
   validarArquivoPerguntas: vi.fn(),
@@ -32,10 +36,19 @@ const status = {
   versoes: [
     {
       id: 'versao-ativa',
+      hash: 'ativa123456789',
       total: 50,
       status: 'ATIVA',
       criadaEm: '2026-11-03T10:00:00.000Z',
       ativadaEm: '2026-11-03T10:01:00.000Z',
+    },
+    {
+      id: 'versao-arquivada',
+      hash: 'anterior123456789',
+      total: 48,
+      status: 'ARQUIVADA',
+      criadaEm: '2026-10-20T10:00:00.000Z',
+      ativadaEm: '2026-10-20T10:01:00.000Z',
     },
   ],
 }
@@ -143,6 +156,100 @@ describe('administração das perguntas', () => {
       'token-administrativo-com-32-caracteres',
       'candidata',
     )
+  })
+
+  it('visualiza uma versão anterior e filtra as perguntas', async () => {
+    const user = userEvent.setup()
+    consultarVersaoPerguntas.mockResolvedValue({
+      versao: {
+        ...status.versoes[1],
+        perguntas: [
+          {
+            id: 'P-ORIGENS',
+            faixa: 'FUNDAMENTAL_1',
+            tema: 'Origens e caminhos',
+            pergunta: 'Onde nasceu Cego Aderaldo?',
+            opcoes: ['Quixadá', 'Crato', 'Sobral', 'Fortaleza'],
+            correta: 'A',
+            pontosIniciais: 100,
+            dicas: ['Fica no Sertão Central.'],
+          },
+          {
+            id: 'P-MUSICA',
+            faixa: 'MEDIO',
+            tema: 'Arte e música',
+            pergunta: 'Qual instrumento aparece na narrativa?',
+            opcoes: ['Cavaquinho', 'Piano', 'Flauta', 'Violino'],
+            correta: 'A',
+            pontosIniciais: 100,
+            dicas: [],
+          },
+        ],
+      },
+    })
+    renderPage()
+
+    fireEvent.change(screen.getByLabelText('Senha administrativa'), {
+      target: { value: 'token-administrativo-com-32-caracteres' },
+    })
+    await user.click(screen.getByRole('button', { name: 'Entrar' }))
+    const versaoAnterior = screen
+      .getByText('Identificação anterior')
+      .closest('.perguntas-admin__version')
+    await user.click(within(versaoAnterior).getByRole('button', { name: 'Visualizar' }))
+
+    expect(consultarVersaoPerguntas).toHaveBeenCalledWith(
+      'token-administrativo-com-32-caracteres',
+      'versao-arquivada',
+    )
+    expect(await screen.findByText('Onde nasceu Cego Aderaldo?')).toBeVisible()
+    expect(screen.getByText('Qual instrumento aparece na narrativa?')).toBeVisible()
+
+    await user.selectOptions(screen.getByLabelText('Tema'), 'Arte e música')
+    expect(screen.queryByText('Onde nasceu Cego Aderaldo?')).not.toBeInTheDocument()
+    expect(screen.getByText('Qual instrumento aparece na narrativa?')).toBeVisible()
+
+    await user.selectOptions(screen.getByLabelText('Tema'), 'TODOS')
+    await user.type(screen.getByLabelText('Buscar'), 'Quixadá')
+    expect(screen.getByText('Onde nasceu Cego Aderaldo?')).toBeVisible()
+    expect(screen.queryByText('Qual instrumento aparece na narrativa?')).not.toBeInTheDocument()
+  })
+
+  it('descarta somente uma versão anterior após confirmar a senha', async () => {
+    const user = userEvent.setup()
+    descartarVersaoPerguntas.mockResolvedValue({ mensagem: 'Versão descartada definitivamente.' })
+    consultarStatusPerguntas
+      .mockResolvedValueOnce(status)
+      .mockResolvedValueOnce({ ...status, versoes: [status.versoes[0]] })
+    renderPage()
+
+    fireEvent.change(screen.getByLabelText('Senha administrativa'), {
+      target: { value: 'token-administrativo-com-32-caracteres' },
+    })
+    await user.click(screen.getByRole('button', { name: 'Entrar' }))
+    const versaoAnterior = screen
+      .getByText('Identificação anterior')
+      .closest('.perguntas-admin__version')
+    expect(
+      within(
+        screen.getByText('Identificação ativa123').closest('.perguntas-admin__version'),
+      ).queryByRole('button', { name: 'Descartar' }),
+    ).not.toBeInTheDocument()
+    await user.click(within(versaoAnterior).getByRole('button', { name: 'Descartar' }))
+
+    const confirmacao = screen.getByRole('dialog', { name: 'Descartar esta versão?' })
+    fireEvent.change(within(confirmacao).getByLabelText('Confirme a senha administrativa'), {
+      target: { value: 'token-administrativo-com-32-caracteres' },
+    })
+    await user.click(within(confirmacao).getByRole('button', { name: 'Descartar definitivamente' }))
+
+    expect(descartarVersaoPerguntas).toHaveBeenCalledWith(
+      'token-administrativo-com-32-caracteres',
+      'versao-arquivada',
+      'token-administrativo-com-32-caracteres',
+    )
+    expect(await screen.findByRole('dialog', { name: 'Versão descartada' })).toBeVisible()
+    expect(screen.queryByText('Identificação anterior')).not.toBeInTheDocument()
   })
 
   it('exporta os rankings e exige senha e frase para reiniciar o ano', async () => {

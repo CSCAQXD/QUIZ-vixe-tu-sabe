@@ -30,6 +30,17 @@ export function ativarVersaoPerguntas(token, versaoId) {
   )
 }
 
+export function consultarVersaoPerguntas(token, versaoId) {
+  return apiRequest(`/perguntas/admin/versoes/${encodeURIComponent(versaoId)}`, opcoes(token))
+}
+
+export function descartarVersaoPerguntas(token, versaoId, senhaAdministrativa) {
+  return apiRequest(`/perguntas/admin/versoes/${encodeURIComponent(versaoId)}`, {
+    ...opcoes(token, 'DELETE'),
+    body: JSON.stringify({ senhaAdministrativa }),
+  })
+}
+
 export async function exportarRankings(token, ano) {
   let response
   try {

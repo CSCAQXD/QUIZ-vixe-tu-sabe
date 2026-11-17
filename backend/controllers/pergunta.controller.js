@@ -63,6 +63,30 @@ async function ativarVersao(req, res, next) {
     }
 }
 
+async function detalharVersao(req, res, next) {
+    try {
+        const versao = await perguntaService.obterVersao(req.params.id);
+        return res.status(200).json({ versao });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+async function descartarVersao(req, res, next) {
+    try {
+        const versao = await perguntaService.descartarVersao(
+            req.params.id,
+            req.body?.senhaAdministrativa,
+        );
+        return res.status(200).json({
+            mensagem: "Versão descartada definitivamente.",
+            versao: resumirVersao(versao),
+        });
+    } catch (error) {
+        return next(error);
+    }
+}
+
 function lerTurmas(parametro) {
     if (!parametro) return [];
 
@@ -98,6 +122,8 @@ function lerTurmas(parametro) {
 
 module.exports = {
     ativarVersao,
+    descartarVersao,
+    detalharVersao,
     listarPerguntas,
     obterStatus,
     validarArquivo,

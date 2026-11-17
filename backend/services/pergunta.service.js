@@ -1,4 +1,4 @@
-const { createHash } = require("node:crypto");
+const { createHash, timingSafeEqual } = require("node:crypto");
 const perguntaRepository = require("../repositories/pergunta.repository");
 const { normalizarFaixaPergunta, obterMenorFaixa } = require("../utils/faixaEnsino");
 
@@ -135,6 +135,32 @@ async function ativarVersao(id) {
     return versao;
 }
 
+async function obterVersao(id) {
+    const versao = await perguntaRepository.buscarVersaoPorId(id);
+    if (!versao) {
+        const erro = new Error("A versão de perguntas não foi encontrada.");
+        erro.statusCode = 404;
+        throw erro;
+    }
+    return versao;
+}
+
+function compararSegredo(recebido, esperado) {
+    const primeiro = Buffer.from(String(recebido || ""));
+    const segundo = Buffer.from(String(esperado || ""));
+    return primeiro.length === segundo.length && timingSafeEqual(primeiro, segundo);
+}
+
+async function descartarVersao(id, senhaAdministrativa) {
+    if (!compararSegredo(senhaAdministrativa, process.env.PERGUNTAS_ADMIN_TOKEN)) {
+        const erro = new Error("Senha administrativa inválida.");
+        erro.statusCode = 401;
+        throw erro;
+    }
+
+    return perguntaRepository.excluirVersaoInativa(id);
+}
+
 async function carregarVersaoAtiva() {
     if (cacheVersaoAtiva) return cacheVersaoAtiva;
 
@@ -198,8 +224,10 @@ function limparCache() {
 module.exports = {
     ativarVersao,
     compararPerguntas,
+    descartarVersao,
     listarPerguntas,
     limparCache,
+    obterVersao,
     obterStatus,
     transformarPerguntas,
     validarArquivo,
