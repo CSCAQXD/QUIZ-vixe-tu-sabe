@@ -6,17 +6,17 @@ import RankingsPage from '../../src/pages/Rankings/RankingsPage'
 import * as api from '../../src/api/rankingApi'
 import { saveResult } from '../../src/utils/storage'
 
-vi.mock('../../src/api/escolaApi', () => ({
-  listarEscolas: vi.fn().mockResolvedValue([{ id: 'escola-a', nome: 'Escola A' }]),
-}))
 vi.mock('../../src/api/rankingApi', () => ({
   listarRankingTurmas: vi.fn().mockResolvedValue({ ranking: [] }),
-  listarRankingEscolas: vi.fn().mockResolvedValue({ ranking: [] }),
+  listarRankingEscolas: vi.fn().mockResolvedValue({
+    ranking: [{ escolaId: 'escola-a', escola: 'Escola A', cidade: 'Quixadá' }],
+  }),
   listarRankingInterno: vi.fn().mockResolvedValue({ ranking: [] }),
   listarRankingCategoria: vi.fn().mockResolvedValue({ ranking: [] }),
 }))
 
 it('permite trocar todos os rankings depois de sair da tela de parabéns', async () => {
+  Element.prototype.scrollTo = vi.fn()
   saveResult({
     partida: { pontuacaoFinal: 100, categoriaQuiz: 'MEDIO' },
     escola: { id: 'escola-a', nome: 'Escola A' },
@@ -38,7 +38,11 @@ it('permite trocar todos os rankings depois de sair da tela de parabéns', async
     'Geral de Turmas',
   ]) {
     fireEvent.click(screen.getByRole('button', { name: label, exact: true }))
-    await screen.findByText('Ainda não há pontuações neste ranking.')
+    if (label === 'Entre as Escolas') {
+      await screen.findByRole('cell', { name: 'Escola A' })
+    } else {
+      await screen.findByText('Ainda não há pontuações neste ranking.')
+    }
     expect(screen.getByRole('button', { name: label, exact: true })).toHaveAttribute(
       'aria-pressed',
       'true',

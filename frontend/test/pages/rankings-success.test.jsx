@@ -3,11 +3,9 @@ import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import RankingsPage from '../../src/pages/Rankings/RankingsPage'
-import { listarEscolas } from '../../src/api/escolaApi'
 import * as rankingApi from '../../src/api/rankingApi'
 import { saveResult } from '../../src/utils/storage'
 
-vi.mock('../../src/api/escolaApi', () => ({ listarEscolas: vi.fn() }))
 vi.mock('../../src/api/rankingApi', () => ({
   listarRankingEscolas: vi.fn(),
   listarRankingInterno: vi.fn(),
@@ -16,6 +14,9 @@ vi.mock('../../src/api/rankingApi', () => ({
 }))
 
 const response = { ranking: [] }
+const rankedSchoolsResponse = {
+  ranking: [{ escolaId: 'e1', escola: 'Escola Modelo', cidade: 'Quixadá' }],
+}
 
 describe('RankingsPage', () => {
   afterEach(() => vi.restoreAllMocks())
@@ -23,8 +24,8 @@ describe('RankingsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.spyOn(window, 'requestAnimationFrame').mockReturnValue(0)
-    listarEscolas.mockResolvedValue([{ id: 'e1', nome: 'Escola Modelo', cidade: 'Quixadá' }])
     Object.values(rankingApi).forEach((request) => request.mockResolvedValue(response))
+    rankingApi.listarRankingEscolas.mockResolvedValue(rankedSchoolsResponse)
   })
 
   it('alterna entre os tipos de ranking', async () => {
@@ -47,9 +48,9 @@ describe('RankingsPage', () => {
   })
 
   it('permite tentar novamente quando a listagem de escolas falha', async () => {
-    listarEscolas
+    rankingApi.listarRankingEscolas
       .mockRejectedValueOnce(new Error('Falha ao carregar escolas'))
-      .mockResolvedValue([{ id: 'e1', nome: 'Escola Modelo', cidade: 'Quixadá' }])
+      .mockResolvedValue(rankedSchoolsResponse)
     render(
       <MemoryRouter>
         <RankingsPage />
@@ -65,7 +66,7 @@ describe('RankingsPage', () => {
     await waitFor(() =>
       expect(rankingApi.listarRankingInterno).toHaveBeenCalledWith('e1', expect.any(Object)),
     )
-    expect(listarEscolas).toHaveBeenCalledTimes(2)
+    expect(rankingApi.listarRankingEscolas).toHaveBeenCalledTimes(2)
   })
 
   it.each([

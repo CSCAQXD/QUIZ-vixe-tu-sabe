@@ -10,7 +10,6 @@ import ScenicBackdrop from '../../components/common/ScenicBackdrop/ScenicBackdro
 import SelectField from '../../components/common/SelectField/SelectField'
 import RankingPodium from '../../components/features/rankings/RankingPodium/RankingPodium'
 import RankingTable from '../../components/features/rankings/RankingTable/RankingTable'
-import { listarEscolas } from '../../api/escolaApi'
 import {
   listarRankingEscolas,
   listarRankingCategoria,
@@ -140,17 +139,29 @@ function RankingsPage() {
 
     let isActive = true
 
-    listarEscolas()
+    listarRankingEscolas({ ano: CURRENT_YEAR })
       .then((response) => {
         if (!isActive) return
 
-        setSchools(response)
+        const rankedSchools = (response.ranking ?? []).map((school) => ({
+          id: school.escolaId,
+          nome: school.escola,
+          cidade: school.cidade,
+        }))
+
+        setSchools(rankedSchools)
         setSelectedSchoolId((current) => {
           const preferredSchoolId = currentClasses[0]?.escolaId
-          const preferredSchoolExists = response.some((school) => school.id === preferredSchoolId)
+          const currentSchoolExists = rankedSchools.some((school) => school.id === current)
+          const preferredSchoolExists = rankedSchools.some(
+            (school) => school.id === preferredSchoolId,
+          )
 
           return (
-            current || (preferredSchoolExists ? preferredSchoolId : '') || response[0]?.id || ''
+            (currentSchoolExists ? current : '') ||
+            (preferredSchoolExists ? preferredSchoolId : '') ||
+            rankedSchools[0]?.id ||
+            ''
           )
         })
       })
@@ -162,7 +173,7 @@ function RankingsPage() {
         setSchoolError(
           getUserErrorMessage(
             requestError,
-            'Não foi possível carregar as escolas. Tente novamente em alguns instantes.',
+            'Não foi possível carregar as escolas com pontuação. Tente novamente em alguns instantes.',
           ),
         )
       })
@@ -334,7 +345,9 @@ function RankingsPage() {
                 {isSchoolsLoading ? (
                   <option value="">Carregando escolas...</option>
                 ) : (
-                  schools.length === 0 && <option value="">Nenhuma escola cadastrada</option>
+                  schools.length === 0 && (
+                    <option value="">Nenhuma escola com pontuação neste ano</option>
+                  )
                 )}
 
                 {schools.map((school) => (

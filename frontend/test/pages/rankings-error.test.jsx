@@ -5,9 +5,6 @@ import { expect, it, vi } from 'vitest'
 import RankingsPage from '../../src/pages/Rankings/RankingsPage'
 import { listarRankingTurmas } from '../../src/api/rankingApi'
 
-vi.mock('../../src/api/escolaApi', () => ({
-  listarEscolas: vi.fn().mockRejectedValue(new Error('indisponível')),
-}))
 vi.mock('../../src/api/rankingApi', () => ({
   listarRankingEscolas: vi.fn(),
   listarRankingCategoria: vi.fn(),
