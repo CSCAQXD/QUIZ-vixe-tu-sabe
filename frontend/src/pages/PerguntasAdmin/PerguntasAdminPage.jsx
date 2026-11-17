@@ -300,7 +300,13 @@ function PerguntasAdminPage() {
     const temas = [...new Set(versaoVisualizada.perguntas.map((pergunta) => pergunta.tema))].sort(
       (a, b) => a.localeCompare(b, 'pt-BR'),
     )
-    const faixas = [...new Set(versaoVisualizada.perguntas.map((pergunta) => pergunta.faixa))]
+    const faixas = [
+      ...new Set(
+        versaoVisualizada.perguntas
+          .map((pergunta) => pergunta.faixa)
+          .filter((faixa) => faixa && faixa !== 'TODAS'),
+      ),
+    ]
     const perguntas = versaoVisualizada.perguntas.filter((pergunta) => {
       const correspondeTexto =
         !termo ||

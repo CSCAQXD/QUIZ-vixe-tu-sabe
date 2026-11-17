@@ -176,7 +176,7 @@ describe('administração das perguntas', () => {
           },
           {
             id: 'P-MUSICA',
-            faixa: 'MEDIO',
+            faixa: 'TODAS',
             tema: 'Arte e música',
             pergunta: 'Qual instrumento aparece na narrativa?',
             opcoes: ['Cavaquinho', 'Piano', 'Flauta', 'Violino'],
@@ -204,6 +204,7 @@ describe('administração das perguntas', () => {
     )
     expect(await screen.findByText('Onde nasceu Cego Aderaldo?')).toBeVisible()
     expect(screen.getByText('Qual instrumento aparece na narrativa?')).toBeVisible()
+    expect(screen.getAllByRole('option', { name: 'Todas as faixas' })).toHaveLength(1)
 
     await user.selectOptions(screen.getByLabelText('Tema'), 'Arte e música')
     expect(screen.queryByText('Onde nasceu Cego Aderaldo?')).not.toBeInTheDocument()
