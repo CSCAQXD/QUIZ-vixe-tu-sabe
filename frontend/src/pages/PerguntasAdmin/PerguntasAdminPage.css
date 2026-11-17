@@ -710,7 +710,14 @@
 }
 
 .perguntas-admin__reset-form .form-field__input {
+  min-height: 62px;
+  padding-top: 14px;
+  padding-bottom: 14px;
   background: #fff;
+}
+
+.perguntas-admin__reset-form .form-field__error {
+  min-height: 0;
 }
 
 .perguntas-admin__reset-actions {
