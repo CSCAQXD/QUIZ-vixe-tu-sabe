@@ -54,6 +54,7 @@ function PerguntasAdminPage() {
   const [mostrarReinicio, setMostrarReinicio] = useState(false)
   const [senhaReinicio, setSenhaReinicio] = useState('')
   const [confirmacaoReinicio, setConfirmacaoReinicio] = useState('')
+  const [sucessoReinicio, setSucessoReinicio] = useState('')
   const [tituloErro, setTituloErro] = useState('Não foi possível concluir')
 
   function fecharErro() {
@@ -63,6 +64,12 @@ function PerguntasAdminPage() {
   function mostrarErro(titulo, mensagem) {
     setTituloErro(titulo)
     setErro(mensagem)
+  }
+
+  function fecharReinicio() {
+    setMostrarReinicio(false)
+    setSenhaReinicio('')
+    setConfirmacaoReinicio('')
   }
 
   async function executar(acao) {
@@ -169,10 +176,8 @@ function PerguntasAdminPage() {
     )
     if (!resultado) return
 
-    setMostrarReinicio(false)
-    setSenhaReinicio('')
-    setConfirmacaoReinicio('')
-    setMensagem(resultado.mensagem)
+    fecharReinicio()
+    setSucessoReinicio(resultado.mensagem)
   }
 
   if (!status) {
@@ -429,69 +434,89 @@ function PerguntasAdminPage() {
                   Apaga todas as sessões e pontuações de {ANO_ATUAL}. Perguntas, escolas e cursos
                   serão preservados.
                 </p>
-                {!mostrarReinicio ? (
-                  <Button
-                    disabled={carregando}
-                    onClick={() => setMostrarReinicio(true)}
-                    variant="danger"
-                  >
-                    Iniciar reinicialização
-                  </Button>
-                ) : (
-                  <form className="perguntas-admin__reset-form" onSubmit={apagarDadosDoAno}>
-                    <p className="perguntas-admin__reset-warning">
-                      Exporte os rankings antes de continuar. Esta ação não pode ser desfeita.
-                    </p>
-                    <FormField
-                      id="senha-reinicio"
-                      label="Confirme a senha administrativa"
-                      onChange={setSenhaReinicio}
-                      revealable
-                      required
-                      type="password"
-                      value={senhaReinicio}
-                    />
-                    <FormField
-                      id="frase-reinicio"
-                      label={`Digite: ${FRASE_REINICIO}`}
-                      onChange={setConfirmacaoReinicio}
-                      required
-                      value={confirmacaoReinicio}
-                    />
-                    <div className="perguntas-admin__reset-actions">
-                      <Button
-                        disabled={carregando}
-                        onClick={() => {
-                          setMostrarReinicio(false)
-                          setSenhaReinicio('')
-                          setConfirmacaoReinicio('')
-                        }}
-                        type="button"
-                        variant="secondary"
-                      >
-                        Cancelar
-                      </Button>
-                      <Button
-                        disabled={
-                          carregando ||
-                          !senhaReinicio.trim() ||
-                          confirmacaoReinicio !== FRASE_REINICIO
-                        }
-                        type="submit"
-                        variant="danger"
-                      >
-                        {carregando ? 'Apagando...' : `Apagar dados de ${ANO_ATUAL}`}
-                      </Button>
-                    </div>
-                  </form>
-                )}
+                <Button
+                  disabled={carregando}
+                  onClick={() => setMostrarReinicio(true)}
+                  variant="danger"
+                >
+                  Reiniciar rankings de {ANO_ATUAL}
+                </Button>
               </section>
             </div>
           </article>
         </main>
       </div>
 
+      <Modal
+        className="perguntas-admin__reset-modal"
+        isOpen={mostrarReinicio}
+        onClose={fecharReinicio}
+        title={`Reiniciar rankings de ${ANO_ATUAL}?`}
+      >
+        <div aria-hidden="true" className="perguntas-admin__reset-icon">
+          !
+        </div>
+        <p className="perguntas-admin__reset-description">
+          Todas as sessões e pontuações de {ANO_ATUAL} serão apagadas. Perguntas, escolas e cursos
+          continuarão salvos.
+        </p>
+
+        <form className="perguntas-admin__reset-form" onSubmit={apagarDadosDoAno}>
+          <p className="perguntas-admin__reset-warning">
+            Exporte os rankings antes de continuar. Esta ação não pode ser desfeita.
+          </p>
+          <FormField
+            id="senha-reinicio"
+            label="Confirme a senha administrativa"
+            onChange={setSenhaReinicio}
+            revealable
+            required
+            type="password"
+            value={senhaReinicio}
+          />
+          <FormField
+            id="frase-reinicio"
+            label={`Digite: ${FRASE_REINICIO}`}
+            onChange={setConfirmacaoReinicio}
+            required
+            value={confirmacaoReinicio}
+          />
+          <div className="perguntas-admin__reset-actions">
+            <Button
+              disabled={carregando}
+              onClick={fecharReinicio}
+              type="button"
+              variant="secondary"
+            >
+              Cancelar
+            </Button>
+            <Button
+              disabled={
+                carregando || !senhaReinicio.trim() || confirmacaoReinicio !== FRASE_REINICIO
+              }
+              type="submit"
+              variant="danger"
+            >
+              {carregando ? 'Apagando...' : `Apagar dados de ${ANO_ATUAL}`}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
       <ErrorModal erro={erro} onClose={fecharErro} titulo={tituloErro} />
+
+      <Modal
+        className="perguntas-admin__reset-result-modal"
+        isOpen={Boolean(sucessoReinicio)}
+        onClose={() => setSucessoReinicio('')}
+        title="Rankings reiniciados"
+      >
+        <div aria-hidden="true" className="perguntas-admin__reset-success-icon">
+          ✓
+        </div>
+        <p>{sucessoReinicio}</p>
+        <Button onClick={() => setSucessoReinicio('')}>Concluir</Button>
+      </Modal>
 
       <ScenicBackdrop
         fenceClassName="perguntas-admin__dashboard-fence"

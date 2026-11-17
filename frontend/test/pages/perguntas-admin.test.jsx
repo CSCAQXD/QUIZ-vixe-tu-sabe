@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -168,16 +168,19 @@ describe('administração das perguntas', () => {
     expect(exportarRankings).toHaveBeenCalledWith('token-administrativo-com-32-caracteres', ano)
     expect(clicarLink).toHaveBeenCalledOnce()
 
-    await user.click(screen.getByRole('button', { name: 'Iniciar reinicialização' }))
-    await user.type(
-      screen.getByLabelText('Confirme a senha administrativa'),
-      'token-administrativo-com-32-caracteres',
-    )
-    await user.type(
-      screen.getByLabelText(`Digite: APAGAR DADOS DE ${ano}`),
-      `APAGAR DADOS DE ${ano}`,
-    )
-    await user.click(screen.getByRole('button', { name: `Apagar dados de ${ano}` }))
+    expect(screen.queryByLabelText('Confirme a senha administrativa')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: `Reiniciar rankings de ${ano}` }))
+    const confirmacao = screen.getByRole('dialog', { name: `Reiniciar rankings de ${ano}?` })
+    expect(confirmacao).toBeVisible()
+    fireEvent.change(within(confirmacao).getByLabelText('Confirme a senha administrativa'), {
+      target: { value: 'token-administrativo-com-32-caracteres' },
+    })
+    fireEvent.change(within(confirmacao).getByLabelText(`Digite: APAGAR DADOS DE ${ano}`), {
+      target: { value: `APAGAR DADOS DE ${ano}` },
+    })
+    const apagar = within(confirmacao).getByRole('button', { name: `Apagar dados de ${ano}` })
+    expect(apagar).toBeEnabled()
+    await user.click(apagar)
 
     expect(reiniciarRankings).toHaveBeenCalledWith(
       'token-administrativo-com-32-caracteres',
@@ -185,5 +188,13 @@ describe('administração das perguntas', () => {
       'token-administrativo-com-32-caracteres',
       `APAGAR DADOS DE ${ano}`,
     )
+    expect(
+      screen.queryByRole('dialog', { name: `Reiniciar rankings de ${ano}?` }),
+    ).not.toBeInTheDocument()
+    const sucesso = await screen.findByRole('dialog', { name: 'Rankings reiniciados' })
+    expect(within(sucesso).getByText(`Os dados de ${ano} foram apagados.`)).toBeVisible()
+
+    await user.click(within(sucesso).getByRole('button', { name: 'Concluir' }))
+    expect(screen.queryByRole('dialog', { name: 'Rankings reiniciados' })).not.toBeInTheDocument()
   })
 })
