@@ -12,6 +12,7 @@ const cursoRouter = require("./routers/curso.router");
 const sessaoRouter = require("./routers/sessao.router");
 
 const rankingRouter = require("./routers/ranking.router");
+const administracaoRouter = require("./routers/administracao.router");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -98,6 +99,8 @@ app.use("/sessao", sessaoRouter);
 app.use("/sessoes", sessaoRouter);
 
 app.use(rankingRouter);
+
+app.use("/admin", administracaoRouter);
 
 app.use((req, res) => {
     return res.status(404).json({
