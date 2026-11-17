@@ -3,20 +3,43 @@ import { useState } from 'react'
 import Button from '../../components/common/Button/Button'
 import FormField from '../../components/common/FormField/FormField'
 import HomeButton from '../../components/common/HomeButton/HomeButton'
+import Modal from '../../components/common/Modal/Modal'
 import ScenicBackdrop from '../../components/common/ScenicBackdrop/ScenicBackdrop'
 import {
   ativarVersaoPerguntas,
   consultarStatusPerguntas,
+  exportarRankings,
+  reiniciarRankings,
   validarArquivoPerguntas,
 } from '../../api/perguntaAdminApi'
 import { getUserErrorMessage } from '../../utils/errors'
 
 import './PerguntasAdminPage.css'
 
+const ANO_ATUAL = new Date().getFullYear()
+const FRASE_REINICIO = `APAGAR DADOS DE ${ANO_ATUAL}`
+
 function formatarData(valor) {
   if (!valor) return 'Ainda não ativada'
   return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(
     new Date(valor),
+  )
+}
+
+function ErrorModal({ erro, onClose, titulo }) {
+  return (
+    <Modal
+      className="perguntas-admin__password-modal"
+      isOpen={Boolean(erro)}
+      onClose={onClose}
+      title={titulo}
+    >
+      <div aria-hidden="true" className="perguntas-admin__password-warning">
+        !
+      </div>
+      <p>{erro}</p>
+      <Button onClick={onClose}>Entendi</Button>
+    </Modal>
   )
 }
 
@@ -28,6 +51,19 @@ function PerguntasAdminPage() {
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(false)
   const [arquivo, setArquivo] = useState(null)
+  const [mostrarReinicio, setMostrarReinicio] = useState(false)
+  const [senhaReinicio, setSenhaReinicio] = useState('')
+  const [confirmacaoReinicio, setConfirmacaoReinicio] = useState('')
+  const [tituloErro, setTituloErro] = useState('Não foi possível concluir')
+
+  function fecharErro() {
+    setErro('')
+  }
+
+  function mostrarErro(titulo, mensagem) {
+    setTituloErro(titulo)
+    setErro(mensagem)
+  }
 
   async function executar(acao) {
     setCarregando(true)
@@ -36,7 +72,8 @@ function PerguntasAdminPage() {
     try {
       return await acao()
     } catch (falha) {
-      setErro(
+      mostrarErro(
+        'Não foi possível concluir',
         getUserErrorMessage(
           falha,
           'Não foi possível concluir esta operação. Tente novamente em alguns instantes.',
@@ -50,18 +87,41 @@ function PerguntasAdminPage() {
 
   async function entrar(event) {
     event.preventDefault()
-    const dados = await executar(() => consultarStatusPerguntas(token))
-    if (dados) setStatus(dados)
+    setCarregando(true)
+    setErro('')
+    setMensagem('')
+
+    try {
+      const dados = await consultarStatusPerguntas(token)
+      setStatus(dados)
+    } catch (falha) {
+      if (falha?.status === 401) {
+        mostrarErro(
+          'Senha incorreta',
+          'A senha administrativa informada não confere. Verifique e tente novamente.',
+        )
+      } else {
+        mostrarErro(
+          'Não foi possível entrar',
+          getUserErrorMessage(
+            falha,
+            'Não foi possível entrar na área administrativa. Tente novamente em alguns instantes.',
+          ),
+        )
+      }
+    } finally {
+      setCarregando(false)
+    }
   }
 
   async function validarArquivo() {
     if (!arquivo) {
-      setErro('Escolha primeiro o arquivo CSV com as perguntas.')
+      mostrarErro('Arquivo não selecionado', 'Escolha primeiro o arquivo CSV com as perguntas.')
       return
     }
 
     if (arquivo.size > 2 * 1024 * 1024) {
-      setErro('O arquivo é muito grande. O limite é 2 MB.')
+      mostrarErro('Arquivo muito grande', 'O arquivo é muito grande. O limite é 2 MB.')
       return
     }
 
@@ -87,6 +147,32 @@ function PerguntasAdminPage() {
     setMensagem(resultado.mensagem)
     const atualizado = await executar(() => consultarStatusPerguntas(token))
     if (atualizado) setStatus(atualizado)
+  }
+
+  async function baixarRankings() {
+    const resultado = await executar(() => exportarRankings(token, ANO_ATUAL))
+    if (!resultado) return
+
+    const endereco = URL.createObjectURL(resultado.arquivo)
+    const link = document.createElement('a')
+    link.href = endereco
+    link.download = resultado.nome
+    link.click()
+    URL.revokeObjectURL(endereco)
+    setMensagem(`Planilha dos rankings de ${ANO_ATUAL} exportada com sucesso.`)
+  }
+
+  async function apagarDadosDoAno(event) {
+    event.preventDefault()
+    const resultado = await executar(() =>
+      reiniciarRankings(token, ANO_ATUAL, senhaReinicio, confirmacaoReinicio),
+    )
+    if (!resultado) return
+
+    setMostrarReinicio(false)
+    setSenhaReinicio('')
+    setConfirmacaoReinicio('')
+    setMensagem(resultado.mensagem)
   }
 
   if (!status) {
@@ -134,15 +220,16 @@ function PerguntasAdminPage() {
               type="password"
               value={token}
             />
-            {erro && <p className="perguntas-admin__error">{erro}</p>}
             <div className="perguntas-admin__login-actions">
               <HomeButton />
-              <Button disabled={carregando || token.length < 16} type="submit">
+              <Button disabled={carregando || !token.trim()} type="submit">
                 {carregando ? 'Verificando...' : 'Entrar'}
               </Button>
             </div>
           </form>
         </div>
+
+        <ErrorModal erro={erro} onClose={fecharErro} titulo={tituloErro} />
 
         <ScenicBackdrop
           fenceClassName="perguntas-admin__login-fence"
@@ -179,7 +266,6 @@ function PerguntasAdminPage() {
         </header>
 
         <div aria-live="polite">
-          {erro && <p className="perguntas-admin__notice perguntas-admin__error">{erro}</p>}
           {mensagem && (
             <p className="perguntas-admin__notice perguntas-admin__message">{mensagem}</p>
           )}
@@ -317,8 +403,95 @@ function PerguntasAdminPage() {
               ))}
             </div>
           </article>
+
+          <article className="perguntas-admin__panel perguntas-admin__annual-tools">
+            <div className="perguntas-admin__panel-heading">
+              <div>
+                <p className="perguntas-admin__step">Fechamento anual</p>
+                <h2>Dados e rankings de {ANO_ATUAL}</h2>
+              </div>
+            </div>
+
+            <div className="perguntas-admin__tools-grid">
+              <section className="perguntas-admin__tool-card">
+                <h3>Exportar rankings</h3>
+                <p>
+                  Baixe uma planilha com uma aba para cada tipo de ranking antes de encerrar o ano.
+                </p>
+                <Button disabled={carregando} onClick={baixarRankings} variant="secondary">
+                  {carregando ? 'Preparando...' : `Exportar rankings de ${ANO_ATUAL}`}
+                </Button>
+              </section>
+
+              <section className="perguntas-admin__tool-card perguntas-admin__tool-card--danger">
+                <h3>Reiniciar rankings</h3>
+                <p>
+                  Apaga todas as sessões e pontuações de {ANO_ATUAL}. Perguntas, escolas e cursos
+                  serão preservados.
+                </p>
+                {!mostrarReinicio ? (
+                  <Button
+                    disabled={carregando}
+                    onClick={() => setMostrarReinicio(true)}
+                    variant="danger"
+                  >
+                    Iniciar reinicialização
+                  </Button>
+                ) : (
+                  <form className="perguntas-admin__reset-form" onSubmit={apagarDadosDoAno}>
+                    <p className="perguntas-admin__reset-warning">
+                      Exporte os rankings antes de continuar. Esta ação não pode ser desfeita.
+                    </p>
+                    <FormField
+                      id="senha-reinicio"
+                      label="Confirme a senha administrativa"
+                      onChange={setSenhaReinicio}
+                      revealable
+                      required
+                      type="password"
+                      value={senhaReinicio}
+                    />
+                    <FormField
+                      id="frase-reinicio"
+                      label={`Digite: ${FRASE_REINICIO}`}
+                      onChange={setConfirmacaoReinicio}
+                      required
+                      value={confirmacaoReinicio}
+                    />
+                    <div className="perguntas-admin__reset-actions">
+                      <Button
+                        disabled={carregando}
+                        onClick={() => {
+                          setMostrarReinicio(false)
+                          setSenhaReinicio('')
+                          setConfirmacaoReinicio('')
+                        }}
+                        type="button"
+                        variant="secondary"
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        disabled={
+                          carregando ||
+                          !senhaReinicio.trim() ||
+                          confirmacaoReinicio !== FRASE_REINICIO
+                        }
+                        type="submit"
+                        variant="danger"
+                      >
+                        {carregando ? 'Apagando...' : `Apagar dados de ${ANO_ATUAL}`}
+                      </Button>
+                    </div>
+                  </form>
+                )}
+              </section>
+            </div>
+          </article>
         </main>
       </div>
+
+      <ErrorModal erro={erro} onClose={fecharErro} titulo={tituloErro} />
 
       <ScenicBackdrop
         fenceClassName="perguntas-admin__dashboard-fence"

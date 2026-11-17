@@ -157,6 +157,47 @@
   width: 100%;
 }
 
+.perguntas-admin__password-modal {
+  display: grid;
+  justify-items: center;
+  width: min(440px, 100%);
+  text-align: center;
+  border-radius: 26px;
+  background: #fff0df;
+  box-shadow: 9px 10px 0 #3c1423;
+}
+
+.perguntas-admin__password-modal h2 {
+  margin-bottom: 10px;
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+}
+
+.perguntas-admin__password-modal p {
+  max-width: 330px;
+  margin-bottom: 22px;
+  color: #6c5960;
+  line-height: 1.5;
+}
+
+.perguntas-admin__password-modal > .button {
+  width: min(260px, 100%);
+}
+
+.perguntas-admin__password-warning {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  place-items: center;
+  border: 2px solid #3c1423;
+  border-radius: 18px;
+  color: #3c1423;
+  background: #f09b32;
+  box-shadow: 5px 6px 0 #3c1423;
+  font-size: 2.4rem;
+  font-weight: 900;
+}
+
 .perguntas-admin__login-sun,
 .perguntas-admin__login-fence,
 .perguntas-admin__login-ground {
@@ -536,6 +577,79 @@
   background: #fff8ef;
 }
 
+.perguntas-admin__annual-tools {
+  background: #fff;
+}
+
+.perguntas-admin__tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.perguntas-admin__tool-card {
+  display: flex;
+  min-width: 0;
+  padding: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid #d7b99e;
+  border-radius: 16px;
+  background: #fff8ef;
+}
+
+.perguntas-admin__tool-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+}
+
+.perguntas-admin__tool-card > p {
+  margin-bottom: 18px;
+  color: #6c5960;
+  line-height: 1.45;
+}
+
+.perguntas-admin__tool-card > .button {
+  width: 100%;
+  margin-top: auto;
+}
+
+.perguntas-admin__tool-card--danger {
+  border-color: #d99198;
+  background: #fff7f7;
+}
+
+.perguntas-admin__reset-form {
+  display: grid;
+  width: 100%;
+  gap: 12px;
+}
+
+.perguntas-admin__reset-warning {
+  margin-bottom: 2px;
+  padding: 12px 14px;
+  border-left: 4px solid #a52d37;
+  color: #78202a;
+  background: #ffe8ea;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.perguntas-admin__reset-form .form-field__input {
+  background: #fff;
+}
+
+.perguntas-admin__reset-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 10px;
+}
+
+.perguntas-admin__reset-actions .button {
+  width: 100%;
+}
+
 .perguntas-admin__history {
   display: grid;
   gap: 10px;
@@ -684,6 +798,11 @@
   }
 
   .perguntas-admin__upload-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .perguntas-admin__tools-grid,
+  .perguntas-admin__reset-actions {
     grid-template-columns: 1fr;
   }
 }
