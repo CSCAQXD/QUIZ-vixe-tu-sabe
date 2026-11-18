@@ -61,7 +61,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\definir-senha-administracao.p
 npm run dev:all
 ```
 
-Antes do fechamento anual, use **Exportar rankings** na Administracao e guarde a planilha em local seguro. Depois de conferir o arquivo, a opcao **Reiniciar rankings** apaga partidas e participacoes do ano mediante nova confirmacao da senha administrativa e frase de seguranca. Perguntas, escolas e cursos sao preservados.
+Antes do fechamento anual, use **Exportar rankings** na Administracao e guarde a planilha em local seguro. Na aba **Interno por escola**, use o filtro da coluna **Escola** para consultar as instituicoes sem criar uma aba separada para cada uma. Depois de conferir o arquivo, a opcao **Reiniciar rankings** apaga partidas e participacoes do ano mediante nova confirmacao da senha administrativa e frase de seguranca. Perguntas, escolas e cursos sao preservados.
 
 Para popular somente o banco SQLite local de desenvolvimento com escolas, turmas e partidas ficticias organizadas, execute em `backend`:
 
