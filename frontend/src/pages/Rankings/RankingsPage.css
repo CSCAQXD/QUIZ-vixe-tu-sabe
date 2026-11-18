@@ -239,8 +239,12 @@
 }
 
 .rankings-page__panel > .page-status {
+  min-height: 0;
+  flex: 1 1 auto;
   width: min(47rem, 100%);
-  margin: clamp(4rem, 14vh, 10rem) auto;
+  margin: 0 auto;
+  padding-block: clamp(0.75rem, 2svh, 1.5rem);
+  overflow-y: auto;
 }
 
 .rankings-page__highlights {
