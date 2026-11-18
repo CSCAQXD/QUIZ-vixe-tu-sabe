@@ -20,6 +20,31 @@ describe('navegação e modal', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
+  it('mantém o foco no campo quando a função de fechamento muda', async () => {
+    const { rerender } = render(
+      <Modal isOpen onClose={() => {}} title="Confirmação">
+        <label>
+          Senha
+          <input type="password" />
+        </label>
+      </Modal>,
+    )
+    const input = screen.getByLabelText('Senha')
+
+    await userEvent.type(input, 'abc')
+    rerender(
+      <Modal isOpen onClose={() => {}} title="Confirmação">
+        <label>
+          Senha
+          <input type="password" />
+        </label>
+      </Modal>,
+    )
+
+    expect(input).toHaveFocus()
+    expect(input).toHaveValue('abc')
+  })
+
   it('usa navegação de retorno', async () => {
     render(
       <MemoryRouter>
