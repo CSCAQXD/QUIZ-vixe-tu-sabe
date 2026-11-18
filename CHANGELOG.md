@@ -12,6 +12,8 @@ Mudancas relevantes deste projeto sao registradas aqui. O formato segue [Keep a 
 - Teste E2E do fluxo principal do quiz.
 - Logs estruturados com ID de requisicao e endpoint de prontidao.
 - Backup e restauracao segura do banco SQLite.
+- Guias completos de uso, administração, servidor Windows, desenvolvimento, privacidade e acessibilidade.
+- Referência atualizada da API e procedimentos operacionais de diagnóstico.
 
 ### Changed
 
