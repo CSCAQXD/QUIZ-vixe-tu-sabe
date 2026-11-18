@@ -10,7 +10,10 @@ O backend é responsável por:
 - impedir duplicidade no envio de uma partida;
 - manter o histórico das partidas;
 - calcular os rankings anuais;
-- retornar a posição imediata das turmas.
+- retornar a posição imediata das turmas;
+- manter versões de perguntas no SQLite;
+- exportar rankings anuais em XLSX;
+- reiniciar os dados anuais mediante confirmação administrativa.
 
 ## Tecnologias
 
@@ -19,6 +22,7 @@ O backend é responsável por:
 - Prisma ORM
 - SQLite
 - Papa Parse
+- ExcelJS
 
 ## Pré-requisitos
 
@@ -29,9 +33,15 @@ O backend é responsável por:
 
 Dentro da pasta `backend`, execute:
 
-```bash
-npm install
+```powershell
+npm ci
+Copy-Item .env.example .env
+npm run prisma:generate
+npm run prisma:deploy
+npm run dev
 ```
+
+A API fica disponível em `http://localhost:3001`. Consulte o contrato completo em [API](../docs/API.md).
 
 ## Faixas das perguntas
 
@@ -93,3 +103,33 @@ Para atualizar o banco e o cliente, execute na pasta `backend`:
 npm run prisma:generate
 npm run prisma:deploy
 ```
+
+## Variáveis principais
+
+| Variável                     | Finalidade                                   |
+| ---------------------------- | -------------------------------------------- |
+| `DATABASE_URL`               | Arquivo SQLite                               |
+| `HOST` e `PORT`              | Endereço e porta da API                      |
+| `CORS_ORIGINS`               | Origens permitidas                           |
+| `QUIZ_CONTEXT_SECRET`        | Assinatura privada dos contextos de mediação |
+| `PERGUNTAS_ADMIN_TOKEN`      | Senha da administração                       |
+| `WRITE_RATE_LIMIT_MAX`       | Máximo de escritas por janela                |
+| `WRITE_RATE_LIMIT_WINDOW_MS` | Duração da janela em milissegundos           |
+| `TRUST_PROXY`                | Quantidade de proxies confiáveis             |
+| `BACKUP_DIRECTORY`           | Destino padrão dos backups                   |
+| `BACKUP_RETENTION_DAYS`      | Retenção dos backups locais                  |
+
+## Comandos
+
+| Comando                             | Finalidade                                |
+| ----------------------------------- | ----------------------------------------- |
+| `npm run dev`                       | API com reinício automático               |
+| `npm start`                         | API sem observador                        |
+| `npm test`                          | Testes unitários e de integração          |
+| `npm run test:coverage`             | Testes com limites de cobertura           |
+| `npm run lint`                      | ESLint                                    |
+| `npm run check`                     | Sintaxe e schema Prisma                   |
+| `npm run prisma:deploy`             | Aplica migrações versionadas              |
+| `npm run dados:teste -- --ano=2026` | Popula somente o banco de desenvolvimento |
+
+Não execute `dados:teste` no servidor real. O próprio script bloqueia `NODE_ENV=production`.

@@ -1,16 +1,80 @@
-# React + Vite
+# Frontend do Vixe, Tu Sabe?
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface React do quiz da Casa de Saberes Cego Aderaldo.
 
-Currently, two official plugins are available:
+## Responsabilidades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- tela inicial e navegação;
+- cadastro de escolas e turmas;
+- execução do quiz e feedback das respostas;
+- envio idempotente das sessões;
+- rankings por turma, escola, escola selecionada e categoria;
+- área administrativa de perguntas e fechamento anual;
+- telas de erro acessíveis e pop-ups de confirmação.
 
-## React Compiler
+## Tecnologias
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19;
+- React Router;
+- Vite;
+- Vitest e Testing Library;
+- Playwright;
+- Atkinson Hyperlegible.
 
-## Expanding the ESLint configuration
+## Configuração
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```powershell
+Copy-Item .env.example .env
+```
+
+| Variável       | Uso                                                                |
+| -------------- | ------------------------------------------------------------------ |
+| `VITE_API_URL` | URL da API em desenvolvimento; recomendado `http://localhost:3001` |
+
+Em produção, a imagem é compilada com `VITE_API_URL=/api`. O Nginx encaminha essas chamadas ao backend indicado por `BACKEND_URL`.
+
+## Executar
+
+Na pasta `frontend`:
+
+```powershell
+npm ci
+npm run dev
+```
+
+Acesse `http://localhost:5173`.
+
+## Rotas da interface
+
+| Rota                       | Tela                        |
+| -------------------------- | --------------------------- |
+| `/`                        | Tela inicial                |
+| `/cadastro-turmas`         | Cadastro da mediação        |
+| `/quiz`                    | Perguntas                   |
+| `/quiz-concluido`          | Resultado e próximos passos |
+| `/rankings`                | Rankings                    |
+| `/administracao/perguntas` | Administração autenticada   |
+
+Rotas desconhecidas voltam para a tela inicial.
+
+## Comandos
+
+| Comando                 | Finalidade                |
+| ----------------------- | ------------------------- |
+| `npm run dev`           | Servidor Vite             |
+| `npm run build`         | Build de produção         |
+| `npm run preview`       | Pré-visualização do build |
+| `npm test`              | Testes Vitest             |
+| `npm run test:coverage` | Cobertura                 |
+| `npm run test:e2e`      | Fluxo E2E                 |
+| `npm run lint`          | ESLint                    |
+
+## Estado local
+
+O navegador guarda dados transitórios da mediação para permitir navegação e recuperação do fluxo. Esse armazenamento não substitui o banco. O resultado oficial é o registro aceito pelo backend.
+
+## Produção
+
+O `Dockerfile` gera os arquivos estáticos e usa Nginx sem privilégios. Somente o frontend é publicado no host; o backend permanece na rede interna do Compose.
+
+Consulte [Desenvolvimento](../docs/DESENVOLVIMENTO.md), [Arquitetura](../docs/ARCHITECTURE.md) e [API](../docs/API.md).
