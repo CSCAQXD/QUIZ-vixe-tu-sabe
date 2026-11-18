@@ -7,6 +7,8 @@
 - HTTPS no proxy ou plataforma publica;
 - backup verificado antes de qualquer migracao.
 
+Para o servidor Windows da Casa de Saberes, siga primeiro o [guia específico do servidor](SERVIDOR_WINDOWS.md). Este documento também cobre cenários genéricos de publicação.
+
 ## Publicacao
 
 1. Garanta que o commit esteja na branch principal e todos os checks estejam verdes.
@@ -33,10 +35,13 @@ somente pela rede interna dos containers.
 
 As perguntas entram somente por um CSV enviado na Administracao. Depois que uma versao e ativada, as partidas leem apenas o SQLite e continuam funcionando sem internet. Preserve o volume `quiz-data`; recriar esse volume apaga perguntas versionadas, rankings e sessoes.
 
+Nunca execute `docker compose down -v` em produção. O sufixo `-v` remove o volume persistente.
+
 ## Servidor Windows em rede interna
 
-Use este modo somente em uma rede confiavel e exclusiva para funcionarios. No PowerShell, dentro
-do repositorio:
+Use este modo somente em uma rede confiável e exclusiva para funcionários. O procedimento completo, incluindo instalação, endereço curto, firewall, inicialização automática e diagnóstico, está em [Servidor Windows](SERVIDOR_WINDOWS.md).
+
+Resumo da primeira publicação, no PowerShell dentro do repositório:
 
 ```powershell
 .\scripts\configurar-deploy-interno.ps1
@@ -106,6 +111,21 @@ docker compose exec -T backend node scripts/backupDatabase.js
 Copie periodicamente essa pasta para uma unidade externa criptografada e teste a restauracao em
 ambiente isolado.
 
+## Checklist pós-publicação
+
+1. `docker compose ps` mostra backend e frontend saudáveis.
+2. `/health` retorna `200`.
+3. `/api/ready` retorna `ready` pelo frontend.
+4. A tela inicial abre em um notebook autorizado.
+5. A Administração aceita a senha nova.
+6. Existe uma versão ativa de perguntas.
+7. Uma partida de teste é salva e aparece nos rankings.
+8. A exportação XLSX abre e possui as seis abas esperadas.
+9. Um backup foi criado e copiado para fora do computador servidor.
+10. As portas do quiz não estão encaminhadas no roteador.
+
 ## Rollback
 
 Reimplante a tag anterior e, somente se o schema exigir, restaure o backup conforme [BACKUP_RESTORE.md](BACKUP_RESTORE.md). Nao aplique migracoes de desenvolvimento em producao. Registre versao, horario, operador e resultado.
+
+Não faça rollback apagando o volume ou copiando um SQLite enquanto ele está em escrita. Preserve evidências e a base atual antes de qualquer restauração.
