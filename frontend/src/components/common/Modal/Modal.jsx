@@ -4,6 +4,11 @@ import './Modal.css'
 function Modal({ children, className = '', isOpen, onClose, title }) {
   const closeButtonRef = useRef(null)
   const contentRef = useRef(null)
+  const onCloseRef = useRef(onClose)
+
+  useEffect(() => {
+    onCloseRef.current = onClose
+  }, [onClose])
 
   useEffect(() => {
     if (!isOpen) {
@@ -15,7 +20,7 @@ function Modal({ children, className = '', isOpen, onClose, title }) {
 
     function handleKeyDown(event) {
       if (event.key === 'Escape') {
-        onClose()
+        onCloseRef.current()
       }
       if (event.key === 'Tab') {
         const controls = contentRef.current?.querySelectorAll(
@@ -42,7 +47,7 @@ function Modal({ children, className = '', isOpen, onClose, title }) {
         previousFocus.focus()
       }
     }
-  }, [isOpen, onClose])
+  }, [isOpen])
 
   if (!isOpen) {
     return null
