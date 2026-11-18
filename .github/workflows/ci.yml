@@ -97,7 +97,7 @@ jobs:
 
       - name: Audit ${{ matrix.name }}
         working-directory: ${{ matrix.directory }}
-        run: npm audit --audit-level=high
+        run: npm audit --omit=dev --audit-level=high
 
   container-build:
     name: Build production containers

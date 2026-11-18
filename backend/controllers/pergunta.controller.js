@@ -39,9 +39,9 @@ async function obterStatus(req, res, next) {
     }
 }
 
-async function validarAtualizacao(req, res, next) {
+async function validarArquivo(req, res, next) {
     try {
-        const resultado = await perguntaService.validarAtualizacao();
+        const resultado = await perguntaService.validarArquivo(req.body);
         return res.status(200).json({
             ...resultado,
             versao: resumirVersao(resultado.versao),
@@ -56,6 +56,30 @@ async function ativarVersao(req, res, next) {
         const versao = await perguntaService.ativarVersao(req.params.id);
         return res.status(200).json({
             mensagem: "Versão de perguntas ativada com sucesso.",
+            versao: resumirVersao(versao),
+        });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+async function detalharVersao(req, res, next) {
+    try {
+        const versao = await perguntaService.obterVersao(req.params.id);
+        return res.status(200).json({ versao });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+async function descartarVersao(req, res, next) {
+    try {
+        const versao = await perguntaService.descartarVersao(
+            req.params.id,
+            req.body?.senhaAdministrativa,
+        );
+        return res.status(200).json({
+            mensagem: "Versão descartada definitivamente.",
             versao: resumirVersao(versao),
         });
     } catch (error) {
@@ -98,7 +122,9 @@ function lerTurmas(parametro) {
 
 module.exports = {
     ativarVersao,
+    descartarVersao,
+    detalharVersao,
     listarPerguntas,
     obterStatus,
-    validarAtualizacao,
+    validarArquivo,
 };

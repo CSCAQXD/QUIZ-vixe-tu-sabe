@@ -1,58 +1,14 @@
-const axios = require("axios");
 const Papa = require("papaparse");
 const prisma = require("../config/prisma");
 
-function obterConfiguracao() {
-    const csvUrl = process.env.PERGUNTAS_CSV_URL;
-
-    const timeoutMs = Number(process.env.PERGUNTAS_TIMEOUT_MS) || 5000;
-
-    if (!csvUrl) {
-        const erro = new Error("PERGUNTAS_CSV_URL não está configurada.");
-
-        erro.statusCode = 500;
-
+function interpretarCsv(conteudo) {
+    if (typeof conteudo !== "string" || !conteudo.trim()) {
+        const erro = new Error("Selecione um arquivo CSV que contenha as perguntas.");
+        erro.statusCode = 400;
         throw erro;
     }
 
-    return {
-        csvUrl,
-        timeoutMs,
-    };
-}
-
-async function buscarDaPlanilha() {
-    const { csvUrl, timeoutMs } = obterConfiguracao();
-
-    let resposta;
-
-    try {
-        resposta = await axios.get(csvUrl, {
-            timeout: timeoutMs,
-            responseType: "text",
-            maxContentLength: 2 * 1024 * 1024,
-            headers: {
-                Accept: "text/csv,text/plain",
-            },
-        });
-    } catch (error) {
-        const erro = new Error("Não foi possível consultar a planilha de perguntas.");
-
-        erro.statusCode = 503;
-        erro.cause = error;
-
-        throw erro;
-    }
-
-    if (typeof resposta.data !== "string") {
-        const erro = new Error("A planilha retornou um conteúdo inválido.");
-
-        erro.statusCode = 502;
-
-        throw erro;
-    }
-
-    const resultado = Papa.parse(resposta.data, {
+    const resultado = Papa.parse(conteudo.replace(/^\uFEFF/, ""), {
         header: true,
         skipEmptyLines: "greedy",
         transformHeader: (cabecalho) => cabecalho.trim(),
@@ -61,17 +17,17 @@ async function buscarDaPlanilha() {
     const errosRelevantes = resultado.errors.filter((erro) => erro.type !== "FieldMismatch");
 
     if (errosRelevantes.length > 0) {
-        const erro = new Error("A planilha contém um CSV inválido.");
+        const erro = new Error("O arquivo enviado contém um CSV inválido.");
 
-        erro.statusCode = 502;
+        erro.statusCode = 422;
 
         throw erro;
     }
 
     if (!Array.isArray(resultado.data)) {
-        const erro = new Error("A planilha não contém perguntas válidas.");
+        const erro = new Error("O arquivo não contém perguntas válidas.");
 
-        erro.statusCode = 502;
+        erro.statusCode = 422;
 
         throw erro;
     }
@@ -193,6 +149,27 @@ async function ativarVersao(id, cliente = prisma) {
     });
 }
 
+async function excluirVersaoInativa(id, cliente = prisma) {
+    return cliente.$transaction(async (transacao) => {
+        const versao = await transacao.versaoPerguntas.findUnique({ where: { id } });
+
+        if (!versao) {
+            const erro = new Error("A versão de perguntas não foi encontrada.");
+            erro.statusCode = 404;
+            throw erro;
+        }
+
+        if (versao.status === "ATIVA") {
+            const erro = new Error("A versão ativa não pode ser descartada.");
+            erro.statusCode = 409;
+            throw erro;
+        }
+
+        await transacao.versaoPerguntas.delete({ where: { id } });
+        return mapearVersao(versao);
+    });
+}
+
 async function listarVersoes(cliente = prisma) {
     const versoes = await cliente.versaoPerguntas.findMany({
         orderBy: { criadaEm: "desc" },
@@ -204,9 +181,10 @@ async function listarVersoes(cliente = prisma) {
 
 module.exports = {
     ativarVersao,
-    buscarDaPlanilha,
     buscarVersaoAtiva,
     buscarVersaoPorId,
+    excluirVersaoInativa,
+    interpretarCsv,
     listarVersoes,
     salvarVersao,
 };

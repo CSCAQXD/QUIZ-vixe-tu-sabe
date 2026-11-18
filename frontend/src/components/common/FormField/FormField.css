@@ -11,6 +11,10 @@
   font-weight: 600;
 }
 
+.form-field__control {
+  position: relative;
+}
+
 .form-field__input {
   width: 100%;
   min-height: 89px;
@@ -21,6 +25,41 @@
   background: transparent;
   font-family: var(--font-family-base);
   font-size: 1.15rem;
+}
+
+.form-field__input--revealable {
+  padding-right: 64px;
+}
+
+.form-field__reveal {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #3c1423;
+  background: transparent;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.form-field__reveal:hover {
+  background: rgb(240 155 50 / 20%);
+}
+
+.form-field__reveal:focus-visible {
+  outline: 2px solid #3c1423;
+  outline-offset: 2px;
+}
+
+.form-field__reveal svg {
+  width: 26px;
+  height: 26px;
 }
 
 .form-field__input[aria-invalid='true'] {

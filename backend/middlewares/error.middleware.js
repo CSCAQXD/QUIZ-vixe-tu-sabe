@@ -40,7 +40,7 @@ function errorMiddleware(error, req, res, next) {
         mensagem = erroPrisma.mensagem;
     } else if (jsonInvalido) {
         mensagem = "O corpo da requisição contém um JSON inválido.";
-    } else if (statusCode >= 500) {
+    } else if (statusCode >= 500 && !error.expose) {
         mensagem = "Erro interno do servidor.";
     } else {
         mensagem = error.message || "Erro interno do servidor.";

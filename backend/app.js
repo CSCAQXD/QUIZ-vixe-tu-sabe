@@ -12,6 +12,7 @@ const cursoRouter = require("./routers/curso.router");
 const sessaoRouter = require("./routers/sessao.router");
 
 const rankingRouter = require("./routers/ranking.router");
+const administracaoRouter = require("./routers/administracao.router");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -56,7 +57,7 @@ app.use(requestContext);
 app.use(
     cors({
         origin: validarOrigem,
-        methods: ["GET", "POST", "OPTIONS"],
+        methods: ["GET", "POST", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Admin-Token"],
         exposedHeaders: ["X-Request-ID", "RateLimit"],
         maxAge: 86400,
@@ -98,6 +99,8 @@ app.use("/sessao", sessaoRouter);
 app.use("/sessoes", sessaoRouter);
 
 app.use(rankingRouter);
+
+app.use("/admin", administracaoRouter);
 
 app.use((req, res) => {
     return res.status(404).json({

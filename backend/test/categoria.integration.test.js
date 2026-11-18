@@ -8,15 +8,22 @@ test(
     async (t) => {
         const cenario = await iniciarCenario();
         const repositorio = require("../repositories/pergunta.repository");
-        t.mock.method(repositorio, "buscarDaPlanilha", async () => [
+        const fonte = [
             pergunta("f1-a", "fundamental 1"),
             pergunta("f1-b", "fundamental 1"),
             pergunta("f2", "fundamental 2"),
             pergunta("medio", "ensino medio"),
             pergunta("comum-a", "comum"),
             pergunta("comum-b", "comum"),
-        ]);
+        ];
         const servicoPerguntas = require("../services/pergunta.service");
+        t.mock.method(repositorio, "buscarVersaoAtiva", async () => ({
+            id: "ativa",
+            status: "ATIVA",
+            hash: "teste",
+            total: fonte.length,
+            perguntas: servicoPerguntas.transformarPerguntas(fonte),
+        }));
         servicoPerguntas.limparCache();
         t.after(async () => {
             servicoPerguntas.limparCache();

@@ -13,7 +13,11 @@ function TelaInicialPage() {
 
   return (
     <section aria-label="Tela inicial do Vixe, Tu Sabe?" className="home-page">
-      <HomeScene onOpenRankings={() => navigate('/rankings')} onStart={startQuiz} />
+      <HomeScene
+        onOpenAdministration={() => navigate('/administracao/perguntas')}
+        onOpenRankings={() => navigate('/rankings')}
+        onStart={startQuiz}
+      />
     </section>
   )
 }

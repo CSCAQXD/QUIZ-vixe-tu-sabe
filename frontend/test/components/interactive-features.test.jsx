@@ -9,11 +9,20 @@ describe('componentes interativos', () => {
   it('aciona as ações da tela inicial', async () => {
     const onStart = vi.fn()
     const onOpenRankings = vi.fn()
-    render(<HomeScene onOpenRankings={onOpenRankings} onStart={onStart} />)
+    const onOpenAdministration = vi.fn()
+    render(
+      <HomeScene
+        onOpenAdministration={onOpenAdministration}
+        onOpenRankings={onOpenRankings}
+        onStart={onStart}
+      />,
+    )
     await userEvent.click(screen.getByRole('button', { name: 'INICIAR' }))
     await userEvent.click(screen.getByRole('button', { name: 'RANKINGS' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Abrir administração' }))
     expect(onStart).toHaveBeenCalledOnce()
     expect(onOpenRankings).toHaveBeenCalledOnce()
+    expect(onOpenAdministration).toHaveBeenCalledOnce()
   })
 
   it('edita, reutiliza e remove uma turma', async () => {

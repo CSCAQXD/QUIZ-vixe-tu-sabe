@@ -33,7 +33,7 @@ test("recusa token inválido sem revelar o valor esperado", () => {
     });
 
     assert.equal(erro.statusCode, 401);
-    assert.equal(erro.message, "Token administrativo inválido.");
+    assert.equal(erro.message, "Senha administrativa inválida.");
 });
 
 test("indica quando o token administrativo não foi configurado", () => {

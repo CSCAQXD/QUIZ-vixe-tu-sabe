@@ -5,7 +5,7 @@ import './HomeScene.css'
 
 const ILLUSTRATIONS_PATH = '/assets/illustrations'
 
-function HomeScene({ onOpenRankings, onStart }) {
+function HomeScene({ onOpenAdministration, onOpenRankings, onStart }) {
   return (
     <div className="home-scene">
       <img
@@ -58,6 +58,25 @@ function HomeScene({ onOpenRankings, onStart }) {
       />
       <ScenicBackdrop fenceClassName="home-scene__fence" groundClassName="home-scene__ground" />
       <SponsorsBar className="home-scene__sponsors" />
+
+      <button
+        aria-label="Abrir administração"
+        className="home-scene__admin"
+        onClick={onOpenAdministration}
+        type="button"
+      >
+        <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+          <path
+            d="M7.5 10V7.5a4.5 4.5 0 0 1 9 0V10m-10 0h11a1.5 1.5 0 0 1 1.5 1.5v7A1.5 1.5 0 0 1 17.5 20h-11A1.5 1.5 0 0 1 5 18.5v-7A1.5 1.5 0 0 1 6.5 10Z"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.8"
+          />
+          <path d="M12 14v2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+        </svg>
+        <span>Administração</span>
+      </button>
     </div>
   )
 }

@@ -13,7 +13,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "dados:teste": "node scripts/popularRankingsTeste.js --confirm-development"
   },
   "engines": {
     "node": ">=22.22.2 <23"
@@ -24,20 +25,24 @@
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "7.10.1",
     "@prisma/client": "7.10.1",
-    "axios": "^1.16.1",
     "better-sqlite3": "12.11.1",
     "cors": "^2.8.6",
     "dotenv": "^18.0.5",
+    "exceljs": "4.4.0",
     "express": "^5.3.0",
     "express-rate-limit": "^8.7.1",
     "helmet": "^8.3.0",
-    "papaparse": "^5.7.0"
+    "papaparse": "^5.7.0",
+    "quiz-vixe-tu-sabe": "file:.."
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "eslint": "10.13.0",
     "globals": "17.13.0",
     "prisma": "7.10.1"
+  },
+  "overrides": {
+    "uuid": "11.1.1"
   },
   "allowScripts": {
     "prisma@7.10.1": true,

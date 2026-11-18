@@ -1,4 +1,4 @@
-const { createHash } = require("node:crypto");
+const { createHash, timingSafeEqual } = require("node:crypto");
 const perguntaRepository = require("../repositories/pergunta.repository");
 const { normalizarFaixaPergunta, obterMenorFaixa } = require("../utils/faixaEnsino");
 
@@ -55,7 +55,7 @@ function transformarPerguntas(dados) {
 
     if (linhasInvalidas.length > 0) {
         const erro = new Error(
-            `A planilha possui ${linhasInvalidas.length} linha(s) inválida(s): ${linhasInvalidas
+            `O arquivo possui ${linhasInvalidas.length} linha(s) inválida(s): ${linhasInvalidas
                 .slice(0, 10)
                 .join(", ")}.`,
         );
@@ -64,7 +64,7 @@ function transformarPerguntas(dados) {
     }
 
     if (processadas.length === 0) {
-        const erro = new Error("Nenhuma pergunta válida foi encontrada na planilha.");
+        const erro = new Error("Nenhuma pergunta válida foi encontrada no arquivo.");
         erro.statusCode = 422;
         throw erro;
     }
@@ -72,7 +72,7 @@ function transformarPerguntas(dados) {
     const ids = new Set();
     for (const pergunta of processadas) {
         if (ids.has(pergunta.id)) {
-            const erro = new Error(`A planilha possui o ID duplicado: ${pergunta.id}.`);
+            const erro = new Error(`O arquivo possui o ID duplicado: ${pergunta.id}.`);
             erro.statusCode = 422;
             throw erro;
         }
@@ -114,8 +114,8 @@ function compararPerguntas(atuais = [], candidatas = []) {
     };
 }
 
-async function validarAtualizacao() {
-    const dados = await perguntaRepository.buscarDaPlanilha();
+async function validarArquivo(conteudoCsv) {
+    const dados = perguntaRepository.interpretarCsv(conteudoCsv);
     const perguntas = transformarPerguntas(dados);
     const hash = calcularHash(perguntas);
     const ativa = await perguntaRepository.buscarVersaoAtiva();
@@ -135,6 +135,32 @@ async function ativarVersao(id) {
     return versao;
 }
 
+async function obterVersao(id) {
+    const versao = await perguntaRepository.buscarVersaoPorId(id);
+    if (!versao) {
+        const erro = new Error("A versão de perguntas não foi encontrada.");
+        erro.statusCode = 404;
+        throw erro;
+    }
+    return versao;
+}
+
+function compararSegredo(recebido, esperado) {
+    const primeiro = Buffer.from(String(recebido || ""));
+    const segundo = Buffer.from(String(esperado || ""));
+    return primeiro.length === segundo.length && timingSafeEqual(primeiro, segundo);
+}
+
+async function descartarVersao(id, senhaAdministrativa) {
+    if (!compararSegredo(senhaAdministrativa, process.env.PERGUNTAS_ADMIN_TOKEN)) {
+        const erro = new Error("Senha administrativa inválida.");
+        erro.statusCode = 401;
+        throw erro;
+    }
+
+    return perguntaRepository.excluirVersaoInativa(id);
+}
+
 async function carregarVersaoAtiva() {
     if (cacheVersaoAtiva) return cacheVersaoAtiva;
 
@@ -144,8 +170,11 @@ async function carregarVersaoAtiva() {
         return armazenada;
     }
 
-    const importacaoInicial = await validarAtualizacao();
-    return ativarVersao(importacaoInicial.versao.id);
+    const erro = new Error(
+        "Nenhuma versão de perguntas foi publicada. Envie um arquivo CSV pela Administração.",
+    );
+    erro.statusCode = 503;
+    throw erro;
 }
 
 async function garantirVersaoAtiva() {
@@ -195,9 +224,11 @@ function limparCache() {
 module.exports = {
     ativarVersao,
     compararPerguntas,
+    descartarVersao,
     listarPerguntas,
     limparCache,
+    obterVersao,
     obterStatus,
     transformarPerguntas,
-    validarAtualizacao,
+    validarArquivo,
 };

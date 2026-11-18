@@ -14,7 +14,7 @@ Nginx (frontend React/Vite)
 API Express
    |              edicao
    v                |
-SQLite + Prisma <- Google Sheets
+SQLite + Prisma <- CSV enviado pela administracao
 ```
 
 - `frontend/`: interface React, testes Vitest e fluxo E2E com Playwright.
@@ -28,24 +28,19 @@ SQLite + Prisma <- Google Sheets
 - npm 10 ou superior
 - Docker com Compose, para executar o ambiente de producao local
 
-## Instalacao
+## Instalação para desenvolvimento
 
-```bash
+```powershell
 npm ci
 npm ci --prefix backend
 npm ci --prefix frontend
-```
-
-Copie os arquivos de exemplo e ajuste somente os valores necessarios:
-
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
+Copy-Item backend\.env.example backend\.env
+Copy-Item frontend\.env.example frontend\.env
 ```
 
 Prepare o banco e inicie os dois servicos:
 
-```bash
+```powershell
 npm run prisma:generate
 npm run prisma:deploy
 npm run dev:all
@@ -55,18 +50,21 @@ Frontend: `http://localhost:5173`. API: `http://localhost:3001`.
 
 ## Variaveis de ambiente
 
-| Variavel                     | Servico            | Finalidade                                        |
-| ---------------------------- | ------------------ | ------------------------------------------------- |
-| `DATABASE_URL`               | backend            | URL do SQLite, normalmente `file:./prisma/dev.db` |
-| `PORT`                       | backend            | Porta HTTP da API; padrao `3001`                  |
-| `CORS_ORIGINS`               | backend            | Origens autorizadas, separadas por virgula        |
-| `WRITE_RATE_LIMIT_MAX`       | backend            | Limite de operacoes de escrita por janela         |
-| `WRITE_RATE_LIMIT_WINDOW_MS` | backend            | Duracao da janela de limitacao em milissegundos   |
-| `TRUST_PROXY`                | backend            | Quantidade de proxies confiaveis antes da API     |
-| `PERGUNTAS_CSV_URL`          | backend            | Planilha publicada usada na sincronizacao         |
-| `PERGUNTAS_ADMIN_TOKEN`      | backend            | Token forte da administracao das perguntas        |
-| `VITE_API_URL`               | frontend           | URL da API; use `/api` em producao                |
-| `BACKEND_URL`                | frontend container | Destino interno do proxy Nginx                    |
+| Variavel                     | Servico            | Finalidade                                      |
+| ---------------------------- | ------------------ | ----------------------------------------------- |
+| `DATABASE_URL`               | backend            | URL do SQLite, normalmente `file:./dev.db`      |
+| `PORT`                       | backend            | Porta HTTP da API; padrao `3001`                |
+| `CORS_ORIGINS`               | backend            | Origens autorizadas, separadas por virgula      |
+| `WRITE_RATE_LIMIT_MAX`       | backend            | Limite de operacoes de escrita por janela       |
+| `WRITE_RATE_LIMIT_WINDOW_MS` | backend            | Duracao da janela de limitacao em milissegundos |
+| `TRUST_PROXY`                | backend            | Quantidade de proxies confiaveis antes da API   |
+| `QUIZ_CONTEXT_SECRET`        | backend            | Assina o contexto das mediações                 |
+| `PERGUNTAS_ADMIN_TOKEN`      | backend            | Senha forte da administração                    |
+| `VITE_API_URL`               | frontend           | URL da API; use `/api` em producao              |
+| `BACKEND_URL`                | frontend container | Destino interno do proxy Nginx                  |
+| `SERVER_BIND_ADDRESS`        | Compose            | Interface publicada pelo frontend               |
+| `SERVER_PORT`                | Compose            | Porta publicada pelo frontend                   |
+| `BACKUP_RETENTION_DAYS`      | backend            | Retenção dos backups locais                     |
 
 Nunca envie arquivos `.env`, bancos, backups ou credenciais ao Git.
 
@@ -82,28 +80,36 @@ Nunca envie arquivos `.env`, bancos, backups ou credenciais ao Git.
 | `npm run backup:database`                              | Cria backup consistente do SQLite                 |
 | `npm run restore:database -- --from CAMINHO --confirm` | Restaura um backup validado                       |
 
-## Producao local
+## Produção local
 
-```bash
-docker compose up --build
+```powershell
+Copy-Item .env.example .env
+docker compose up --build -d
 ```
 
-A aplicacao fica disponivel em `http://localhost:8080`; o Nginx entrega o frontend e encaminha `/api` ao backend. A prontidao da API e verificada em `/ready`.
+A aplicacao fica disponivel em `http://localhost:8080`; o Nginx entrega o frontend e encaminha `/api` ao backend. Pelo proxy, a prontidão da API é verificada em `/api/ready`; diretamente no backend, em `/ready`.
 
-A planilha e a fonte de edicao, mas o quiz usa a versao ativa gravada no SQLite. O mediador verifica, revisa e publica atualizacoes em `/administracao/perguntas`; depois da primeira importacao, as perguntas continuam disponiveis sem internet.
+A planilha privada e a fonte de edicao. Para atualizar o quiz, baixe-a como CSV e envie o arquivo pela Administracao. O quiz usa somente a versao ativa gravada no SQLite e continua disponivel sem internet.
 
 ## Qualidade e seguranca
 
 O CI executa formatacao, lint, validacao do schema, testes com cobertura, build, auditoria de dependencias, CodeQL, teste E2E e build dos containers. A API inclui cabecalhos seguros, identificador de requisicao, logs estruturados e limitacao de escritas.
 
-Consulte tambem:
+## Documentação
 
+- [Índice completo](docs/README.md)
+- [Guia de uso para funcionários](docs/GUIA_USO.md)
+- [Administração](docs/ADMINISTRACAO.md)
+- [Servidor Windows](docs/SERVIDOR_WINDOWS.md)
+- [Desenvolvimento](docs/DESENVOLVIMENTO.md)
 - [Arquitetura](docs/ARCHITECTURE.md)
 - [API](docs/API.md)
 - [Deploy](docs/DEPLOYMENT.md)
 - [Backup e restauracao](docs/BACKUP_RESTORE.md)
 - [Runbook operacional](docs/RUNBOOK.md)
 - [Releases](docs/RELEASES.md)
+- [Dados e privacidade](docs/DADOS_PRIVACIDADE.md)
+- [Acessibilidade](docs/ACESSIBILIDADE.md)
 - [Contribuicao](.github/CONTRIBUTING.md)
 - [Seguranca](.github/SECURITY.md)
 - [Suporte](.github/SUPPORT.md)

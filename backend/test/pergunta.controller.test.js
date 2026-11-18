@@ -101,8 +101,8 @@ test("retorna o status sem expor o conteúdo das perguntas", async () => {
     assert.equal("perguntas" in resposta.dados.ativa, false);
 });
 
-test("valida a planilha sem ativar a versão candidata", async () => {
-    const validar = mock.method(perguntaService, "validarAtualizacao", async () => ({
+test("valida o arquivo sem ativar a versão candidata", async () => {
+    const validar = mock.method(perguntaService, "validarArquivo", async () => ({
         resultado: "VERSAO_PRONTA",
         versao: { id: "rascunho", total: 51, perguntas: [{ id: "1" }] },
         diferencas: { totais: { adicionadas: 1, alteradas: 0, removidas: 0 } },
@@ -111,10 +111,50 @@ test("valida a planilha sem ativar a versão candidata", async () => {
     let dados;
     const res = { status: () => res, json: (valor) => (dados = valor) };
 
-    await perguntaController.validarAtualizacao({}, res, assert.fail);
+    await perguntaController.validarArquivo({ body: "conteudo csv" }, res, assert.fail);
 
     assert.equal(validar.mock.callCount(), 1);
+    assert.equal(validar.mock.calls[0].arguments[0], "conteudo csv");
     assert.equal(ativar.mock.callCount(), 0);
     assert.equal(dados.versao.id, "rascunho");
+    assert.equal("perguntas" in dados.versao, false);
+});
+
+test("retorna o conteúdo da versão escolhida somente na rota de detalhe", async () => {
+    mock.method(perguntaService, "obterVersao", async () => ({
+        id: "arquivada",
+        total: 1,
+        perguntas: [{ id: "P1", pergunta: "Pergunta anterior?" }],
+    }));
+    let dados;
+    const res = { status: () => res, json: (valor) => (dados = valor) };
+
+    await perguntaController.detalharVersao({ params: { id: "arquivada" } }, res, assert.fail);
+
+    assert.equal(dados.versao.id, "arquivada");
+    assert.equal(dados.versao.perguntas[0].id, "P1");
+});
+
+test("descarta uma versão anterior com nova confirmação da senha", async () => {
+    const descartar = mock.method(perguntaService, "descartarVersao", async () => ({
+        id: "arquivada",
+        total: 50,
+        status: "ARQUIVADA",
+        perguntas: [{ id: "segredo" }],
+    }));
+    let dados;
+    const res = { status: () => res, json: (valor) => (dados = valor) };
+
+    await perguntaController.descartarVersao(
+        {
+            params: { id: "arquivada" },
+            body: { senhaAdministrativa: "senha-segura" },
+        },
+        res,
+        assert.fail,
+    );
+
+    assert.deepEqual(descartar.mock.calls[0].arguments, ["arquivada", "senha-segura"]);
+    assert.equal(dados.mensagem, "Versão descartada definitivamente.");
     assert.equal("perguntas" in dados.versao, false);
 });
