@@ -46,13 +46,6 @@ const COLUNAS_ESCOLAS = [
     { campo: "pontuacaoTotal", titulo: "Pontuação", largura: 14, numero: true },
 ];
 
-const COLUNAS_INDICE_ESCOLAS = [
-    { campo: "ordem", titulo: "Nº", largura: 9, numero: true },
-    { campo: "escola", titulo: "Selecione a escola", largura: 46 },
-    { campo: "cidade", titulo: "Cidade", largura: 24 },
-    { campo: "quantidadeTurmas", titulo: "Turmas", largura: 12, numero: true },
-];
-
 function criarAba(workbook, nome, titulo, ano, colunas, registros) {
     const aba = workbook.addWorksheet(nome, {
         views: [{ state: "frozen", ySplit: 4 }],
@@ -140,9 +133,7 @@ function criarAba(workbook, nome, titulo, ano, colunas, registros) {
 
         for (const [campo, alinhamento] of Object.entries({
             posicao: "center",
-            ordem: "center",
             quantidadePartidas: "center",
-            quantidadeTurmas: "center",
             pontuacaoTotal: "right",
         })) {
             if (colunas.some((coluna) => coluna.campo === campo)) {
@@ -210,70 +201,17 @@ function adicionarPosicoesInternas(turmas) {
     );
 }
 
-function separarRankingPorEscola(turmas) {
-    const escolas = new Map();
-    for (const turma of adicionarPosicoesInternas(turmas)) {
-        const grupo = escolas.get(turma.escolaId) || [];
-        grupo.push(turma);
-        escolas.set(turma.escolaId, grupo);
-    }
-    return [...escolas.values()];
-}
-
-function criarPaginasInternas(workbook, ano, turmas) {
-    const rankings = separarRankingPorEscola(turmas);
-    const indice = rankings.map((ranking, indiceRanking) => ({
-        ordem: indiceRanking + 1,
-        escola: ranking[0].escola,
-        cidade: ranking[0].cidade,
-        quantidadeTurmas: ranking.length,
-        nomeAba: `Interno ${String(indiceRanking + 1).padStart(2, "0")}`,
-    }));
-
-    const abaIndice = criarAba(
+function criarRankingInterno(workbook, ano, turmas) {
+    const aba = criarAba(
         workbook,
         "Interno por escola",
-        "Selecione uma escola",
+        "Ranking interno por escola",
         ano,
-        COLUNAS_INDICE_ESCOLAS,
-        indice,
+        COLUNAS_TURMAS,
+        adicionarPosicoesInternas(turmas),
     );
-    abaIndice.getCell("A3").value = "Clique no nome da escola para abrir o ranking interno.";
-
-    indice.forEach((escola, indiceRanking) => {
-        const linhaIndice = abaIndice.getRow(indiceRanking + 5);
-        linhaIndice.getCell("escola").value = {
-            text: escola.escola,
-            hyperlink: `#'${escola.nomeAba}'!A1`,
-        };
-        linhaIndice.getCell("escola").font = {
-            name: "Arial",
-            size: 10,
-            bold: true,
-            color: { argb: CORES.vermelho },
-            underline: true,
-        };
-
-        const abaEscola = criarAba(
-            workbook,
-            escola.nomeAba,
-            `Ranking interno · ${escola.escola}`,
-            ano,
-            COLUNAS_TURMAS,
-            rankings[indiceRanking],
-        );
-        abaEscola.getCell("A3").value = {
-            text: "Voltar à lista de escolas",
-            hyperlink: "#'Interno por escola'!A1",
-        };
-        abaEscola.getCell("A3").font = {
-            name: "Arial",
-            size: 10,
-            bold: true,
-            color: { argb: CORES.vermelho },
-            underline: true,
-        };
-    });
+    aba.getCell("A3").value =
+        'Use o filtro da coluna "Escola" para visualizar o ranking interno desejado.';
 }
 
 async function exportarRankings(ano) {
@@ -304,7 +242,7 @@ async function exportarRankings(ano) {
             resultado.ranking,
         );
     });
-    criarPaginasInternas(workbook, ano, turmas.ranking);
+    criarRankingInterno(workbook, ano, turmas.ranking);
 
     return Buffer.from(await workbook.xlsx.writeBuffer());
 }

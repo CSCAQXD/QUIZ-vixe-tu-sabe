@@ -32,7 +32,7 @@ test.afterEach(() => {
     mock.restoreAll();
 });
 
-test("exporta uma planilha com uma aba para cada ranking", async () => {
+test("exporta uma planilha com uma aba para cada tipo de ranking", async () => {
     mock.method(rankingService, "listarRankingDeTurmas", async () => ({
         ranking: [turma, outraTurma],
     }));
@@ -62,8 +62,6 @@ test("exporta uma planilha com uma aba para cada ranking", async () => {
         "Fundamental II",
         "Ensino Médio",
         "Interno por escola",
-        "Interno 01",
-        "Interno 02",
     ];
     assert.deepEqual(
         workbook.worksheets.map((aba) => aba.name),
@@ -74,18 +72,12 @@ test("exporta uma planilha com uma aba para cada ranking", async () => {
     assert.equal(workbook.getWorksheet("Turmas").views[0].state, "frozen");
     assert.equal(workbook.getWorksheet("Turmas").getCell("A4").fill.fgColor.argb, "FFA52D37");
     assert.equal(workbook.getWorksheet("Turmas").getCell("A5").fill.fgColor.argb, "FFFFD166");
-    assert.equal(
-        workbook.getWorksheet("Interno por escola").getCell("B5").value.hyperlink,
-        "#'Interno 01'!A1",
-    );
-    assert.equal(workbook.getWorksheet("Interno 01").getCell("B5").value, "Escola & Cultura");
-    assert.equal(workbook.getWorksheet("Interno 01").getCell("B6").value, null);
-    assert.equal(workbook.getWorksheet("Interno 01").getCell("A1").alignment.horizontal, "left");
-    assert.equal(workbook.getWorksheet("Interno 02").getCell("B5").value, "Escola Modelo");
-    assert.equal(
-        workbook.getWorksheet("Interno 02").getCell("A3").value.hyperlink,
-        "#'Interno por escola'!A1",
-    );
+    const rankingInterno = workbook.getWorksheet("Interno por escola");
+    assert.equal(rankingInterno.getCell("B4").value, "Escola");
+    assert.equal(rankingInterno.getCell("B5").value, "Escola & Cultura");
+    assert.equal(rankingInterno.getCell("B6").value, "Escola Modelo");
+    assert.deepEqual(rankingInterno.autoFilter, "A4:H4");
+    assert.match(rankingInterno.getCell("A3").value, /filtro da coluna "Escola"/);
     assert.equal(workbook.creator, "Casa de Saberes Cego Aderaldo");
 });
 
